@@ -194,7 +194,7 @@ object Images {
 
         val regex = "(?is)^<img\\W.*?(src|srcset)=[\"|'](.*?)[\"|'].*?>".toRegex()
         val info = imgTag.replaceFirst(regex, "$1 :: $2").split(" :: ")
-        val type = info[0].toLowerCase()
+        val type = info[0].lowercase()
         val url  = info[1].replace("(?is)&amp;".toRegex(), "&")
 
         log.trace { "html : ${imgTag}\ntype : ${type}\nurl  : ${url}" }
