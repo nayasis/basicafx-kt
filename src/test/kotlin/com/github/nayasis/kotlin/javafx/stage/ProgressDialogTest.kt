@@ -3,7 +3,6 @@ package com.github.nayasis.kotlin.javafx.stage
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.FXTask
-import tornadofx.Stylesheet
 import tornadofx.launch
 import java.lang.Thread.sleep
 import kotlin.system.exitProcess
