@@ -9,7 +9,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
-private val log = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 object BoundaryChecker {
 
@@ -78,7 +78,7 @@ object BoundaryChecker {
 
 }
 
-private inline fun Rectangle2D.areaIntersected(r: Rectangle2D): Double {
+private fun Rectangle2D.areaIntersected(r: Rectangle2D): Double {
     return when {
         this.contains(r) -> this.width * this.height
         this.intersects(r) -> {
