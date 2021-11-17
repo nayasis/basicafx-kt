@@ -3,7 +3,7 @@
 package com.github.nayasis.kotlin.javafx.stage
 
 import com.github.nayasis.kotlin.javafx.model.Point
-import javafx.concurrent.Worker
+import javafx.concurrent.Task
 import javafx.concurrent.Worker.State.*
 import javafx.event.EventHandler
 import javafx.scene.Node
@@ -17,15 +17,19 @@ import javafx.stage.Modality
 import javafx.stage.Stage
 import javafx.stage.StageStyle
 import javafx.stage.Window
+import mu.KotlinLogging
 import tornadofx.label
 import tornadofx.progressbar
+import tornadofx.runAsync
 import tornadofx.runLater
 import tornadofx.vbox
 
-@Suppress("HasPlatformType")
-class ProgressDialog(worker: Worker<*>?) {
+private val logger = KotlinLogging.logger {}
 
-    val dialog = ProgressDialogCore(worker)
+//@Suppress("HasPlatformType")
+class ProgressDialog(task: Task<*>?) {
+
+    val dialog = ProgressDialogCore(task)
     val scene: Scene
         get() = dialog.dialogPane.scene
     val stage: Stage
@@ -54,9 +58,22 @@ class ProgressDialog(worker: Worker<*>?) {
 
     fun initModality(modality: Modality) = dialog.initModality(modality)
     fun initOwner(window: Window?) = dialog.initOwner(window)
-    fun show() = dialog.show()
-    fun showAndWait() = dialog.showAndWait()
+
     fun close() = dialog.closeForcibly()
+
+    fun runSync() {
+        dialog.task?.let { task ->
+            runAsync { task.run() }
+        }
+        dialog.showAndWait()
+    }
+
+    fun runAsync() {
+        dialog.show()
+        dialog.task?.let { task ->
+            runAsync { task.run() }
+        }
+    }
 
 }
 
@@ -65,7 +82,11 @@ class ProgressDialogCore: Dialog<Any> {
     lateinit var message: Label
     lateinit var progressBar: ProgressBar
 
-    constructor(worker: Worker<*>?) {
+    var task: Task<*>? = null
+
+    constructor(task: Task<*>?) {
+
+        this.task = task
 
         dialogPane.scene.apply {
             fill = Color.TRANSPARENT
@@ -80,27 +101,29 @@ class ProgressDialogCore: Dialog<Any> {
 
         // set view
         dialogPane.content = vbox {
-            prefWidth  = 400.0
-            prefHeight = 40.0
-            spacing   = 10.0
-            message = label {}
+            prefWidth   = 400.0
+            prefHeight  = 75.0
+            spacing     = 10.0
+            message     = label {}
             progressBar = progressbar {
                 maxWidth  = Double.MAX_VALUE
-                minHeight = 10.0
+                minHeight = 15.0
+                maxHeight = minHeight
                 progress  = 0.0
             }
         }
 
-        if( worker != null ) {
-            if( worker.state in setOf(CANCELLED, FAILED, SUCCEEDED) )
-                throw IllegalArgumentException("worker state is not valid (${worker.state})")
-            progressBar.progressProperty().bind(worker.progressProperty())
-            worker.titleProperty().addListener { _, _, text -> dialogPane.headerText = text ?: "" }
-            worker.messageProperty().addListener { _, _, text -> message.text = text ?: "" }
-            worker.stateProperty().addListener { _, _, state ->
+        if( task != null ) {
+            if( task.state in setOf(CANCELLED, FAILED, SUCCEEDED) )
+                throw IllegalArgumentException("worker state is not valid (${task.state})")
+            progressBar.progressProperty().bind(task.progressProperty())
+            task.titleProperty().addListener { _, _, text -> dialogPane.headerText = text ?: "" }
+            task.messageProperty().addListener { _, _, text -> message.text = text ?: "" }
+            task.stateProperty().addListener { _, _, state ->
                 when (state) {
                     CANCELLED, FAILED, SUCCEEDED -> closeForcibly()
                     SCHEDULED -> runLater { show() }
+                    else -> {}
                 }
             }
         }
