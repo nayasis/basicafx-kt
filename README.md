@@ -2,6 +2,7 @@
 
 basic JavaFx 13 library bases on Kotlin.
 
+[![](https://jitpack.io/v/nayasis/basicafx-kt.svg)](https://jitpack.io/#nayasis/basicafx-kt)
 
 ## Dependency
 
