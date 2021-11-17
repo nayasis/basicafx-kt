@@ -89,15 +89,15 @@ class Dialog { companion object {
         }.showAndWait().get()
     }
 
-    fun progress(title: String? = null, func: (FXTask<*>.() -> Any)? = null): ProgressDialog {
+    fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Any)? = null): ProgressDialog {
         val task = func?.let {FXTask(func=it)}
         val dialog = ProgressDialog(task)
         dialog.title = title ?: " "
         dialog.initOwner(Stages.focusedWindow)
-        if( task == null ) {
-            runLater { dialog.show() }
+        if( async ) {
+            dialog.runAsync()
         } else {
-            runAsync { task.run() }
+            dialog.runSync()
         }
         return dialog
     }
