@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	`maven`
+	`maven-publish`
 	kotlin("jvm") version "1.5.21"
 	kotlin("plugin.noarg") version "1.4.20"
 	id("org.openjfx.javafxplugin") version "0.0.8"
