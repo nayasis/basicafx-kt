@@ -1,7 +1,7 @@
 package com.github.nayasis.kotlin.javafx.preloader
 
 import com.github.nayasis.kotlin.javafx.stage.Dialog
-import javafx.application.Platform
+import tornadofx.runLater
 import javafx.application.Preloader as FxPreloader
 
 abstract class NPreloader: FxPreloader() {
@@ -15,7 +15,7 @@ abstract class NPreloader: FxPreloader() {
     }
 
     open fun onError( notificator: ErrorNotificator ) {
-        Platform.runLater {
+        runLater {
             notificator.throwable?.printStackTrace( System.err )
             with(notificator) {
                 Dialog.error( message, throwable )
