@@ -4,17 +4,10 @@ plugins {
 	`maven`
 	kotlin("jvm") version "1.5.21"
 	kotlin("plugin.noarg") version "1.5.21"
-	id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 noArg {
 	invokeInitializers = true
-}
-
-javafx {
-	version = "13"
-	modules = listOf("javafx.controls","javafx.fxml","javafx.web","javafx.swing")
-	configuration = "compileOnly"
 }
 
 java {
@@ -48,6 +41,32 @@ dependencies {
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.apache.httpcomponents:httpclient:4.5.8")
 	implementation("org.controlsfx:controlsfx:8.40.10")
+
+	// javafx
+	implementation("org.openjfx:javafx-base:13")
+	"supportImplementation"("org.openjfx:javafx-base:13:win")
+	"supportImplementation"("org.openjfx:javafx-base:13:mac")
+	"supportImplementation"("org.openjfx:javafx-base:13:linux")
+	implementation("org.openjfx:javafx-graphics:13")
+	"supportImplementation"("org.openjfx:javafx-graphics:13:win")
+	"supportImplementation"("org.openjfx:javafx-graphics:13:mac")
+	"supportImplementation"("org.openjfx:javafx-graphics:13:linux")
+	implementation("org.openjfx:javafx-controls:13")
+	"supportImplementation"("org.openjfx:javafx-controls:13:win")
+	"supportImplementation"("org.openjfx:javafx-controls:13:mac")
+	"supportImplementation"("org.openjfx:javafx-controls:13:linux")
+	implementation("org.openjfx:javafx-fxml:13")
+	"supportImplementation"("org.openjfx:javafx-fxml:13:win")
+	"supportImplementation"("org.openjfx:javafx-fxml:13:mac")
+	"supportImplementation"("org.openjfx:javafx-fxml:13:linux")
+	implementation("org.openjfx:javafx-web:13")
+	"supportImplementation"("org.openjfx:javafx-web:13:win")
+	"supportImplementation"("org.openjfx:javafx-web:13:mac")
+	"supportImplementation"("org.openjfx:javafx-web:13:linux")
+	implementation("org.openjfx:javafx-swing:13")
+	"supportImplementation"("org.openjfx:javafx-swing:13:win")
+	"supportImplementation"("org.openjfx:javafx-swing:13:mac")
+	"supportImplementation"("org.openjfx:javafx-swing:13:linux")
 
 	// spring
 	"supportImplementation"("org.springframework.boot:spring-boot-starter-web:2.5.6")
