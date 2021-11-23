@@ -101,14 +101,9 @@ class ProgressDialogCore: Dialog<Any> {
 
         // set view
         dialogPane.content = vbox {
-            prefWidth   = 400.0
-            prefHeight  = 75.0
-            spacing     = 10.0
             message     = label {}
             progressBar = progressbar {
                 maxWidth  = Double.MAX_VALUE
-                minHeight = 15.0
-                maxHeight = minHeight
                 progress  = 0.0
             }
         }
