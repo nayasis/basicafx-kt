@@ -18,7 +18,7 @@ java {
 }
 
 group = "com.github.nayasis"
-version = "0.1.0"
+version = "0.1.2-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
@@ -116,4 +116,8 @@ tasks.withType<KotlinCompile> {
 		)
 		jvmTarget = "11"
 	}
+}
+
+tasks.withType<Wrapper> {
+	gradleVersion = "6.7"
 }
