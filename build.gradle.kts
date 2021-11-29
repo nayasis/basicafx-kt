@@ -18,7 +18,7 @@ java {
 }
 
 group = "com.github.nayasis"
-version = "0.1.2-SNAPSHOT"
+version = "0.1.2"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
