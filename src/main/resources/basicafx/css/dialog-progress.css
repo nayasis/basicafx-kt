@@ -1,0 +1,46 @@
+@import "/basicafx/css/progress-bar.css";
+
+.root {
+  -fx-font : 11px Arial;
+}
+
+.dialog-pane {
+  -fx-background-color  : rgba(0, 0, 0, 0);
+  -fx-background-radius : 5px;
+  -fx-border-radius     : 5px;
+  -fx-border-color      : -fx-box-border;
+  -fx-pref-height       : 90px;
+  -fx-pref-width        : 400px;
+}
+
+.dialog-pane.dragged {
+  -fx-border-color: #486a9a;
+}
+
+/* remove button area */
+.dialog-pane > .button-bar > .container {
+  -fx-padding: 0;
+}
+
+.dialog-pane:header .header-panel {
+  -fx-background-radius : 5 5 0 0;
+}
+
+.dialog-pane:header .header-panel .label {
+  -fx-font-size   : 13px;
+  -fx-font-weight : bold;
+}
+
+.dialog-pane > .content {
+  -fx-background-radius : 0 0 5 5;
+  -fx-padding           : 8 0 0 0;
+  -fx-background-color  : -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 30%));
+}
+
+.dialog-pane > .content {
+  -fx-spacing: 8px;
+}
+
+.dialog-pane > .content > .label {
+  -fx-padding : 0 0 0 10;
+}

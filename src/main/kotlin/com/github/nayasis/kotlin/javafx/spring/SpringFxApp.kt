@@ -1,10 +1,10 @@
-package com.github.nayasis.kotlin.spring.javafx.app
+package com.github.nayasis.kotlin.javafx.spring
 
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages
+import com.github.nayasis.kotlin.javafx.misc.runAndWait
 import com.github.nayasis.kotlin.javafx.preloader.CloseNotificator
-import com.github.nayasis.kotlin.javafx.preloader.ErrorNotificator
 import com.github.nayasis.kotlin.javafx.preloader.NPreloader
 import com.github.nayasis.kotlin.javafx.preloader.Notificator
 import com.github.nayasis.kotlin.javafx.preloader.ProgressNotificator
@@ -48,19 +48,20 @@ abstract class SpringFxApp: App {
     override fun init() {
         try {
             setOptions(options)
-            setupDefaultExceptionHandler()
             context = SpringApplication.run(this.javaClass, *parameters.raw.toTypedArray())
             context.autowireCapableBeanFactory.autowireBean(this)
             FX.dicontainer = object: DIContainer {
                 override fun <T: Any> getInstance(type: KClass<T>): T = context.getBean(type.java)
                 override fun <T: Any> getInstance(type: KClass<T>, name: String): T = context.getBean(name, type.java)
             }
-        } catch (e: Exception) {
-            notifyPreloader(ErrorNotificator("Error on starting",e))
+            setupDefaultExceptionHandler()
+        } catch (e: Throwable) {
             closePreloader()
-            stop()
+            runAndWait {
+                Dialog.error(e)
+                stop()
+            }
         }
-
     }
 
     private fun setupDefaultExceptionHandler() {
@@ -83,8 +84,8 @@ abstract class SpringFxApp: App {
     }
 
     override fun stop() {
-        runCatching { super.stop() }
         runCatching { context.close() }
+        runCatching { super.stop() }
         exitProcess(0)
     }
 
