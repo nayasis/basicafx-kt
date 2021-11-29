@@ -18,7 +18,7 @@ java {
 }
 
 group = "com.github.nayasis"
-version = "0.1.0"
+version = "0.1.2-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.1.3")
+	implementation("com.github.nayasis:basica-kt:0.1.4")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
@@ -83,6 +83,25 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
 	testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
+	testImplementation("org.openjfx:javafx-base:13:win")
+	testImplementation("org.openjfx:javafx-base:13:mac")
+	testImplementation("org.openjfx:javafx-base:13:linux")
+	testImplementation("org.openjfx:javafx-graphics:13:win")
+	testImplementation("org.openjfx:javafx-graphics:13:mac")
+	testImplementation("org.openjfx:javafx-graphics:13:linux")
+	testImplementation("org.openjfx:javafx-controls:13:win")
+	testImplementation("org.openjfx:javafx-controls:13:mac")
+	testImplementation("org.openjfx:javafx-controls:13:linux")
+	testImplementation("org.openjfx:javafx-fxml:13:win")
+	testImplementation("org.openjfx:javafx-fxml:13:mac")
+	testImplementation("org.openjfx:javafx-fxml:13:linux")
+	testImplementation("org.openjfx:javafx-web:13:win")
+	testImplementation("org.openjfx:javafx-web:13:mac")
+	testImplementation("org.openjfx:javafx-web:13:linux")
+	testImplementation("org.openjfx:javafx-swing:13:win")
+	testImplementation("org.openjfx:javafx-swing:13:mac")
+	testImplementation("org.openjfx:javafx-swing:13:linux")
+
 }
 
 tasks.withType<Test> {
@@ -97,4 +116,8 @@ tasks.withType<KotlinCompile> {
 		)
 		jvmTarget = "11"
 	}
+}
+
+tasks.withType<Wrapper> {
+	gradleVersion = "6.7"
 }

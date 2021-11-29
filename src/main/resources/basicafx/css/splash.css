@@ -1,0 +1,16 @@
+@import "/basicafx/css/progress-bar.css";
+
+#splash {
+  -fx-background-repeat   : stretch;
+  -fx-background-size     : stretch;
+  -fx-background-position : center center;
+  -fx-effect              : dropshadow(three-pass-box, black, 30, 0.5, 0, 0);
+}
+
+#splash .label {
+  -fx-font        : 9px Arial;
+  -fx-text-fill   : white;
+  -fx-font-weight : bolder;
+  -fx-opacity     : 1;
+  -fx-padding     : 7 5 10 10;
+}
