@@ -2,9 +2,6 @@ package com.github.nayasis.kotlin.javafx.preloader
 
 import com.github.nayasis.kotlin.javafx.spring.SpringFxApp
 import javafx.beans.property.SimpleIntegerProperty
-import org.apache.commons.cli.CommandLine
-import org.apache.commons.cli.Options
-import org.junit.jupiter.api.Assertions.*
 import tornadofx.App
 import tornadofx.View
 import tornadofx.action
