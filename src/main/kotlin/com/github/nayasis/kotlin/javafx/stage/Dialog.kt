@@ -89,7 +89,7 @@ class Dialog { companion object {
         }.showAndWait().get()
     }
 
-    fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Any)? = null): ProgressDialog {
+    fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Unit)? = null): ProgressDialog {
         val task = func?.let {FXTask(func=it)}
         val dialog = ProgressDialog(task)
         dialog.title = title ?: " "
