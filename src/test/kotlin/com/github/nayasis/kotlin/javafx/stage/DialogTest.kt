@@ -31,6 +31,11 @@ class DialogTestView: View("dialog test") {
                 Dialog.alert("it is ok !!")
             }
         }}
+        button("prompt") {action {
+            // if 'esc' pressed, no error raised !
+            val text = Dialog.prompt("input your parameter")
+            Dialog.alert("[${text}]")
+        }}
         button("progress") {action {
             Dialog.progress("header") {
                 val max = 40
