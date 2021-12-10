@@ -1,14 +1,19 @@
 package com.github.nayasis.kotlin.javafx.control.combobox
 
+import com.github.nayasis.kotlin.javafx.control.basic.addKeyPressed
 import javafx.scene.control.ComboBox
 import javafx.scene.input.KeyCode.*
-import javafx.scene.input.KeyEvent
 import javafx.util.StringConverter
 import tornadofx.runLater
 import kotlin.math.max
 import kotlin.math.min
 
-class ItemComboBox: ComboBox<Item>() {
+class ItemComboBox: ComboBox<Item> {
+
+    constructor(items: Collection<Item>? = null) {
+        if( ! items.isNullOrEmpty() )
+            this.items.addAll(items)
+    }
 
     var value: String?
         get() = super.getValue()?.value
@@ -18,6 +23,22 @@ class ItemComboBox: ComboBox<Item>() {
         get() = selectionModel.selectedIndex
         set(value) = selectionModel.select(value)
 
+    val selectedItem: Item?
+        get() {
+            return try {
+                selectionModel.selectedItem
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+    fun selectFirst() {
+        select = 0
+    }
+
+    fun selectLast() {
+        select = items.size - 1
+    }
 
     fun getItem(value: String?): Item? {
         return items.firstOrNull{ it.value == value }
@@ -73,31 +94,33 @@ class ItemComboBox: ComboBox<Item>() {
             override fun fromString(value: String): Item? = getItem(value)
         }
 
-        addEventFilter(KeyEvent.KEY_PRESSED) { event ->
-                when (event.code) {
-                    UP, KP_UP -> {
-                        event.consume()
-                        show()
-                        if (isEditable) runLater{
-                            select = max(select + 1, items.size - 1)
-                        }
-                    }
-                    DOWN, KP_DOWN -> {
-                        event.consume()
-                        show()
-                        if (isEditable) runLater{
-                            select = min(select - 1, 0)
-                        }
-                    }
-                    ESCAPE -> {
-                        parent.fireEvent(event)
-                        event.consume()
-                    }
-                    ENTER -> if (isEditable) {
-                        getItem(editor.text)?.also { event.consume() }
+        addKeyPressed { event ->
+            when (event.code) {
+                UP, KP_UP -> {
+                    event.consume()
+                    show()
+                    if (isEditable) runLater{
+                        select = max(select + 1, items.size - 1)
                     }
                 }
+                DOWN, KP_DOWN -> {
+                    event.consume()
+                    show()
+                    if (isEditable) runLater{
+                        select = min(select - 1, 0)
+                    }
+                }
+                ESCAPE -> {
+                    parent.fireEvent(event)
+                    event.consume()
+                }
+                HOME -> selectFirst()
+                END -> selectLast()
+                ENTER -> if (isEditable) {
+                    getItem(editor.text)?.also { event.consume() }
+                }
             }
+        }
 
     }
 
