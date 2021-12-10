@@ -1,6 +1,7 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import javafx.css.Styleable
+import javafx.event.EventHandler
 import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.control.Menu
@@ -12,6 +13,7 @@ import javafx.scene.control.TabPane
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.ToolBar
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
@@ -103,3 +105,8 @@ private fun gatherStyleables(target: Styleable?, targets: HashSet<Styleable>) {
         is TableColumn<*, *> -> target.columns.forEach{gatherStyleables(it,targets)}
     }
 }
+
+fun Node.addKeyPressed(event: EventHandler<in KeyEvent>) {
+    this.addEventFilter(KeyEvent.KEY_PRESSED,event)
+}
+
