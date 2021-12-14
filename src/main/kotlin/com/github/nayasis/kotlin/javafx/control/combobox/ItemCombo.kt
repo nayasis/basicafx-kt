@@ -4,7 +4,7 @@ import au.com.console.kassava.kotlinEquals
 import au.com.console.kassava.kotlinHashCode
 import java.io.Serializable
 
-data class Item(
+data class ItemCombo(
     val value: String?,
     var label: String?,
     var ref: Any? = null
@@ -12,7 +12,7 @@ data class Item(
 
     constructor(value: String): this(value,value)
 
-    override fun equals(other: Any?): Boolean = kotlinEquals(other, arrayOf(Item::value))
-    override fun hashCode(): Int = kotlinHashCode(arrayOf(Item::value))
+    override fun equals(other: Any?): Boolean = kotlinEquals(other, arrayOf(ItemCombo::value))
+    override fun hashCode(): Int = kotlinHashCode(arrayOf(ItemCombo::value))
 
 }

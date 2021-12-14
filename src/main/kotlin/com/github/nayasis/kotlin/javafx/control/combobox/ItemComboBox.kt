@@ -14,9 +14,9 @@ import kotlin.math.min
 
 private val logger = KotlinLogging.logger {}
 
-class ItemComboBox: ComboBox<Item> {
+class ItemComboBox: ComboBox<ItemCombo> {
 
-    constructor(items: Collection<Item>? = null) {
+    constructor(items: Collection<ItemCombo>? = null) {
         if( ! items.isNullOrEmpty() )
             this.items.addAll(items)
     }
@@ -30,15 +30,15 @@ class ItemComboBox: ComboBox<Item> {
         set(value) {
             selectionModel.select(value)
             try {
-                (skin as ComboBoxListViewSkin<Item>?)?.also {
-                    (it.popupContent as ListView<Item>).scrollTo(value)
+                (skin as ComboBoxListViewSkin<ItemCombo>?)?.also {
+                    (it.popupContent as ListView<ItemCombo>).scrollTo(value)
                 }
             } catch (e: Exception) {
                 logger.error(e)
             }
         }
 
-    val selectedItem: Item?
+    val selectedItem: ItemCombo?
         get() {
             return try {
                 selectionModel.selectedItem
@@ -47,41 +47,41 @@ class ItemComboBox: ComboBox<Item> {
             }
         }
 
-    fun selectFirst(): Item? {
+    fun selectFirst(): ItemCombo? {
         select = 0
         return selectedItem
     }
 
-    fun selectLast(): Item? {
+    fun selectLast(): ItemCombo? {
         select = items.size - 1
         return selectedItem
     }
 
-    fun getItem(value: String?): Item? {
+    fun getItem(value: String?): ItemCombo? {
         return items.firstOrNull{ it.value == value }
     }
 
     fun setItem(value: String, label: String = value, index: Int? = null): ItemComboBox {
-        return setItem(Item(value,label),index) {
+        return setItem(ItemCombo(value,label),index) {
             it.label = label
         }
     }
 
     fun setItem(value: String, label: String = value, ref: Any?, index: Int? = null): ItemComboBox {
-        return setItem(Item(value,label,ref),index) {
+        return setItem(ItemCombo(value,label,ref),index) {
             it.label = label
             it.ref   = ref
         }
     }
 
-    fun setItem(item: Item, index: Int? = null): ItemComboBox {
+    fun setItem(item: ItemCombo, index: Int? = null): ItemComboBox {
         return setItem(item, index) {
             it.label = item.label
             it.ref   = item.ref
         }
     }
 
-    fun setItem(item: Item, index: Int? = null, onExist: (Item) -> Unit, ): ItemComboBox {
+    fun setItem(item: ItemCombo, index: Int? = null, onExist: (ItemCombo) -> Unit, ): ItemComboBox {
         items.firstOrNull{ it.value == item.value }.let {
             if( it == null ) {
                 if( index == null ) {
@@ -96,7 +96,7 @@ class ItemComboBox: ComboBox<Item> {
         return this
     }
 
-    fun setItem(items: Collection<Item>): ItemComboBox {
+    fun setItem(items: Collection<ItemCombo>): ItemComboBox {
         val checker = this.items.associateBy { it.value }
         for( item in items ) {
             if( checker.containsKey(item.value) ) {
@@ -109,22 +109,22 @@ class ItemComboBox: ComboBox<Item> {
     }
 
     fun removeItem(value: String): Boolean {
-        return removeItem(Item(value))
+        return removeItem(ItemCombo(value))
     }
 
-    fun removeItem(item: Item): Boolean {
+    fun removeItem(item: ItemCombo): Boolean {
         return items.remove(item)
     }
 
-    fun removeItem(items: Collection<Item>): Boolean {
+    fun removeItem(items: Collection<ItemCombo>): Boolean {
         return this.items.removeAll(items)
     }
 
     init {
 
-        converter = object: StringConverter<Item>() {
-            override fun toString(item: Item?): String? = item?.label
-            override fun fromString(value: String): Item? = getItem(value)
+        converter = object: StringConverter<ItemCombo>() {
+            override fun toString(item: ItemCombo?): String? = item?.label
+            override fun fromString(value: String): ItemCombo? = getItem(value)
         }
 
         addKeyPressed { event ->
