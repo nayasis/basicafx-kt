@@ -32,12 +32,14 @@ class ItemComboBox: ComboBox<Item> {
             }
         }
 
-    fun selectFirst() {
+    fun selectFirst(): Item? {
         select = 0
+        return selectedItem
     }
 
-    fun selectLast() {
+    fun selectLast(): Item? {
         select = items.size - 1
+        return selectedItem
     }
 
     fun getItem(value: String?): Item? {
@@ -85,6 +87,22 @@ class ItemComboBox: ComboBox<Item> {
             }
         }
         return this
+    }
+
+    fun removeItem(value: String): Boolean {
+        val checker = this.items.associateBy { it.value }
+        if( checker.containsKey(value) ) {
+            return items.remove(checker[value])
+        }
+        return false
+    }
+
+    fun removeItem(item: Item): Boolean {
+        return items.remove(item)
+    }
+
+    fun removeItem(items: Collection<Item>): Boolean {
+        return this.items.removeAll(items)
     }
 
     init {
