@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
 
 class ComboBoxTest: App(ComboBoxTestView::class,MyStylesheet::class)
 
-private val list = ('A'..'Z').mapIndexed{ i, ch -> Item("$i", "$ch") }
+private val list = ('A'..'Z').mapIndexed{ i, ch -> Item("$ch") }
 
 class ComboBoxTestView: View("ComboBox test") {
 
@@ -30,13 +30,31 @@ class ComboBoxTestView: View("ComboBox test") {
         }
     }
 
-    override val root = vbox {
+    override val root = vbox(spacing = 5) {
+
         combo.attachTo(this)
-        button("progress manually") { action {
-            combo.value = "3"
+
+        button("select 'J'") { action {
+            combo.value = "J"
         }}
+
+        button("remove C") { action {
+            val rs = combo.removeItem("C")
+            logger.debug { ">> remove 'C' : ${rs}" }
+        }}
+
+        button("add C") { action {
+            combo.setItem("C",index=2)
+        }}
+
+        button("remove first") { action {
+            combo.removeItem( combo.items.first() )
+            combo.selectFirst()
+        }}
+
         prefWidth = 300.0
         prefHeight = 200.0
+
     }
 
 }

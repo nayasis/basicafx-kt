@@ -1,12 +1,18 @@
 package com.github.nayasis.kotlin.javafx.control.combobox
 
+import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.control.basic.addKeyPressed
 import javafx.scene.control.ComboBox
+import javafx.scene.control.ListView
+import javafx.scene.control.skin.ComboBoxListViewSkin
 import javafx.scene.input.KeyCode.*
 import javafx.util.StringConverter
+import mu.KotlinLogging
 import tornadofx.runLater
 import kotlin.math.max
 import kotlin.math.min
+
+private val logger = KotlinLogging.logger {}
 
 class ItemComboBox: ComboBox<Item> {
 
@@ -21,7 +27,16 @@ class ItemComboBox: ComboBox<Item> {
 
     var select: Int
         get() = selectionModel.selectedIndex
-        set(value) = selectionModel.select(value)
+        set(value) {
+            selectionModel.select(value)
+            try {
+                (skin as ComboBoxListViewSkin<Item>?)?.also {
+                    (it.popupContent as ListView<Item>).scrollTo(value)
+                }
+            } catch (e: Exception) {
+                logger.error(e)
+            }
+        }
 
     val selectedItem: Item?
         get() {
@@ -46,32 +61,36 @@ class ItemComboBox: ComboBox<Item> {
         return items.firstOrNull{ it.value == value }
     }
 
-    fun setItem(value: String, label: String = value): ItemComboBox {
-        return setItem(Item(value,label)) {
+    fun setItem(value: String, label: String = value, index: Int? = null): ItemComboBox {
+        return setItem(Item(value,label),index) {
             it.label = label
         }
     }
 
-    fun setItem(value: String, label: String = value, ref: Any?): ItemComboBox {
-        return setItem(Item(value,label,ref)) {
+    fun setItem(value: String, label: String = value, ref: Any?, index: Int? = null): ItemComboBox {
+        return setItem(Item(value,label,ref),index) {
             it.label = label
             it.ref   = ref
         }
     }
 
-    fun setItem(item: Item): ItemComboBox {
-        return setItem(item) {
+    fun setItem(item: Item, index: Int? = null): ItemComboBox {
+        return setItem(item, index) {
             it.label = item.label
             it.ref   = item.ref
         }
     }
 
-    fun setItem(item: Item, fn:(Item)->Unit): ItemComboBox {
-        items.firstOrNull{ it.value == value }.let {
+    fun setItem(item: Item, index: Int? = null, onExist: (Item) -> Unit, ): ItemComboBox {
+        items.firstOrNull{ it.value == item.value }.let {
             if( it == null ) {
-                items.add(item)
+                if( index == null ) {
+                    items.add(item)
+                } else {
+                    items.add(index,item)
+                }
             } else {
-                fn(it)
+                onExist(it)
             }
         }
         return this
@@ -90,11 +109,7 @@ class ItemComboBox: ComboBox<Item> {
     }
 
     fun removeItem(value: String): Boolean {
-        val checker = this.items.associateBy { it.value }
-        if( checker.containsKey(value) ) {
-            return items.remove(checker[value])
-        }
-        return false
+        return removeItem(Item(value))
     }
 
     fun removeItem(item: Item): Boolean {
