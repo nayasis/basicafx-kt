@@ -49,15 +49,17 @@ data class StageProperty(
     @JsonIgnore
     val excludeObject = HashSet<Styleable>()
 
-    constructor(stage: Stage): this() {
-        read(stage)
+    constructor(stage: Stage, includeChildren: Boolean = true): this() {
+        read(stage,includeChildren)
     }
 
-    fun read(stage: Stage) {
+    fun read(stage: Stage, includeChildren: Boolean = true) {
 
         inset.read(stage)
         maximized = stage.isMaximized
         previousZoomSize = stage.scene.previousZoomSize
+
+        if(!includeChildren) return
 
         getAllChildren(stage).forEach {
             if( skippable(it) ) return@forEach
@@ -86,12 +88,15 @@ data class StageProperty(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun bind(stage: Stage?, visibility: Boolean = true ) {
+    fun bind(stage: Stage?, visibility: Boolean = true, includeChildren: Boolean = true) {
 
         if( stage?.scene == null ) return
 
         inset.bind(stage)
+        stage.isMaximized = maximized
         stage.scene.previousZoomSize = previousZoomSize
+
+        if(!includeChildren) return
 
         getAllChildren(stage).forEach {
             if( skippable(it) ) return@forEach
