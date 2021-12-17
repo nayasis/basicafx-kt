@@ -77,8 +77,8 @@ class Dialog { companion object {
         error(exception?.message, exception)
     }
 
-    fun prompt(message: String?): String {
-        return TextInputDialog().apply {
+    fun prompt(message: String?): String? {
+        val res = TextInputDialog().apply {
             headerText = message
             initModality(WINDOW_MODAL)
             initOwner(Stages.focusedWindow)
@@ -86,10 +86,11 @@ class Dialog { companion object {
                 isAlwaysOnTop = true
                 loadDefaultIcon()
             }
-        }.showAndWait().get()
+        }.showAndWait()
+        return if(res.isEmpty) null else res.get()
     }
 
-    fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Any)? = null): ProgressDialog {
+    fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Unit)? = null): ProgressDialog {
         val task = func?.let {FXTask(func=it)}
         val dialog = ProgressDialog(task)
         dialog.title = title ?: " "
