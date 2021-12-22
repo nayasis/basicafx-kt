@@ -7,12 +7,17 @@ data class PositionProperty(
     var x: Int = 0,
     var y: Int = 0,
 ): Serializable {
+
+    constructor(stage: Stage?): this() { stage?.let { read(it) } }
+
     fun read(stage: Stage) {
         x = stage.x.toInt()
         y = stage.y.toInt()
     }
+
     fun bind(stage: Stage) {
         stage.x = x.toDouble()
         stage.y = y.toDouble()
     }
+
 }
