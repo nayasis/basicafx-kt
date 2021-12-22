@@ -25,6 +25,7 @@ class ItemComboBox: ComboBox<ItemCombo> {
         get() = super.getValue()?.value
         set(value) = super.setValue(getItem(value))
 
+    @Suppress("UNCHECKED_CAST")
     var select: Int
         get() = selectionModel.selectedIndex
         set(value) {
@@ -128,6 +129,7 @@ class ItemComboBox: ComboBox<ItemCombo> {
         }
 
         addKeyPressed { event ->
+            @Suppress("NON_EXHAUSTIVE_WHEN")
             when (event.code) {
                 UP, KP_UP -> {
                     event.consume()
