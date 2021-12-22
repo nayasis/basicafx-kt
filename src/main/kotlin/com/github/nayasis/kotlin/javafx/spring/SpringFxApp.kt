@@ -79,7 +79,7 @@ abstract class SpringFxApp: App {
     }
 
     override fun start(stage: Stage) {
-        start(DefaultParser().parse(options, parameters.raw.toTypedArray()))
+        onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()), stage)
         super.start(stage)
     }
 
@@ -89,8 +89,8 @@ abstract class SpringFxApp: App {
         exitProcess(0)
     }
 
-    abstract fun setOptions(options: Options)
-    abstract fun start(command: CommandLine)
+    open fun setOptions(options: Options) {}
+    open fun onStart(command: CommandLine, primaryStage: Stage) {}
 
     companion object {
 
