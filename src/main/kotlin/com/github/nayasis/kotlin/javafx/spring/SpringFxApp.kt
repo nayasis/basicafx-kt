@@ -84,6 +84,7 @@ abstract class SpringFxApp: App {
     }
 
     override fun stop() {
+        onStop()
         runCatching { context.close() }
         runCatching { super.stop() }
         exitProcess(0)
@@ -91,6 +92,7 @@ abstract class SpringFxApp: App {
 
     open fun setOptions(options: Options) {}
     open fun onStart(command: CommandLine, primaryStage: Stage) {}
+    open fun onStop() {}
 
     companion object {
 
