@@ -10,14 +10,18 @@ data class SizeProperty(
 
     constructor(stage: Stage?): this() { stage?.let { read(it) } }
 
-    fun read(stage: Stage) {
-        width = stage.width.toInt()
-        height = stage.height.toInt()
+    fun read(stage: Stage?) {
+        stage?.let {
+            width  = it.width.toInt()
+            height = it.height.toInt()
+        }
     }
 
-    fun bind(stage: Stage) {
-        stage.width = width.toDouble()
-        stage.height = height.toDouble()
+    fun bind(stage: Stage?) {
+        stage?.let {
+            it.width  = width.toDouble()
+            it.height = height.toDouble()
+        }
     }
 
 }

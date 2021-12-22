@@ -10,14 +10,18 @@ data class PositionProperty(
 
     constructor(stage: Stage?): this() { stage?.let { read(it) } }
 
-    fun read(stage: Stage) {
-        x = stage.x.toInt()
-        y = stage.y.toInt()
+    fun read(stage: Stage?) {
+        stage?.let {
+            x = it.x.toInt()
+            y = it.y.toInt()
+        }
     }
 
-    fun bind(stage: Stage) {
-        stage.x = x.toDouble()
-        stage.y = y.toDouble()
+    fun bind(stage: Stage?) {
+        stage?.let {
+            it.x = x.toDouble()
+            it.y = y.toDouble()
+        }
     }
 
 }
