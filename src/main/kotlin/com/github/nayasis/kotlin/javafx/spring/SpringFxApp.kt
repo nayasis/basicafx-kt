@@ -34,6 +34,8 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
+private lateinit var ctx: ConfigurableApplicationContext
+
 @Suppress("SpringJavaConstructorAutowiringInspection")
 abstract class SpringFxApp: App {
 
@@ -43,16 +45,14 @@ abstract class SpringFxApp: App {
 
     private val options = Options()
 
-    lateinit var context: ConfigurableApplicationContext
-
     override fun init() {
         try {
             setOptions(options)
-            context = SpringApplication.run(this.javaClass, *parameters.raw.toTypedArray())
-            context.autowireCapableBeanFactory.autowireBean(this)
+            ctx = SpringApplication.run(this.javaClass, *parameters.raw.toTypedArray())
+            ctx.autowireCapableBeanFactory.autowireBean(this)
             FX.dicontainer = object: DIContainer {
-                override fun <T: Any> getInstance(type: KClass<T>): T = context.getBean(type.java)
-                override fun <T: Any> getInstance(type: KClass<T>, name: String): T = context.getBean(name, type.java)
+                override fun <T: Any> getInstance(type: KClass<T>): T = ctx.getBean(type.java)
+                override fun <T: Any> getInstance(type: KClass<T>, name: String): T = ctx.getBean(name, type.java)
             }
             setupDefaultExceptionHandler()
         } catch (e: Throwable) {
@@ -85,8 +85,8 @@ abstract class SpringFxApp: App {
     }
 
     override fun stop() {
-        onStop(context)
-        runCatching { context.close() }
+        onStop(ctx)
+        runCatching { ctx.close() }
         runCatching { super.stop() }
         exitProcess(0)
     }
@@ -121,6 +121,9 @@ abstract class SpringFxApp: App {
         }
 
         fun closePreloader() = notifyPreloader(CloseNotificator())
+
+        val context: ConfigurableApplicationContext
+            get() = ctx
 
     }
 
