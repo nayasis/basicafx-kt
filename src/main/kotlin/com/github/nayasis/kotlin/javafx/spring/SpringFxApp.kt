@@ -20,6 +20,7 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.Environment
 import tornadofx.App
 import tornadofx.DIContainer
 import tornadofx.FX
@@ -124,6 +125,9 @@ abstract class SpringFxApp: App {
 
         val context: ConfigurableApplicationContext
             get() = ctx
+
+        val environment: Environment
+            get() = ctx.environment
 
     }
 
