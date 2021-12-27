@@ -4,9 +4,6 @@ import javafx.scene.control.Button
 import javafx.scene.control.OverrunStyle
 import org.controlsfx.glyphfont.FontAwesome
 
-fun Button.create(text: String? = null, glyph: FontAwesome.Glyph? = null): Button {
-    return when (glyph) {
-        null -> Button(text)
-        else -> Button(text,FontAwesome().create(glyph))
-    }.apply { textOverrun = OverrunStyle.CLIP }
+fun Button(glyph: FontAwesome.Glyph, text: String? = null): Button {
+    return Button(text,FontAwesome().create(glyph)).apply { textOverrun = OverrunStyle.CLIP }
 }
