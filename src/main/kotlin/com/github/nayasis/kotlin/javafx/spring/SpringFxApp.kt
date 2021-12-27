@@ -82,13 +82,21 @@ abstract class SpringFxApp: App {
     }
 
     override fun start(stage: Stage) {
-        onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
-        onStart(stage)
+        try {
+            onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
+            onStart(stage)
+        } catch (e: Exception) {
+            Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
+        }
         super.start(stage)
     }
 
     override fun stop() {
-        onStop(ctx)
+        try {
+            onStop(ctx)
+        } catch (e: Exception) {
+            Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
+        }
         runCatching { ctx.close() }
         runCatching { super.stop() }
         exitProcess(0)
