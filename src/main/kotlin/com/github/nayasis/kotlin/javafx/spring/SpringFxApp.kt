@@ -86,7 +86,13 @@ abstract class SpringFxApp: App {
             onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
             onStart(stage)
         } catch (e: Exception) {
-            Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
+            if (Platform.isFxApplicationThread()) {
+                Dialog.error(e.rootCause)
+                throw e
+            } else {
+                logger.error(e)
+                throw e
+            }
         }
         super.start(stage)
     }
@@ -95,10 +101,10 @@ abstract class SpringFxApp: App {
         try {
             onStop(ctx)
         } catch (e: Exception) {
-            Thread.getDefaultUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), e)
+            logger.error(e)
         }
-        runCatching { ctx.close() }
-        runCatching { super.stop() }
+        runCatching { ctx.close() }.onFailure { logger.error(it) }
+        runCatching { super.stop() }.onFailure { logger.error(it) }
         exitProcess(0)
     }
 
