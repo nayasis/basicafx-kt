@@ -1,5 +1,6 @@
 package com.github.nayasis.kotlin.javafx.spring
 
+import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages
@@ -20,6 +21,8 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.Environment
+import org.springframework.core.env.get
 import tornadofx.App
 import tornadofx.DIContainer
 import tornadofx.FX
@@ -124,6 +127,12 @@ abstract class SpringFxApp: App {
 
         val context: ConfigurableApplicationContext
             get() = ctx
+
+        val environment: Environment
+            get() = ctx.environment
+
+        fun environment(key: String, default: String = ""): String =
+            environment[key].ifEmpty { default }
 
     }
 
