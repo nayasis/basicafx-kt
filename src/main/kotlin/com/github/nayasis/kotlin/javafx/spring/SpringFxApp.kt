@@ -79,20 +79,22 @@ abstract class SpringFxApp: App {
     }
 
     override fun start(stage: Stage) {
-        onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()), stage)
+        onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
+        onStart(stage)
         super.start(stage)
     }
 
     override fun stop() {
-        onStop()
+        onStop(context)
         runCatching { context.close() }
         runCatching { super.stop() }
         exitProcess(0)
     }
 
     open fun setOptions(options: Options) {}
-    open fun onStart(command: CommandLine, primaryStage: Stage) {}
-    open fun onStop() {}
+    open fun onStart(command: CommandLine) {}
+    open fun onStart(primaryStage: Stage) {}
+    open fun onStop(context: ConfigurableApplicationContext) {}
 
     companion object {
 
