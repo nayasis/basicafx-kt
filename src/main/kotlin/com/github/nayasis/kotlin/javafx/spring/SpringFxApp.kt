@@ -96,7 +96,7 @@ abstract class SpringFxApp: App {
 
     open fun setOptions(options: Options) {}
     open fun onStart(command: CommandLine) {}
-    open fun onStart(primaryStage: Stage) {}
+    open fun onStart(stage: Stage) {}
     open fun onStop(context: ConfigurableApplicationContext) {}
 
     companion object {
