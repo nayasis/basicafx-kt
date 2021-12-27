@@ -2,6 +2,7 @@ package com.github.nayasis.kotlin.javafx.control.basic
 
 import javafx.css.Styleable
 import javafx.event.EventHandler
+import javafx.geometry.Insets
 import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.control.Menu
@@ -17,8 +18,11 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
+import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import mu.KotlinLogging
+import tornadofx.Field
+import tornadofx.Fieldset
 import tornadofx.getChildList
 
 private val log = KotlinLogging.logger{}
@@ -110,3 +114,6 @@ fun Node.addKeyPressed(event: EventHandler<in KeyEvent>) {
     this.addEventFilter(KeyEvent.KEY_PRESSED,event)
 }
 
+var Node.margin: Insets
+    get() = VBox.getMargin(this)
+    set(value) = VBox.setMargin(this, value)
