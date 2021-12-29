@@ -114,6 +114,10 @@ fun Node.addKeyPressed(event: EventHandler<in KeyEvent>) {
     this.addEventFilter(KeyEvent.KEY_PRESSED,event)
 }
 
-var Node.margin: Insets
+var Node.vmargin: Insets
     get() = VBox.getMargin(this)
     set(value) = VBox.setMargin(this, value)
+
+var Node.hmargin: Insets
+    get() = HBox.getMargin(this)
+    set(value) = HBox.setMargin(this, value)

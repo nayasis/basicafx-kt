@@ -1,5 +1,6 @@
 package com.github.nayasis.kotlin.javafx.spring
 
+import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages
@@ -20,6 +21,8 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import org.springframework.boot.SpringApplication
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.Environment
+import org.springframework.core.env.get
 import tornadofx.App
 import tornadofx.DIContainer
 import tornadofx.FX
@@ -34,6 +37,8 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
+private lateinit var ctx: ConfigurableApplicationContext
+
 @Suppress("SpringJavaConstructorAutowiringInspection")
 abstract class SpringFxApp: App {
 
@@ -43,16 +48,14 @@ abstract class SpringFxApp: App {
 
     private val options = Options()
 
-    lateinit var context: ConfigurableApplicationContext
-
     override fun init() {
         try {
             setOptions(options)
-            context = SpringApplication.run(this.javaClass, *parameters.raw.toTypedArray())
-            context.autowireCapableBeanFactory.autowireBean(this)
+            ctx = SpringApplication.run(this.javaClass, *parameters.raw.toTypedArray())
+            ctx.autowireCapableBeanFactory.autowireBean(this)
             FX.dicontainer = object: DIContainer {
-                override fun <T: Any> getInstance(type: KClass<T>): T = context.getBean(type.java)
-                override fun <T: Any> getInstance(type: KClass<T>, name: String): T = context.getBean(name, type.java)
+                override fun <T: Any> getInstance(type: KClass<T>): T = ctx.getBean(type.java)
+                override fun <T: Any> getInstance(type: KClass<T>, name: String): T = ctx.getBean(name, type.java)
             }
             setupDefaultExceptionHandler()
         } catch (e: Throwable) {
@@ -79,21 +82,35 @@ abstract class SpringFxApp: App {
     }
 
     override fun start(stage: Stage) {
-        onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
-        onStart(stage)
+        try {
+            onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
+            onStart(stage)
+        } catch (e: Exception) {
+            if (Platform.isFxApplicationThread()) {
+                Dialog.error(e.rootCause)
+                throw e
+            } else {
+                logger.error(e)
+                throw e
+            }
+        }
         super.start(stage)
     }
 
     override fun stop() {
-        onStop(context)
-        runCatching { context.close() }
-        runCatching { super.stop() }
+        try {
+            onStop(ctx)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
+        runCatching { ctx.close() }.onFailure { logger.error(it) }
+        runCatching { super.stop() }.onFailure { logger.error(it) }
         exitProcess(0)
     }
 
     open fun setOptions(options: Options) {}
     open fun onStart(command: CommandLine) {}
-    open fun onStart(primaryStage: Stage) {}
+    open fun onStart(stage: Stage) {}
     open fun onStop(context: ConfigurableApplicationContext) {}
 
     companion object {
@@ -121,6 +138,15 @@ abstract class SpringFxApp: App {
         }
 
         fun closePreloader() = notifyPreloader(CloseNotificator())
+
+        val context: ConfigurableApplicationContext
+            get() = ctx
+
+        val environment: Environment
+            get() = ctx.environment
+
+        fun environment(key: String, default: String = ""): String =
+            environment[key].ifEmpty { default }
 
     }
 

@@ -40,7 +40,7 @@ dependencies {
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.apache.httpcomponents:httpclient:4.5.8")
-	implementation("org.controlsfx:controlsfx:8.40.10")
+	implementation("org.controlsfx:controlsfx:11.1.1")
 
 	// javafx
 	implementation("org.openjfx:javafx-base:13")
