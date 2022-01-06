@@ -15,6 +15,7 @@ data class TableProperty(
     var columnSortOrder: TableColumnSortOrderProperty? = null,
     var visible: Boolean? = null,
     var focusedRow: Int? = null,
+    var focusedCol: Int? = null,
 ): Serializable{
 
     constructor(tableview: TableView<*>): this() {
@@ -24,6 +25,7 @@ data class TableProperty(
     fun read(tableview: TableView<*>) {
         visible = tableview.isVisible
         focusedRow = tableview.focused.row
+        focusedCol = tableview.focused.col
         columnSortOrder = TableColumnSortOrderProperty(tableview)
         tableview.columns.forEach {
             columns[it.id] = TableColumnProperty(it)
@@ -39,7 +41,7 @@ data class TableProperty(
         columnSortOrder?.bind(tableview)
         focusedRow?.let {
             Platform.runLater {
-                tableview.focus(it)
+                tableview.focus(it,focusedCol ?: -1)
             }
         }
 
