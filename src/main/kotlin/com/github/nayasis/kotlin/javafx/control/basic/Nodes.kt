@@ -114,6 +114,10 @@ fun Node.addKeyPressed(event: EventHandler<in KeyEvent>) {
     this.addEventFilter(KeyEvent.KEY_PRESSED,event)
 }
 
+fun Node.addKeyReleased(event: EventHandler<in KeyEvent>) {
+    this.addEventFilter(KeyEvent.KEY_RELEASED,event)
+}
+
 var Node.vmargin: Insets
     get() = VBox.getMargin(this)
     set(value) = VBox.setMargin(this, value)
