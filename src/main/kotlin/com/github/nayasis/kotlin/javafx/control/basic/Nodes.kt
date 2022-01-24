@@ -1,35 +1,25 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
-import javafx.css.Styleable
+import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
 import javafx.event.EventHandler
+import javafx.event.EventTarget
 import javafx.geometry.Insets
 import javafx.scene.Group
 import javafx.scene.Node
-import javafx.scene.control.Menu
-import javafx.scene.control.MenuBar
-import javafx.scene.control.ScrollPane
-import javafx.scene.control.SplitPane
-import javafx.scene.control.Tab
-import javafx.scene.control.TabPane
-import javafx.scene.control.TableColumn
-import javafx.scene.control.TableView
-import javafx.scene.control.ToolBar
+import javafx.scene.Parent
+import javafx.scene.control.*
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
-import javafx.scene.layout.Priority
 import javafx.scene.layout.VBox
 import mu.KotlinLogging
-import tornadofx.Field
-import tornadofx.Fieldset
-import tornadofx.getChildList
+import tornadofx.findMethodByName
 
 private val log = KotlinLogging.logger{}
 
-fun Node.repack() {
+fun Node.repack() =
     this.managedProperty().bind(this.visibleProperty())
-}
 
 val Node.root: Node
     get() {
@@ -40,13 +30,57 @@ val Node.root: Node
         }
     }
 
-val Node.allChildren: List<Node>
+val EventTarget.children: List<EventTarget>
     get() {
-        return HashSet<Node>().let{
-            gatherChildren(this,it)
-            it.remove(this)
-            it
-        }.toList()
+        return when(this) {
+            is SplitPane -> items
+            is ScrollPane -> content?.children ?: emptyList()
+            is ToolBar -> items
+            is Tab -> listOf(content)
+            is TabPane -> tabs
+            is TableView<*> -> columns
+            is TableColumn<*,*> -> columns
+            is MenuBar -> menus
+            is Menu -> items
+            is MenuItem -> children
+            is Pane -> children
+            is Group -> children
+            is HBox -> children
+            is VBox -> children
+            is Control -> (skin as? SkinBase<*>)?.children ?: getChildrenReflectively()
+            is Parent -> getChildrenReflectively()
+            else -> emptyList()
+        }
+    }
+
+@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+private fun Parent.getChildrenReflectively(): List<Node> {
+    val getter = this.javaClass.findMethodByName("getChildren")
+    if (getter != null && java.util.List::class.java.isAssignableFrom(getter.returnType)) {
+        getter.isAccessible = true
+        return getter.invoke(this) as List<Node>
+    }
+    return emptyList()
+}
+
+val EventTarget.allChildren: List<EventTarget>
+    get() = HashSet<EventTarget>().let{
+        findChildren(this,it)
+        it.remove(this)
+        it
+    }.toList()
+
+val EventTarget.fxId: String
+    get() = when (this) {
+        is Node -> this.id ?: ""
+        is TabPane -> this.id ?: ""
+        is Tab -> this.id ?: ""
+        else -> ""
+    }
+
+val EventTarget.allChildrenById: Map<String,EventTarget>
+    get() {
+        return this.allChildren.filter { it.fxId.isNotEmpty() }.associateBy { it.fxId }
     }
 
 var Node.leftAnchor: Double?
@@ -75,38 +109,10 @@ fun Node.clearAnchor() {
     this.topAnchor    = null
 }
 
-private fun gatherChildren(target: Node?, targets: HashSet<Node>) {
-    if(target == null) return
-    targets.add(target)
-    target.getChildList()?.forEach { gatherChildren(it,targets) }
-}
-
-
-val Styleable.allStyleables: List<Styleable>
-    get() {
-        return HashSet<Styleable>().let {
-            gatherStyleables(this,it)
-            it
-        }.toList()
-    }
-
-private fun gatherStyleables(target: Styleable?, targets: HashSet<Styleable>) {
-    if(target == null) return
-    targets.add(target)
-    when (target) {
-        is SplitPane         -> target.items.forEach{gatherStyleables(it,targets)}
-        is ToolBar           -> target.items.forEach{gatherStyleables(it,targets)}
-        is Pane              -> target.children.forEach{gatherStyleables(it,targets)}
-        is Group             -> target.children.forEach{gatherStyleables(it,targets)}
-        is HBox              -> target.children.forEach{gatherStyleables(it,targets)}
-        is VBox              -> target.children.forEach{gatherStyleables(it,targets)}
-        is TabPane           -> target.tabs.forEach{gatherStyleables(it,targets)}
-        is ScrollPane        -> target.content.allStyleables.forEach{gatherStyleables(it,targets)}
-        is Tab               -> target.content.allStyleables.forEach{gatherStyleables(it,targets)}
-        is MenuBar           -> target.menus.forEach{gatherStyleables(it,targets)}
-        is Menu              -> target.items.forEach{gatherStyleables(it,targets)}
-        is TableView<*>      -> target.columns.forEach{gatherStyleables(it,targets)}
-        is TableColumn<*, *> -> target.columns.forEach{gatherStyleables(it,targets)}
+private fun findChildren(node: EventTarget?, set: HashSet<EventTarget>) {
+    node?.let {
+        set.add(node)
+        node.children.forEach { child -> findChildren(child,set) }
     }
 }
 

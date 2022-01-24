@@ -1,16 +1,18 @@
 package com.github.nayasis.kotlin.javafx.fxml
 
-import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
-import com.github.nayasis.kotlin.javafx.control.basic.allChildren
+import com.github.nayasis.kotlin.basica.core.klass.isSubclassOf
+import com.github.nayasis.kotlin.basica.etc.error
+import com.github.nayasis.kotlin.javafx.control.basic.allChildrenById
 import com.github.nayasis.kotlin.javafx.stage.Localizator
 import javafx.fxml.FXMLLoader
 import javafx.scene.Node
 import mu.KotlinLogging
-import tornadofx.UIComponent
+import tornadofx.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.javaType
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,19 +22,25 @@ private val logger = KotlinLogging.logger {}
  * @param injectionBean target bean to field injection
  * @return FXML loaded object
  */
-inline fun <reified T: Node> FXMLLoader.loadWith(injectionBean: Any): T {
+fun <T: Node> FXMLLoader.loadWith(injectionBean: Any): T {
 
     val root  = load<T>()
-    val nodes = root.allChildren.filter { it.id.isNotEmpty() }.associateBy { it.id }
+    val nodes = root.allChildrenById
 
-    injectionBean::class.memberProperties
-        .filterIsInstance<Node>()
+    val properties = injectionBean::class.memberProperties
         .filterIsInstance<KMutableProperty<*>>()
-        .forEach { field ->
-            nodes[field.name]?.let { node ->
+        .filter { it.returnType.javaType.isSubclassOf(Node::class.java) }
+        as ArrayList<KMutableProperty<*>>
+
+    properties.forEach { field ->
+        nodes[field.name]?.let { node ->
+            try {
                 field.setter.call(injectionBean,node)
+            } catch (e: Exception) {
+                logger.error(e)
             }
         }
+    }
 
     Localizator(root)
     return root
