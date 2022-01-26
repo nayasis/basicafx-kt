@@ -12,6 +12,7 @@ import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.javaType
 
 private val logger = KotlinLogging.logger {}
@@ -34,10 +35,15 @@ fun <T: Node> FXMLLoader.loadWith(injectionBean: Any): T {
 
     properties.forEach { field ->
         nodes[field.name]?.let { node ->
+            val inaccessible = ! field.isAccessible
+            if( inaccessible )
+                field.isAccessible = true
             try {
                 field.setter.call(injectionBean,node)
             } catch (e: Exception) {
                 logger.error(e)
+            } finally {
+                if( inaccessible ) field.isAccessible = false
             }
         }
     }
