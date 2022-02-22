@@ -1,10 +1,10 @@
 package com.github.nayasis.kotlin.javafx.property
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.github.nayasis.kotlin.javafx.control.basic.allStyleables
+import com.github.nayasis.kotlin.javafx.control.basic.allChildren
+import com.github.nayasis.kotlin.javafx.control.basic.fxId
 import com.github.nayasis.kotlin.javafx.scene.previousZoomSize
-import com.github.nayasis.kotlin.javafx.stage.BoundaryChecker
-import javafx.css.Styleable
+import javafx.event.EventTarget
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
@@ -37,17 +37,17 @@ data class StageProperty(
 ): Serializable{
 
     @JsonIgnore
-    var includeKlass = ArrayList<KClass<out Styleable>>()
+    var includeKlass = ArrayList<KClass<out EventTarget>>()
     @JsonIgnore
-    var excludeKlass = ArrayList<KClass<out Styleable>>()
+    var excludeKlass = ArrayList<KClass<out EventTarget>>()
     @JsonIgnore
     var includeId = HashSet<String>()
     @JsonIgnore
     var excludeId = HashSet<String>()
     @JsonIgnore
-    val includeObject = HashSet<Styleable>()
+    val includeObject = HashSet<EventTarget>()
     @JsonIgnore
-    val excludeObject = HashSet<Styleable>()
+    val excludeObject = HashSet<EventTarget>()
 
     constructor(stage: Stage, includeChildren: Boolean = true): this() {
         read(stage,includeChildren)
@@ -129,12 +129,12 @@ data class StageProperty(
 
     }
 
-    private fun getAllChildren(stage: Stage): List<Styleable> {
-        return stage.scene.root?.allStyleables?.filter { setFxId(it) } ?: emptyList()
+    private fun getAllChildren(stage: Stage): List<EventTarget> {
+        return stage.scene.root?.allChildren?.filter { setFxId(it) } ?: emptyList()
     }
 
-    private fun setFxId(node: Styleable): Boolean {
-        return if( node.id.isNullOrEmpty() ) try {
+    private fun setFxId(node: EventTarget): Boolean {
+        return if( node.fxId.isNullOrEmpty() ) try {
             when (node) {
                 is Node -> node.id = "${PREFIX_ID}_${seq++}"
                 is MenuItem -> node.id = "${PREFIX_ID}_${seq++}"
@@ -147,11 +147,11 @@ data class StageProperty(
         } else true
     }
 
-    private fun skippable(node: Styleable): Boolean {
+    private fun skippable(node: EventTarget): Boolean {
         if( excludeKlass.isNotEmpty() && excludeKlass.any { it::class.isSuperclassOf(node::class) } ) return true
         if( includeKlass.isNotEmpty() && ! includeKlass.any { it::class.isSuperclassOf(node::class) } ) return true
-        if( excludeId.isNotEmpty() && node.id in excludeId) return true
-        if( includeId.isNotEmpty() && node.id !in includeId) return true
+        if( excludeId.isNotEmpty() && node.fxId in excludeId) return true
+        if( includeId.isNotEmpty() && node.fxId !in includeId) return true
         if( excludeObject.isNotEmpty() && node in excludeObject) return true
         if( includeObject.isNotEmpty() && node !in includeObject) return true
         return false

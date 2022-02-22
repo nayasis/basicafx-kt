@@ -77,8 +77,8 @@ class Dialog { companion object {
         error(exception?.message, exception)
     }
 
-    fun prompt(message: String?): String? {
-        val res = TextInputDialog().apply {
+    fun prompt(message: String?, defaultValue: String? = null): String? {
+        val res = TextInputDialog(defaultValue).apply {
             headerText = message
             initModality(WINDOW_MODAL)
             initOwner(Stages.focusedWindow)

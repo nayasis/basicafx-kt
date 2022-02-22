@@ -14,8 +14,8 @@ import java.lang.Thread.sleep
 
 private val logger = KotlinLogging.logger {}
 
-fun main(args: Array<String>) {
-    launch<DialogTest>(args)
+fun main(vararg args: String) {
+    launch<DialogTest>(*args)
 }
 
 class DialogTest: App(DialogTestView::class,MyStylesheet::class)
@@ -33,7 +33,7 @@ class DialogTestView: View("dialog test") {
         }}
         button("prompt") {action {
             // if 'esc' pressed, no error raised !
-            val text = Dialog.prompt("input your parameter")
+            val text = Dialog.prompt("input your parameter","merong")
             Dialog.alert("[${text}]")
         }}
         button("progress") {action {
