@@ -455,7 +455,7 @@ private fun Dragboard.hasHtmlImgTag(): Boolean {
 }
 
 private fun Image?.isValid(): Boolean {
-    return (this?.width ?: 0.0) * (this?.height ?: 0.0) > 0
+    return this != null && this.width > 0 && this.height > 0
 }
 
 private fun getRegularFile(files: List<File>?): File? {
