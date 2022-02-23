@@ -436,7 +436,7 @@ object Images {
     fun toFile(image: Image?, path: String?): File? {
         if( image == null || path.isNullOrEmpty() ) return null
         val output    = path.toFile().also { it.mkdirs() }
-        val extension = output.extension.ifEmpty {"jpg"}
+        val extension = output.extension.lowercase().ifEmpty {"jpg"}
         var bfimage   = toBufferedImage(image)
         if ("jpg" == extension )
             bfimage = toBufferedImage(toJpgBinary(bfimage))
