@@ -454,7 +454,7 @@ private fun Dragboard.hasHtmlImgTag(): Boolean {
     return this.hasHtml() && this.html.find("(?is)^<img\\W".toPattern())
 }
 
-private fun Image?.isValid(): Boolean {
+fun Image?.isValid(): Boolean {
     return this != null && this.width > 0 && this.height > 0
 }
 
