@@ -8,6 +8,8 @@ import com.github.nayasis.kotlin.basica.core.string.encodeBase64
 import com.github.nayasis.kotlin.basica.core.string.find
 import com.github.nayasis.kotlin.basica.core.string.toFile
 import com.github.nayasis.kotlin.basica.core.string.toUrl
+import com.github.nayasis.kotlin.basica.core.url.toFile
+import com.github.nayasis.kotlin.basica.etc.error
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
@@ -230,23 +232,25 @@ object Images {
     }
 
     fun toImage(url: URL?): Image? {
-        if( url == null ) return null
-        return getHttpClient().use{ it.execute(HttpGet(url.toString()))?.use { response ->
-             try {
-                toImage(ImageIO.read(response.entity.content))
-            } catch (e: Exception) {
-                log.error(e.message,e)
-                null
-            }
-        }}
+        return when {
+            url == null -> null
+            url.protocol == "file" -> toImage(url.toFile())
+            else -> getHttpClient().use{ it.execute(HttpGet(url.toString()))?.use { response ->
+                try {
+                    toImage(ImageIO.read(response.entity.content))
+                } catch (e: Exception) {
+                     log.error(e)
+                     null
+                }
+            }}
+        }
     }
 
-    private fun getHttpClient(): CloseableHttpClient {
-        val sslContext = SSLContexts.custom()
-            .loadTrustMaterial(null) { _, _ -> true }
-            .build()
-        val sslSocket = SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE)
+    private val sslSocket = SSLConnectionSocketFactory(SSLContexts.custom()
+        .loadTrustMaterial(null) { _, _ -> true }
+        .build(), NoopHostnameVerifier.INSTANCE)
 
+    private fun getHttpClient(): CloseableHttpClient {
         return HttpClients.custom().setSSLSocketFactory(sslSocket).build()
     }
 
