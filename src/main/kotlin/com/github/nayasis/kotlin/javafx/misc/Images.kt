@@ -2,6 +2,7 @@
 
 package com.github.nayasis.kotlin.javafx.misc
 
+import com.github.nayasis.kotlin.basica.core.extention.isEmpty
 import com.github.nayasis.kotlin.basica.core.path.isFile
 import com.github.nayasis.kotlin.basica.core.string.decodeBase64
 import com.github.nayasis.kotlin.basica.core.string.encodeBase64
@@ -226,6 +227,7 @@ object Images {
     }
 
     fun toImage(binary: ByteArray?): Image? {
+        if(binary.isEmpty()) return null
         val stream = ByteArrayInputStream(binary)
         val image = ImageIO.read(stream)
         return toImage(image)
