@@ -35,7 +35,7 @@ class CheckBoxTableCell<S>: TableCell<S,Boolean> {
         } else {
             val observableValue = column.getCellObservableValue(index)
             if (observableValue is BooleanProperty) {
-                if (lastBoundProperty != null) checkbox!!.selectedProperty().unbindBidirectional(lastBoundProperty)
+                if (lastBoundProperty != null) checkbox.selectedProperty().unbindBidirectional(lastBoundProperty)
                 lastBoundProperty = observableValue
                 checkbox.selectedProperty().bindBidirectional(lastBoundProperty)
             }
