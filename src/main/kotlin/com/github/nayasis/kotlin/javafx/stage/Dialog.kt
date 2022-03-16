@@ -65,8 +65,8 @@ class Dialog { companion object {
                         isEditable = false
                         maxWidth   = MAX_VALUE
                         maxHeight  = MAX_VALUE
-                        GridPane.setVgrow(this,ALWAYS)
-                        GridPane.setHgrow(this,ALWAYS)
+                        vgrow      = ALWAYS
+                        hgrow      = ALWAYS
                     }, 0, 0 )
                 }
             }
