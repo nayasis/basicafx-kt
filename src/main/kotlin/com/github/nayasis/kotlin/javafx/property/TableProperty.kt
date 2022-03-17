@@ -24,8 +24,10 @@ data class TableProperty(
 
     fun read(tableview: TableView<*>) {
         visible = tableview.isVisible
-        focusedRow = tableview.focused.row
-        focusedCol = tableview.focused.col
+        tableview.focused.let {
+            focusedRow = it?.row
+            focusedCol = it?.col
+        }
         columnSortOrder = TableColumnSortOrderProperty(tableview)
         tableview.columns.forEach {
             columns[it.id] = TableColumnProperty(it)
