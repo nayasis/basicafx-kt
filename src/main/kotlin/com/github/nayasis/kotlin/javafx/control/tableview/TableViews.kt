@@ -52,7 +52,7 @@ var <S> TableView<S>.focused: Position?
         pos?.let {focus(it.row,it.col) }
     }
 
-data class Position(val row: Int, val col: Int)
+data class Position(val row: Int = 0, val col: Int = 0)
 
 fun <S> TableView<S>.select( row: Int, col: Int = -1, scroll: Boolean = true ) {
     selectionModel.clearSelection()
