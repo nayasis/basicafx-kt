@@ -38,12 +38,20 @@ fun <S> TableView<S>.fillFxId(): TableView<S> {
     return this
 }
 
-val <S> TableView<S>.focused: Position
+var <S> TableView<S>.focused: Position?
     get() {
-        return focusModel.focusedCellProperty().get().let {
-            Position(it.row, it.column)
+        return try {
+            focusModel.focusedCellProperty().get().let {
+                Position(it.row, it.column)
+            }
+        } catch (e: Exception) {
+            null
         }
     }
+    set(pos) {
+        pos?.let {focus(it.row,it.col) }
+    }
+
 data class Position(val row: Int, val col: Int)
 
 fun <S> TableView<S>.select( row: Int, col: Int = -1, scroll: Boolean = true ) {
@@ -57,6 +65,16 @@ fun <S> TableView<S>.select( row: Int, col: Int = -1, scroll: Boolean = true ) {
     }
     if(scroll) scroll(row)
 }
+
+var <S> TableView<S>.selected: Position?
+    get() {
+        return selectionModel.selectedCells.firstOrNull()?.let {
+            Position(it.row,it.column)
+        }
+    }
+    set(pos) {
+        pos?.let { select(it.row,it.col) }
+    }
 
 fun <S> TableView<S>.selectBy( row: S? ): Int {
     return itemIndex(row).also { select(it,-1) }
