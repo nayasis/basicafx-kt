@@ -88,7 +88,7 @@ private fun <S> TableView<S>.itemIndex(row: S?): Int {
     }
 }
 
-fun <S> TableView<S>.focus( row: Int, col: Int = -1 ) {
+fun <S> TableView<S>.focus( row: Int, col: Int = -1 ): TableView<S> {
     select(row, col, false)
     requestFocus()
     if( col < 0 ) {
@@ -98,20 +98,21 @@ fun <S> TableView<S>.focus( row: Int, col: Int = -1 ) {
         val column = visibleLeafColumns[colIndex]
         focusModel.focus(row, column)
     }
-    scroll(row)
+    return this
 }
 
 fun <S> TableView<S>.focusBy( row: S? ): Int {
     return itemIndex(row).also { focus(it,-1) }
 }
 
-fun <S> TableView<S>.scroll( row: Int, middle: Boolean = true ) {
+fun <S> TableView<S>.scroll( row: Int, middle: Boolean = true ): TableView<S> {
     val index = if( middle ) {
         max( row - (visibleRows / 2), 0)
     } else {
         row
     }
     this.scrollTo( index )
+    return this
 }
 
 fun <S> TableView<S>.scrollBy( row: S?, middle: Boolean = true ): Int {
