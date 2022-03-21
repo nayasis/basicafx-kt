@@ -7,6 +7,7 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.skin.TableViewSkin
 import javafx.scene.control.skin.VirtualFlow
+import tornadofx.selectedItem
 import java.lang.Integer.min
 import kotlin.math.max
 
@@ -37,6 +38,11 @@ fun <S> TableView<S>.fillFxId(): TableView<S> {
     }
     return this
 }
+
+val <S> TableView<S>.focusedItem: S?
+    get() = this.focused.row.let { row ->
+        if( row >= 0 ) items[row] else null
+    }
 
 var <S> TableView<S>.focused: Position
     get() {
