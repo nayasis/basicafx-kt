@@ -1,7 +1,7 @@
 package com.github.nayasis.kotlin.javafx.stage
 
+import com.github.nayasis.kotlin.basica.core.path.Paths
 import com.github.nayasis.kotlin.basica.core.path.div
-import com.github.nayasis.kotlin.basica.core.path.userHome
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
 import javafx.scene.control.*
@@ -144,7 +144,7 @@ class Dialog { companion object {
     }
 
     private fun dirDesktop(): File {
-        return userHome().let {
+        return Paths.userHome.let {
             when{
                 Platforms.isWindows -> it / "Desktop"
                 else -> it
