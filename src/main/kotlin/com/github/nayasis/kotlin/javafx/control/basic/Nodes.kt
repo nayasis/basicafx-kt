@@ -1,6 +1,7 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
+import com.github.nayasis.kotlin.javafx.control.tableview.column.setStyle
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.geometry.Insets
@@ -131,3 +132,35 @@ var Node.vmargin: Insets
 var Node.hmargin: Insets
     get() = HBox.getMargin(this)
     set(value) = HBox.setMargin(this, value)
+
+
+// style extention
+
+val Node.allStyles: Map<String,String>
+    get() = this.style.split(";").mapNotNull {
+        val words = it.split(":")
+        when {
+            words.size >= 2 -> if(words[1].isEmpty()) null else words[0] to words[1]
+            else -> null
+        }
+    }.toMap()
+
+fun Node.setStyle(style: Map<String,String?>) =
+    style.filter { ! it.value.isNullOrEmpty() }.map{ "${it.key}:${it.value}" }.joinToString(";").let { this.style = it }
+
+fun Node.getStyle(key: String): String? = this.allStyles[key]
+
+fun Node.setStyle(key: String, value: String?) {
+    this.allStyles.toMutableMap().let {
+        if(value.isNullOrEmpty()) {
+            it.remove(key)
+        } else {
+            it[key] = value
+        }
+        setStyle(it)
+    }
+}
+
+fun Node.removeStyle(key: String) {
+    setStyle(key,null)
+}
