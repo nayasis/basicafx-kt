@@ -68,7 +68,7 @@ class DialogTestView: View("dialog test") {
     init {
         val userAgentStylesheet = Application.getUserAgentStylesheet()
 
-        logger.debug {
+        logger.trace {
             "style sheet : ${userAgentStylesheet}"
             "font : ${Font.getDefault().name}"
         }

@@ -51,6 +51,12 @@ class ProgressDialog(task: Task<*>?) {
             dialog.message.text = value
         }
 
+    init {
+        stage.addCloseRequest {
+            dialog.closeForcibly()
+        }
+    }
+
     fun updateMessage(message: String?) = dialog.updateMessage(message)
     fun updateProgress(workDone: Int, max: Int) = dialog.updateProgress(workDone,max)
     fun updateProgress(workDone: Long, max: Long) = dialog.updateProgress(workDone,max)
