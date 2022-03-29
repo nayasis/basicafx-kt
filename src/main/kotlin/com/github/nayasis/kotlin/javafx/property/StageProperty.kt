@@ -117,7 +117,12 @@ data class StageProperty(
                 when(it) {
                     is Pane -> visibles[it.id]?.let { value -> it.isVisible = value }
                     is Control -> {
-                        visibles[it.id]?.let { value -> it.isVisible = value }
+                        visibles[it.id]?.let { value ->
+                            // ScrollBar.visible could not be set
+                            try {
+                                it.isVisible = value
+                            } catch (e: Exception) {}
+                        }
                         disables[it.id]?.let { value -> it.isDisable = value }
                         if (it is TextInputControl) {
                             editables[it.id]?.let { value -> it.isEditable = value }

@@ -2,12 +2,15 @@
 
 package com.github.nayasis.kotlin.javafx.misc
 
+import com.github.nayasis.kotlin.basica.core.extention.isEmpty
 import com.github.nayasis.kotlin.basica.core.path.isFile
 import com.github.nayasis.kotlin.basica.core.string.decodeBase64
 import com.github.nayasis.kotlin.basica.core.string.encodeBase64
 import com.github.nayasis.kotlin.basica.core.string.find
 import com.github.nayasis.kotlin.basica.core.string.toFile
 import com.github.nayasis.kotlin.basica.core.string.toUrl
+import com.github.nayasis.kotlin.basica.core.url.toFile
+import com.github.nayasis.kotlin.basica.etc.error
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
@@ -224,29 +227,32 @@ object Images {
     }
 
     fun toImage(binary: ByteArray?): Image? {
+        if(binary.isEmpty()) return null
         val stream = ByteArrayInputStream(binary)
         val image = ImageIO.read(stream)
         return toImage(image)
     }
 
     fun toImage(url: URL?): Image? {
-        if( url == null ) return null
-        return getHttpClient().use{ it.execute(HttpGet(url.toString()))?.use { response ->
-             try {
-                toImage(ImageIO.read(response.entity.content))
-            } catch (e: Exception) {
-                log.error(e.message,e)
-                null
-            }
-        }}
+        return when {
+            url == null -> null
+            url.protocol == "file" -> toImage(url.toFile())
+            else -> getHttpClient().use{ it.execute(HttpGet(url.toString()))?.use { response ->
+                try {
+                    toImage(ImageIO.read(response.entity.content))
+                } catch (e: Exception) {
+                     log.error(e)
+                     null
+                }
+            }}
+        }
     }
 
-    private fun getHttpClient(): CloseableHttpClient {
-        val sslContext = SSLContexts.custom()
-            .loadTrustMaterial(null) { _, _ -> true }
-            .build()
-        val sslSocket = SSLConnectionSocketFactory(sslContext, NoopHostnameVerifier.INSTANCE)
+    private val sslSocket = SSLConnectionSocketFactory(SSLContexts.custom()
+        .loadTrustMaterial(null) { _, _ -> true }
+        .build(), NoopHostnameVerifier.INSTANCE)
 
+    private fun getHttpClient(): CloseableHttpClient {
         return HttpClients.custom().setSSLSocketFactory(sslSocket).build()
     }
 
@@ -436,7 +442,7 @@ object Images {
     fun toFile(image: Image?, path: String?): File? {
         if( image == null || path.isNullOrEmpty() ) return null
         val output    = path.toFile().also { it.mkdirs() }
-        val extension = output.extension.ifEmpty {"jpg"}
+        val extension = output.extension.lowercase().ifEmpty {"jpg"}
         var bfimage   = toBufferedImage(image)
         if ("jpg" == extension )
             bfimage = toBufferedImage(toJpgBinary(bfimage))
@@ -454,8 +460,8 @@ private fun Dragboard.hasHtmlImgTag(): Boolean {
     return this.hasHtml() && this.html.find("(?is)^<img\\W".toPattern())
 }
 
-private fun Image?.isValid(): Boolean {
-    return (this?.width ?: 0.0) * (this?.height ?: 0.0) > 0
+fun Image?.isValid(): Boolean {
+    return this != null && this.width > 0 && this.height > 0
 }
 
 private fun getRegularFile(files: List<File>?): File? {

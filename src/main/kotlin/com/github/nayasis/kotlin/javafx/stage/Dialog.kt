@@ -1,11 +1,15 @@
 package com.github.nayasis.kotlin.javafx.stage
 
+import com.github.nayasis.kotlin.basica.core.path.Paths
 import com.github.nayasis.kotlin.basica.core.path.div
-import com.github.nayasis.kotlin.basica.core.path.userHome
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
-import javafx.scene.control.*
+import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.Button
+import javafx.scene.control.ButtonType
+import javafx.scene.control.TextArea
+import javafx.scene.control.TextInputDialog
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.GridPane
@@ -17,8 +21,11 @@ import javafx.stage.Modality.WINDOW_MODAL
 import javafx.stage.Stage
 import javafx.stage.Window
 import mu.KotlinLogging
-import tornadofx.*
+import tornadofx.FXTask
+import tornadofx.FileChooserMode
 import tornadofx.FileChooserMode.*
+import tornadofx.hgrow
+import tornadofx.vgrow
 import java.io.File
 import kotlin.Double.Companion.MAX_VALUE
 
@@ -65,8 +72,8 @@ class Dialog { companion object {
                         isEditable = false
                         maxWidth   = MAX_VALUE
                         maxHeight  = MAX_VALUE
-                        GridPane.setVgrow(this,ALWAYS)
-                        GridPane.setHgrow(this,ALWAYS)
+                        vgrow      = ALWAYS
+                        hgrow      = ALWAYS
                     }, 0, 0 )
                 }
             }
@@ -92,15 +99,11 @@ class Dialog { companion object {
 
     fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Unit)? = null): ProgressDialog {
         val task = func?.let {FXTask(func=it)}
-        val dialog = ProgressDialog(task)
-        dialog.title = title ?: " "
-        dialog.initOwner(Stages.focusedWindow)
-        if( async ) {
-            dialog.runAsync()
-        } else {
-            dialog.runSync()
+        return ProgressDialog(task).apply{
+            initOwner(Stages.focusedWindow)
+            this.title = title
+            if(async) runAsync() else runSync()
         }
-        return dialog
     }
 
     fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: File? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<File> {
@@ -144,7 +147,7 @@ class Dialog { companion object {
     }
 
     private fun dirDesktop(): File {
-        return userHome().let {
+        return Paths.userHome.let {
             when{
                 Platforms.isWindows -> it / "Desktop"
                 else -> it

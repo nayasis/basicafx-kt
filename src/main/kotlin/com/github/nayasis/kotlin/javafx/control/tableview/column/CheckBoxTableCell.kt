@@ -1,37 +1,46 @@
 package com.github.nayasis.kotlin.javafx.control.tableview.column
 
 import javafx.beans.property.BooleanProperty
-import javafx.beans.value.ObservableValue
-import javafx.geometry.Pos
 import javafx.scene.control.CheckBox
 import javafx.scene.control.TableCell
+import javafx.scene.control.TableColumn
 
 
-class CheckBoxTableCell<S,T> : TableCell<S,T>() {
+class CheckBoxTableCell<S>: TableCell<S,Boolean> {
 
-    private val checkBox: CheckBox = CheckBox()
-    private var value: ObservableValue<T>? = null
+    private var checkbox = CheckBox()
+    private var lastBoundProperty: BooleanProperty? = null
+    private var column: TableColumn<S,Boolean>
 
-    init {
-        checkBox.alignment = Pos.CENTER
-        alignment = Pos.CENTER
-        graphic = checkBox
+    constructor(column: TableColumn<S,Boolean>) {
+        styleClass.add("check-box-table-cell")
+        this.column = column
+        checkbox.setOnAction {
+            startEdit()
+            commitEdit(!checkbox.isSelected)
+        }
     }
 
-    public override fun updateItem(item: T, empty: Boolean) {
-        super.updateItem(item, empty)
-        if (empty) {
-            setText(null)
-            setGraphic(null)
+    override fun startEdit() {
+        super.startEdit()
+        // WORKAROUND: the following line is necessary for the edit event to be complete
+        tableView.edit(index,getTableColumn())
+    }
+
+    override fun updateItem(item: Boolean?,empty: Boolean) {
+        super.updateItem(item,false)
+        if (empty || item == null) {
+            graphic = null
+            text = null
         } else {
-            setGraphic(checkBox)
-            if (value is BooleanProperty) {
-                checkBox.selectedProperty().unbindBidirectional(value as BooleanProperty?)
+            val observableValue = column.getCellObservableValue(index)
+            if (observableValue is BooleanProperty) {
+                if (lastBoundProperty != null) checkbox.selectedProperty().unbindBidirectional(lastBoundProperty)
+                lastBoundProperty = observableValue
+                checkbox.selectedProperty().bindBidirectional(lastBoundProperty)
             }
-            value = tableColumn.getCellObservableValue(index)
-            if (value is BooleanProperty) {
-                checkBox.selectedProperty().bindBidirectional(value as BooleanProperty?)
-            }
+            // calling checkbox.setSelected(item) here is redundant and might cause errors
+            setGraphic(checkbox)
         }
     }
 

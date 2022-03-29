@@ -7,6 +7,7 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.skin.TableViewSkin
 import javafx.scene.control.skin.VirtualFlow
+import tornadofx.selectedItem
 import java.lang.Integer.min
 import kotlin.math.max
 
@@ -38,15 +39,28 @@ fun <S> TableView<S>.fillFxId(): TableView<S> {
     return this
 }
 
-val <S> TableView<S>.focused: Position
+val <S> TableView<S>.focusedItem: S?
+    get() = this.focused.row.let { row ->
+        if( row >= 0 ) items[row] else null
+    }
+
+var <S> TableView<S>.focused: Position
     get() {
-        return focusModel.focusedCellProperty().get().let {
-            Position(it.row, it.column)
+        return try {
+            focusModel.focusedCellProperty().get().let {
+                Position(it.row, it.column)
+            }
+        } catch (e: Exception) {
+            Position(-1,-1)
         }
     }
-data class Position(val row: Int, val col: Int)
+    set(pos) {
+        pos.run{ focus(row,col) }
+    }
 
-fun <S> TableView<S>.select( row: Int, col: Int = -1, scroll: Boolean = true ) {
+data class Position(val row: Int = 0, val col: Int = 0)
+
+fun <S> TableView<S>.select(row: Int, col: Int = -1): TableView<S> {
     selectionModel.clearSelection()
     if( col < 0 ) {
         selectionModel.select( row )
@@ -55,14 +69,24 @@ fun <S> TableView<S>.select( row: Int, col: Int = -1, scroll: Boolean = true ) {
         val column = visibleLeafColumns[colIndex]
         selectionModel.select( row, column )
     }
-    if(scroll) scroll(row)
+    return this
 }
 
-fun <S> TableView<S>.selectBy( row: S? ): Int {
-    return itemIndex(row).also { select(it,-1) }
+var <S> TableView<S>.selected: Position
+    get() {
+        return selectionModel.selectedCells.firstOrNull()?.let {
+            Position(it.row,it.column)
+        } ?: Position(-1,-1)
+    }
+    set(pos) {
+        pos.run{ select(row,col) }
+    }
+
+fun <S> TableView<S>.selectBy(row: S?): TableView<S> {
+    return select(indexOf(row),-1)
 }
 
-private fun <S> TableView<S>.itemIndex(row: S?): Int {
+fun <S> TableView<S>.indexOf(row: S?): Int {
     return when (row) {
         null -> -1
         is Int -> row
@@ -70,8 +94,8 @@ private fun <S> TableView<S>.itemIndex(row: S?): Int {
     }
 }
 
-fun <S> TableView<S>.focus( row: Int, col: Int = -1 ) {
-    select(row, col, false)
+fun <S> TableView<S>.focus(row: Int, col: Int = -1): TableView<S> {
+    select(row, col)
     requestFocus()
     if( col < 0 ) {
         focusModel.focus(row)
@@ -80,24 +104,25 @@ fun <S> TableView<S>.focus( row: Int, col: Int = -1 ) {
         val column = visibleLeafColumns[colIndex]
         focusModel.focus(row, column)
     }
-    scroll(row)
+    return this
 }
 
-fun <S> TableView<S>.focusBy( row: S? ): Int {
-    return itemIndex(row).also { focus(it,-1) }
+fun <S> TableView<S>.focusBy(row: S?): TableView<S> {
+    return focus(indexOf(row),-1)
 }
 
-fun <S> TableView<S>.scroll( row: Int, middle: Boolean = true ) {
+fun <S> TableView<S>.scroll(row: Int, middle: Boolean = true): TableView<S> {
     val index = if( middle ) {
         max( row - (visibleRows / 2), 0)
     } else {
         row
     }
-    this.scrollTo( index )
+    scrollTo(index)
+    return this
 }
 
-fun <S> TableView<S>.scrollBy( row: S?, middle: Boolean = true ): Int {
-    return itemIndex(row).also { scroll(it,middle) }
+fun <S> TableView<S>.scrollBy(row: S?, middle: Boolean = true): TableView<S> {
+    return scroll(indexOf(row),middle)
 }
 
 val <S> TableView<S>.visibleRows: Int

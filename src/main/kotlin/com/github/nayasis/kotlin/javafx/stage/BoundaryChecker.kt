@@ -1,6 +1,7 @@
 package com.github.nayasis.kotlin.javafx.stage
 
 import javafx.geometry.Rectangle2D
+import javafx.scene.Scene
 import javafx.scene.control.Dialog
 import javafx.stage.Screen
 import javafx.stage.Window
@@ -11,7 +12,7 @@ import kotlin.math.min
 
 private val logger = KotlinLogging.logger {}
 
-object BoundaryChecker {
+class BoundaryChecker {
 
     /**
      * reset stage position to displayed screen
@@ -19,7 +20,7 @@ object BoundaryChecker {
      * @param window Window
      */
     fun reset(window: Window) {
-        if( getScreenContains(window.x,window.y) == null ) {
+        if( ! isShownOnScreen(window.x,window.y) ) {
             Screen.getPrimary().visualBounds.let {
                 window.x = it.minX
                 window.y = it.minY
@@ -35,7 +36,7 @@ object BoundaryChecker {
      * @param dialog Window
      */
     fun reset(dialog: Dialog<*>) {
-        if( getScreenContains(dialog.x,dialog.y) == null ) {
+        if( ! isShownOnScreen(dialog.x,dialog.y) ) {
             Screen.getPrimary().visualBounds.let {
                 dialog.x = it.minX
                 dialog.y = it.minY
@@ -45,27 +46,43 @@ object BoundaryChecker {
         }
     }
 
-    /**
-     * get screen which contains start point(x,y)
-     */
-    fun getScreenContains(x: Double, y: Double): Screen? {
-        return Screen.getScreens().firstOrNull{ it.bounds.contains(x,y) }
-    }
+    fun isShownOnScreen(window: Window): Boolean =
+        isShownOnScreen(window.x,window.y)
+
+    fun isShownOnScreen(dialog: Dialog<*>): Boolean =
+        isShownOnScreen(dialog.x,dialog.y)
+
+    fun isShownOnScreen(x: Double, y: Double): Boolean =
+        Screen.getScreens().firstOrNull{ it.bounds.contains(x,y) } != null
 
     /**
-     * get screen which has maximum stage area potion.
+     * get screen which has maximum staged area potion.
      *
      * if there is no screen related to stage, return primary screen.
      */
-    fun getMajorScreen(window: Window): Screen {
+    fun getMajorScreen(window: Window): Screen =
+        getMajorScreen(window.boundary)
+
+    /**
+     * get screen which has maximum staged area potion.
+     *
+     * if there is no screen related to stage, return primary screen.
+     */
+    fun getMajorScreen(scene: Scene): Screen =
+        getMajorScreen(Rectangle2D(scene.x,scene.y,scene.width,scene.height))
+
+    /**
+     * get screen which has maximum staged area potion.
+     *
+     * if there is no screen related to stage, return primary screen.
+     */
+    fun getMajorScreen(boundary: Rectangle2D): Screen {
 
         var major = Screen.getPrimary()
         var max   = 0.0
 
-        val boundary = window.boundary
-
         for( screen in Screen.getScreens() ) {
-            val area = screen.bounds.areaIntersected(boundary)
+            val area = screen.bounds.getIntersectedArea(boundary)
             if( area > max ) {
                 major = screen
                 max = area
@@ -78,7 +95,7 @@ object BoundaryChecker {
 
 }
 
-private fun Rectangle2D.areaIntersected(r: Rectangle2D): Double {
+fun Rectangle2D.getIntersectedArea(r: Rectangle2D): Double {
     return when {
         this.contains(r) -> this.width * this.height
         this.intersects(r) -> {

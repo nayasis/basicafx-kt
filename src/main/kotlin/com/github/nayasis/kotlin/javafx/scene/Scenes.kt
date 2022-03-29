@@ -134,7 +134,7 @@ fun Scene.addMoveHandler(node: Node, buttonClose: Boolean = false, buttonHide: B
             if( isZoomed() ) {
                 setZoom(false)
                 val half = width / 2
-                val screen = BoundaryChecker.getScreenContains(x, y)!!.visualBounds
+                val screen = BoundaryChecker().getMajorScreen(stage).visualBounds
                 when {
                     // out over left
                     ! screen.contains(e.screenX - half, y) -> {
@@ -187,7 +187,7 @@ fun Scene.setZoom(enable: Boolean) {
     zoomed.set(enable)
     if( enable ) {
         previousZoomSize = InsetProperty(window)
-        BoundaryChecker.getMajorScreen(window).visualBounds.let {
+        BoundaryChecker().getMajorScreen(window).visualBounds.let {
             window.x      = it.minX
             window.y      = it.minY
             window.width  = it.width
