@@ -43,7 +43,7 @@ val EventTarget.children: List<EventTarget>
             is TableColumn<*,*> -> columns
             is MenuBar -> menus
             is Menu -> items
-            is MenuItem -> children
+            is MenuItem -> emptyList()
             is Pane -> children
             is Group -> children
             is HBox -> children
