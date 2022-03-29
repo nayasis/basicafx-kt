@@ -35,23 +35,25 @@ class ProgressDialog(task: Task<*>?) {
     val stage: Stage
         get() = dialog.dialogPane.scene.window as Stage
 
-    var title: String
+    var title: String?
         get() = dialog.dialogPane.headerText ?: ""
         set(value) {
-            dialog.updateTitle(value)
+            dialog.updateTitle(value ?: "")
         }
     var progress: Double
         get() = dialog.progressBar.progress
         set(value) {
             dialog.progressBar.progress = value
         }
-    var message: String
-        get() = dialog.message.text
+    var message: String?
+        get() = dialog.message.text ?: ""
         set(value) {
-            dialog.message.text = value
+            dialog.message.text = value ?: ""
         }
 
     init {
+        title = ""
+        message = ""
         stage.addCloseRequest {
             dialog.closeForcibly()
         }
@@ -94,9 +96,10 @@ class ProgressDialogCore: Dialog<Any> {
 
         this.task = task
 
+        dialogPane.stylesheets.add("basicafx/css/dialog-progress.css")
+
         dialogPane.scene.apply {
             fill = Color.TRANSPARENT
-            stylesheets.add("basicafx/css/dialog-progress.css")
             (window as Stage).apply {
                 initStyle(StageStyle.TRANSPARENT)
                 isAlwaysOnTop = true

@@ -25,7 +25,7 @@ class ProgressDialogTest: App(stylesheet=MyStylesheet::class) {
             }
         }).apply {
             title = "header"
-            message = "content"
+//            message = "content"
         }.runSync()
 
         println(">> sync")
