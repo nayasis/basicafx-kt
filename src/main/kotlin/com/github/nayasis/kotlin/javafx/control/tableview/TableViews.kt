@@ -7,7 +7,6 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.skin.TableViewSkin
 import javafx.scene.control.skin.VirtualFlow
-import tornadofx.selectedItem
 import java.lang.Integer.min
 import kotlin.math.max
 
@@ -58,16 +57,17 @@ var <S> TableView<S>.focused: Position
         pos.run{ focus(row,col) }
     }
 
-data class Position(val row: Int = 0, val col: Int = 0)
+data class Position(val row: Int = -1, val col: Int = -1)
 
 fun <S> TableView<S>.select(row: Int, col: Int = -1): TableView<S> {
     selectionModel.clearSelection()
-    if( col < 0 ) {
-        selectionModel.select( row )
-    } else {
-        val colIndex = min( max(col, 0), visibleLeafColumns.size - 1 )
-        val column = visibleLeafColumns[colIndex]
-        selectionModel.select( row, column )
+    when {
+        row >= 0 && col >= 0 -> {
+            val colIndex = min( max(col, 0), visibleLeafColumns.size - 1 )
+            val column = visibleLeafColumns[colIndex]
+            selectionModel.select( row, column )
+        }
+        row >=0 && col < 0 -> selectionModel.select(row)
     }
     return this
 }
@@ -97,12 +97,13 @@ fun <S> TableView<S>.indexOf(row: S?): Int {
 fun <S> TableView<S>.focus(row: Int, col: Int = -1): TableView<S> {
     select(row, col)
     requestFocus()
-    if( col < 0 ) {
-        focusModel.focus(row)
-    } else {
-        val colIndex = min( max(col, 0), visibleLeafColumns.size - 1 )
-        val column = visibleLeafColumns[colIndex]
-        focusModel.focus(row, column)
+    when {
+        row >= 0 && col >= 0 -> {
+            val colIndex = min( max(col, 0), visibleLeafColumns.size - 1 )
+            val column = visibleLeafColumns[colIndex]
+            focusModel.focus(row, column)
+        }
+        row >= 0  && col < 0 -> focusModel.focus(row)
     }
     return this
 }
