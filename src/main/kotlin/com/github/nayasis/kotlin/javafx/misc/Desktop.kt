@@ -2,7 +2,6 @@ package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.exec.Command
-import com.github.nayasis.kotlin.basica.exec.CommandExecutor
 import javafx.scene.image.Image
 import javafx.scene.input.Clipboard
 import javafx.scene.input.ClipboardContent
@@ -41,8 +40,7 @@ class Desktop { companion object {
 
     private fun execute(command: String, parameter: String? = null): Boolean {
         return try {
-            val cli = Command(command).append(parameter)
-            CommandExecutor().run(cli)
+            Command(command).append(parameter).run()
             true
         } catch (e: Exception) {
             false
