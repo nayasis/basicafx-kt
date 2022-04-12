@@ -106,6 +106,14 @@ class Dialog { companion object {
         }
     }
 
+    fun progress(title: String? = null, async: Boolean = true, task: FXTask<*>): ProgressDialog {
+        return ProgressDialog(task).apply{
+            initOwner(Stages.focusedWindow)
+            this.title = title
+            if(async) runAsync() else runSync()
+        }
+    }
+
     fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: File? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<File> {
         val chooser = FileChooser().apply {
             this.title = title
