@@ -129,8 +129,8 @@ abstract class SpringFxApp: App {
             LauncherImpl.notifyPreloader(null,notificator)
         }
 
-        fun notifyProgress(percent: Double, message: String? = null) {
-            notifyPreloader(ProgressNotificator(percent,message))
+        fun notifyProgress(percent: Number, message: String? = null) {
+            notifyPreloader(ProgressNotificator(percent.toDouble(),message))
         }
 
         fun notifyProgress(index: Number, max: Number, message: String? = null) {
