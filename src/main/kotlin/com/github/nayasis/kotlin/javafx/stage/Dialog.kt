@@ -1,5 +1,6 @@
 package com.github.nayasis.kotlin.javafx.stage
 
+import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
 import com.github.nayasis.kotlin.basica.core.path.Paths
 import com.github.nayasis.kotlin.basica.core.path.div
 import com.github.nayasis.kotlin.basica.etc.Platforms
@@ -47,12 +48,12 @@ class Dialog { companion object {
         }
     }
 
-    fun alert(message: String?) {
-        dialog(AlertType.INFORMATION, message).showAndWait()
+    fun alert(message: String?, content: String? = null) {
+        dialog(AlertType.INFORMATION, message).expand(content).showAndWait()
     }
 
-    fun confirm(message: String?): Boolean {
-        return dialog(AlertType.CONFIRMATION, message).apply {
+    fun confirm(message: String?, content: String? = null): Boolean {
+        return dialog(AlertType.CONFIRMATION, message).expand(content).apply {
             buttonTypes.map { dialogPane.lookupButton(it) }.forEach {
                 it.addEventHandler(KeyEvent.KEY_PRESSED) { e ->
                     if (e.code == KeyCode.ENTER && e.target is Button)
@@ -66,16 +67,7 @@ class Dialog { companion object {
         dialog(AlertType.ERROR, message ?: exception?.message).apply {
             if( exception != null ) {
                 logger.error(exception)
-                dialogPane.expandableContent = GridPane().apply {
-                    maxWidth = MAX_VALUE
-                    add( TextArea(exception.stackTraceToString()).apply{
-                        isEditable = false
-                        maxWidth   = MAX_VALUE
-                        maxHeight  = MAX_VALUE
-                        vgrow      = ALWAYS
-                        hgrow      = ALWAYS
-                    }, 0, 0 )
-                }
+                expand(exception.stackTraceToString())
             }
         }.showAndWait()
     }
@@ -164,3 +156,19 @@ class Dialog { companion object {
     }
 
 }}
+
+fun Alert.expand(content: String?): Alert {
+    if(content.isNotEmpty()) {
+        dialogPane.expandableContent = GridPane().apply {
+            maxWidth = MAX_VALUE
+            add(TextArea(content).apply {
+                isEditable = false
+                maxWidth = MAX_VALUE
+                maxHeight = MAX_VALUE
+                vgrow = ALWAYS
+                hgrow = ALWAYS
+            },0,0)
+        }
+    }
+    return this
+}
