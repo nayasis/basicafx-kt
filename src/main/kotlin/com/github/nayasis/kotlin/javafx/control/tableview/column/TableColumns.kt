@@ -72,7 +72,7 @@ val <S,T> TableColumnBase<S,T>.allStyles: Map<String,String>
 
 
 fun <S,T> TableColumnBase<S,T>.setStyle(style: Map<String,String?>) =
-    style.filter { ! it.value.isNullOrEmpty() }.map{ "${it.key}:${it.value}" }.joinToString(";").let { this.style = it }
+    style.filter { ! it.value.isNullOrEmpty() }.map{ "${it.key}:${it.value};" }.joinToString("").let { this.style = it }
 
 fun <S,T> TableColumnBase<S,T>.getStyle(key: String): String? = this.allStyles[key]
 
