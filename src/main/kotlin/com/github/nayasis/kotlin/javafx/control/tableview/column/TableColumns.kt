@@ -1,5 +1,6 @@
 package com.github.nayasis.kotlin.javafx.control.tableview.column
 
+import com.github.nayasis.kotlin.basica.core.extention.ifNotEmpty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Pos
@@ -49,11 +50,13 @@ fun <S,T:Any> TableColumn<S,T>.findBy(fxId: String): TableColumn<S,T>? {
 
 @Suppress("UNCHECKED_CAST")
 fun <S,T:Any> TableColumn<S,T>.children(recursive: Boolean = false): List<TableColumn<S,T>> {
-    return ArrayList<TableColumn<S,T>>().apply {
-        addAll( this@children.columns as Collection<TableColumn<S,T>> )
-        if( recursive )
-            forEach{ addAll(it.children(recursive)) }
+    val list = ArrayList<TableColumn<S,T>>()
+    (this.columns as Collection<TableColumn<S,T>>?)?.forEach {
+        list.add(it)
+        if(recursive)
+            list.addAll(it.children(recursive))
     }
+    return list
 }
 
 fun <S,T> TableColumn<S,T>.setAlign(align: Pos): TableColumn<S,T> {
