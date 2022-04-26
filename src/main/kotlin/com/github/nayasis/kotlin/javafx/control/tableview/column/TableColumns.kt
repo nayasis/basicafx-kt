@@ -1,6 +1,5 @@
 package com.github.nayasis.kotlin.javafx.control.tableview.column
 
-import com.github.nayasis.kotlin.basica.core.extention.ifNotEmpty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.value.ObservableValue
 import javafx.geometry.Pos
@@ -8,18 +7,7 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableColumnBase
 import javafx.util.Callback
 import tornadofx.observable
-import kotlin.collections.ArrayList
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.joinToString
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
 import kotlin.collections.set
-import kotlin.collections.toMap
-import kotlin.collections.toMutableMap
 import kotlin.reflect.KProperty1
 
 @Suppress("NOTHING_TO_INLINE")
