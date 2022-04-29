@@ -81,15 +81,7 @@ val EventTarget.fxId: String
         is MenuItem -> this.id
         is TabPane -> this.id
         is Tab -> this.id
-        else -> {
-            val getter = this.javaClass.findMethodByName("getId")
-            if (getter != null && String::class.java.isAssignableFrom(getter.returnType)) {
-                getter.isAccessible = true
-                getter.invoke(this) as String?
-            } else {
-                null
-            }
-        }
+        else -> null
     } ?: ""
 
 val EventTarget.allChildrenById: Map<String,EventTarget>
