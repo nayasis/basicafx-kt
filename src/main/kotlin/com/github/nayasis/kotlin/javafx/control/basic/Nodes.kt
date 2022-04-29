@@ -1,7 +1,6 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
-import com.github.nayasis.kotlin.javafx.control.tableview.column.setStyle
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.geometry.Insets
@@ -9,11 +8,14 @@ import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.control.*
+import javafx.scene.image.ImageView
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
+import javafx.scene.shape.Path
 import mu.KotlinLogging
 import tornadofx.findMethodByName
 
@@ -73,11 +75,22 @@ val EventTarget.allChildren: List<EventTarget>
 
 val EventTarget.fxId: String
     get() = when (this) {
-        is Node -> this.id ?: ""
-        is TabPane -> this.id ?: ""
-        is Tab -> this.id ?: ""
-        else -> ""
-    }
+        is Node -> this.id
+        is TableColumnBase<*,*> -> this.id
+        is Pane -> this.id
+        is MenuItem -> this.id
+        is TabPane -> this.id
+        is Tab -> this.id
+        else -> {
+            val getter = this.javaClass.findMethodByName("getId")
+            if (getter != null && String::class.java.isAssignableFrom(getter.returnType)) {
+                getter.isAccessible = true
+                getter.invoke(this) as String?
+            } else {
+                null
+            }
+        }
+    } ?: ""
 
 val EventTarget.allChildrenById: Map<String,EventTarget>
     get() {
