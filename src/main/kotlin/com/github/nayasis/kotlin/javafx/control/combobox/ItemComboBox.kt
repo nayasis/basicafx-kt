@@ -59,6 +59,11 @@ class ItemComboBox: ComboBox<ItemCombo> {
         return selectedItem
     }
 
+    fun clear(): ItemComboBox {
+        items.clear()
+        return this
+    }
+
     fun getItem(value: String?): ItemCombo? {
         return items.firstOrNull{ it.value == value }
     }
