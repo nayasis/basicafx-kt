@@ -44,7 +44,7 @@ class ComboBoxTestView: View("ComboBox test") {
         }}
 
         button("add C") { action {
-            combo.setItem("C",index=2)
+            combo.addItem("C",index=2)
         }}
 
         button("remove first") { action {
