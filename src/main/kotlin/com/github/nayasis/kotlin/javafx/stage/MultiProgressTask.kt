@@ -5,13 +5,12 @@ import javafx.concurrent.Task
 
 abstract class MultiProgressTask<T>: Task<T>() {
 
-    val subProgress = SimpleMapProperty<Int,Double>()
+    var dialog: MultiProgressDialogCore? = null
 
-    fun getProgress(index: Int): Double {
-        return when(index) {
-            0 -> progress
-            else -> subProgress[index] ?: 0.0
-        }
+    override fun run() {
+        super.run()
     }
+
+    abstract fun run(dialog: MultiProgressDialogCore)
 
 }
