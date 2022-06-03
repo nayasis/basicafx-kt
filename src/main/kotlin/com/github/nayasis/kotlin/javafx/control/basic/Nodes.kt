@@ -1,6 +1,8 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
+import com.github.nayasis.kotlin.javafx.model.Point
+import com.github.nayasis.kotlin.javafx.stage.stage
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.geometry.Insets
@@ -8,14 +10,11 @@ import javafx.scene.Group
 import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.control.*
-import javafx.scene.image.ImageView
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
-import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
-import javafx.scene.shape.Path
 import mu.KotlinLogging
 import tornadofx.findMethodByName
 
@@ -168,4 +167,26 @@ fun Node.setStyle(key: String, value: String?) {
 
 fun Node.removeStyle(key: String) {
     setStyle(key,null)
+}
+
+fun Node.setMoveHandler(styleClassOnDragged: String? = null) {
+    val stage = this.scene.stage
+    val offset = Point()
+    setOnMousePressed { e ->
+        offset.x = e.sceneX
+        offset.y = e.sceneY
+    }
+    setOnMouseDragged { e ->
+        stage?.x = e.screenX - offset.x
+        stage?.y = e.screenY - offset.y
+        styleClassOnDragged?.let {
+            if( it !in styleClass )
+                styleClass.add(it)
+        }
+    }
+    setOnMouseReleased {
+        styleClassOnDragged?.let {
+            styleClass.remove(it)
+        }
+    }
 }
