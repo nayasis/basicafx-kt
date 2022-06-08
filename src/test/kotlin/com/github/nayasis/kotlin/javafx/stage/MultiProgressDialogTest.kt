@@ -14,29 +14,43 @@ fun main(args: Array<String>) {
 class MultiProgressDialogTest: App(stylesheet=MyStylesheet::class) {
     override fun start(stage: Stage) {
 
-        val task: (dialog: MultiProgressDialog) -> Unit = { dialog ->
-            val max = 40
-            for (i in 0..2) {
-                for (j in 1..max) {
-                    println("$i/$j to $max")
-                    dialog.updateProgress(i,j,max)
-                    dialog.updateMessage(i,"title[$i] : $j / $max")
-                    dialog.updateTitle("title[$i] : $j / $max")
-                    sleep(100)
-                }
-            }
-            println(">> done")
-        }
+//        val task: (dialog: MultiProgressDialog) -> Unit = { dialog ->
+//            val max = 40
+//            for (i in 0..2) {
+//                for (j in 1..max) {
+//                    println("$i/$j to $max")
+//                    dialog.updateProgress(i,j,max)
+//                    dialog.updateMessage(i,"title[$i] : $j / $max")
+//                    dialog.updateTitle("title[$i] : $j / $max")
+//                    sleep(100)
+//                }
+//            }
+//            println(">> done")
+//        }
+//
+//        println(">> async")
+//        MultiProgressDialog(3,task).apply {
+//            title = "header"
+//        }.runAsync()
+//
+//        println(">> sync")
+//        MultiProgressDialog(3,task).apply {
+//            title = "header"
+//        }.runSync()
 
-        println(">> async")
-        MultiProgressDialog(3,task).apply {
-            title = "header"
-        }.runAsync()
+        MultiProgressDialogCore(2).apply {
+            updateTitle("Title12312312312312312312312312123123123123123123123123123123123123123123132")
+            updateMessage(0,"message 01")
+            updateMessage(1,"message 02")
+            updateProgress(0,10,30)
+            updateProgress(1,20,30)
+        }.show()
 
-        println(">> sync")
-        MultiProgressDialog(3,task).apply {
-            title = "header"
-        }.runSync()
+//        PrevProgressDialogCore().apply {
+//            updateTitle("Title")
+//            updateMessage("message 01")
+//            updateProgress(10.0,30.0)
+//        }.showAndWait()
 
 
     }

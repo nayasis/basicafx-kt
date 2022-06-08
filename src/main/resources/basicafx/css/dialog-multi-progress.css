@@ -1,0 +1,29 @@
+@import "/basicafx/css/progress-bar.css";
+
+.root {
+  -fx-font: 10px Arial;
+  -fx-border-color: #bfbfbf;
+  -fx-background-radius : 5px;
+  -fx-border-radius: 5px;
+}
+
+.root.dragged {
+  -fx-border-color: #486a9a;
+}
+
+.header {
+  -fx-border-color: #bfbfbf;
+  -fx-border-width: 0 0 1 0;
+  -fx-background-radius : 5 5 0 0;
+  -fx-background-color: -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 90%));
+}
+
+.header .label {
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-padding: 7 5 7 5;
+}
+
+.label.message {
+  -fx-padding: 0 5 3 5;
+}
