@@ -5,6 +5,9 @@ import com.github.nayasis.kotlin.basica.core.path.Paths
 import com.github.nayasis.kotlin.basica.core.path.div
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
+import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
+import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
+import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialogStage
 import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.control.Button
@@ -22,7 +25,6 @@ import javafx.stage.Modality.WINDOW_MODAL
 import javafx.stage.Stage
 import javafx.stage.Window
 import mu.KotlinLogging
-import tornadofx.FXTask
 import tornadofx.FileChooserMode
 import tornadofx.FileChooserMode.*
 import tornadofx.hgrow
@@ -89,20 +91,17 @@ class Dialog { companion object {
         return if(res.isEmpty) null else res.get()
     }
 
-    fun progress(title: String? = null, async: Boolean = true, func: (FXTask<*>.() -> Unit)? = null): ProgressDialog {
-        val task = func?.let {FXTask(func=it)}
-        return ProgressDialog(task).apply{
+    fun progress(title: String? = null, async: Boolean = true, task: ((dialog: ProgressDialog) -> Unit)? = null): ProgressDialog {
+        return ProgressDialog(title).apply{
             initOwner(Stages.focusedWindow)
-            this.title = title
-            if(async) runAsync() else runSync()
+            if(async) runAsync(task) else runSync(task)
         }
     }
 
-    fun progress(title: String? = null, async: Boolean = true, task: FXTask<*>): ProgressDialog {
-        return ProgressDialog(task).apply{
+    fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
+        return MultiProgressDialog(progressCount,title).apply{
             initOwner(Stages.focusedWindow)
-            this.title = title
-            if(async) runAsync() else runSync()
+            if(async) runAsync(task) else runSync(task)
         }
     }
 

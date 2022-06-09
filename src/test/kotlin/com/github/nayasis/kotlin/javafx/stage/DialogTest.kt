@@ -9,8 +9,10 @@ import tornadofx.View
 import tornadofx.action
 import tornadofx.button
 import tornadofx.launch
+import tornadofx.runLater
 import tornadofx.vbox
 import java.lang.Thread.sleep
+import kotlin.math.floor
 
 private val logger = KotlinLogging.logger {}
 
@@ -40,11 +42,24 @@ class DialogTestView: View("dialog test") {
             Dialog.progress("header") {
                 val max = 40
                 for (i in 1..max) {
-                    println( "$i to $max" )
-                    updateProgress(i.toLong(), max.toLong())
-                    updateMessage("$i / $max")
-                    updateTitle("title : $i")
+                    it.updateProgress(i, max)
+                    it.updateMessage("$i / $max")
+                    it.updateTitle("title : $i")
+                    it.updateSubMessage("${(it.getProgress()*100).toInt()}%")
                     sleep(100)
+                }
+            }
+        }}
+        button("progress-multi") {action {
+            Dialog.progressMulti(2,"header") {
+                val max = 40
+                for( idx in 0..1) {
+                    for (i in 1..max) {
+                        it.updateProgress(idx, i, max)
+                        it.updateMessage(idx,"$i / $max")
+                        it.updateSubMessage(idx,"${floor(it.getProgress(idx)*100)}%")
+                        sleep(100)
+                    }
                 }
             }
         }}
