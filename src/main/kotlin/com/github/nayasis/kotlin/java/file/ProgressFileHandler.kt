@@ -15,7 +15,7 @@ import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
 import java.nio.file.attribute.BasicFileAttributes
 
-fun copyFile(src: Path, trg: Path, overwrite: Boolean = true, callback: ((read: Long, size: Long) -> Unit)? = null) {
+fun copyFile(src: Path, trg: Path, overwrite: Boolean = true, callback: ((sizeRead: Long, sizeTotal: Long) -> Unit)? = null) {
     if(trg.exists()) {
         if(trg.isFile() && overwrite) {
             trg.delete()
@@ -32,7 +32,7 @@ fun copyFile(src: Path, trg: Path, overwrite: Boolean = true, callback: ((read: 
     }
 }
 
-fun copyTree(src: Path, target: Path, overwrite: Boolean = true, callback:((index: Int, file: Path, fileRead: Long, fileSize: Long) -> Unit)?) {
+fun copyTree(src: Path, target: Path, overwrite: Boolean = true, callback:((index: Int,file: Path,readSize: Long,fileSize: Long) -> Unit)?) {
     if(!src.isDirectory()) return
     var index = 0
     Files.walkFileTree(src, object: SimpleFileVisitor<Path>() {
@@ -50,7 +50,7 @@ fun copyTree(src: Path, target: Path, overwrite: Boolean = true, callback:((inde
     })
 }
 
-fun moveTree(src: Path, trg: Path, overwrite: Boolean, callback:((index: Int,file: Path,fileRead: Long,fileSize: Long) -> Unit)?) {
+fun moveTree(src: Path, trg: Path, overwrite: Boolean, callback:((index: Int,file: Path,readSize: Long,fileSize: Long) -> Unit)?) {
     if(!src.isDirectory()) return
     val option = if(overwrite) arrayOf(StandardCopyOption.REPLACE_EXISTING) else emptyArray()
     var trgProvider = trg.fileSystem.provider()
