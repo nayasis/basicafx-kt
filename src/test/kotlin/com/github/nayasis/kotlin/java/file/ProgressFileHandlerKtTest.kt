@@ -22,10 +22,10 @@ class ProgressFileHandlerKtTest {
         Dialog.progressMulti(2,"Progress copy") { dialog ->
             copyTree(src,trg) { index, file, fileRead, fileSize ->
                 dialog.updateProgress(0,index,res.fileCount)
-                dialog.updateSubMessage(0,"%.1f%".format(dialog.getProgress(0) * 100))
+                dialog.updateSubMessage(0,"%.1f%%".format(dialog.getProgress(0) * 100))
                 dialog.updateMessage(1,file.name)
                 dialog.updateProgress(1,fileRead,fileSize)
-                dialog.updateSubMessage(1,"%.1f%".format(dialog.getProgress(1) * 100))
+                dialog.updateSubMessage(1,"%.1f%%".format(dialog.getProgress(1) * 100))
             }
         }
 
