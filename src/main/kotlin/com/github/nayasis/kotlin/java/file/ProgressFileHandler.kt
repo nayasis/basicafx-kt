@@ -70,6 +70,7 @@ fun moveTree(src: Path, trg: Path, overwrite: Boolean, callback:((index: Int,fil
                 copyFile(file,desc,overwrite) { read, size ->
                     callback?.invoke(index,file,read,size)
                 }
+                file.delete()
             }
             return FileVisitResult.CONTINUE
         }
