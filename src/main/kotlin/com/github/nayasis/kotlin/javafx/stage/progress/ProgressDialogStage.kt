@@ -8,6 +8,7 @@ import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region.USE_PREF_SIZE
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.StageStyle
@@ -30,7 +31,10 @@ class ProgressDialogStage: Stage {
 
         for(i in 0 until progressCount) {
             messages.add(Label().apply { styleClass.add("message") })
-            subMessages.add(Label().apply { styleClass.add("sub-message") })
+            subMessages.add(Label().apply {
+                styleClass.add("sub-message")
+                minWidth = USE_PREF_SIZE
+            })
             progressBars.add(ProgressBar().apply {
                 maxWidth = Double.MAX_VALUE
                 progress = 0.0
