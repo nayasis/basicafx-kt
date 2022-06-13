@@ -1,9 +1,9 @@
 package com.github.nayasis.kotlin.java.file
 
+import com.github.nayasis.kotlin.basica.core.path.copyAttribute
 import com.github.nayasis.kotlin.basica.core.path.delete
 import com.github.nayasis.kotlin.basica.core.path.exists
 import com.github.nayasis.kotlin.basica.core.path.fileSize
-import com.github.nayasis.kotlin.basica.core.path.getAttributes
 import com.github.nayasis.kotlin.basica.core.path.isDirectory
 import com.github.nayasis.kotlin.basica.core.path.isFile
 import com.github.nayasis.kotlin.basica.core.path.makeDir
@@ -14,7 +14,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
-import java.nio.file.attribute.BasicFileAttributeView
 import java.nio.file.attribute.BasicFileAttributes
 
 class ProgressFiles { companion object {
@@ -48,19 +47,9 @@ class ProgressFiles { companion object {
             src.fileSize.let { callback?.invoke(it,it) }
         } else {
             copyFile(src,trg,overwrite,callback)
-            copyAttribute(src,trg)
+            src.copyAttribute(trg)
             src.delete()
         }
-    }
-
-    private fun copyAttribute(source: Path,target: Path) {
-        val srcAttr = source.getAttributes<BasicFileAttributes>()
-        val trgAttr = Files.getFileAttributeView(target,BasicFileAttributeView::class.java)
-        trgAttr.setTimes(
-            srcAttr.lastModifiedTime(),
-            srcAttr.lastAccessTime(),
-            srcAttr.creationTime(),
-        )
     }
 
     fun copyDirectory(source: Path,target: Path,overwrite: Boolean = true,callback:((index: Int,file: Path,readSize: Long,fileSize: Long) -> Unit)?) {
@@ -89,7 +78,7 @@ class ProgressFiles { companion object {
         Files.walkFileTree(source, object: SimpleFileVisitor<Path>() {
             override fun preVisitDirectory(dir: Path, attrs: BasicFileAttributes): FileVisitResult {
                 target.resolve(source.relativize(dir)).let {
-                    copyAttribute(dir,it)
+                    dir.copyAttribute(it)
                     it.makeDir()
                 }
                 return FileVisitResult.CONTINUE
