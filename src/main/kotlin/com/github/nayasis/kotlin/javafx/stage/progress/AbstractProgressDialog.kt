@@ -14,29 +14,29 @@ private val logger = KotlinLogging.logger {}
 
 abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
 
-    val dialog = ProgressDialogStage(progressCount)
+    val stage = ProgressDialogStage(progressCount)
 
     init {
         updateTitle(title)
     }
 
-    fun initModality(modality: Modality) = dialog.initModality(modality)
-    fun initOwner(window: Window?) = dialog.initOwner(window)
-    fun updateTitle(title: String?) = dialog.updateTitle(title)
+    fun initModality(modality: Modality) = stage.initModality(modality)
+    fun initOwner(window: Window?) = stage.initOwner(window)
+    fun updateTitle(title: String?) = stage.updateTitle(title)
 
-    fun show() = dialog.show()
-    fun close() = runLater { dialog.close() }
+    fun show() = stage.show()
+    fun close() = runLater { stage.close() }
 
     @Suppress("UNCHECKED_CAST")
     protected fun <T: AbstractProgressDialog> internalRunSync(task: ((dialog: T) -> Unit)?) {
-        dialog.show()
+        stage.show()
         if(task == null) return
         val self = this
         val status = TaskStatus()
         runAsync(status) {
             task.invoke(self as T)
             runLater {
-                dialog.close()
+                stage.close()
             }
         }
         status.completed.awaitUntil()
@@ -44,13 +44,13 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
 
     @Suppress("UNCHECKED_CAST")
     protected fun <T: AbstractProgressDialog> internalRunAsync(task: ((dialog: T) -> Unit)?) {
-        dialog.show()
+        stage.show()
         if(task == null) return
         val self = this
         runAsync {
             task.invoke(self as T)
             runLater {
-                dialog.close()
+                stage.close()
             }
         }
     }
