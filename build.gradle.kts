@@ -35,7 +35,7 @@ repositories {
 
 dependencies {
 
-//	implementation("com.github.nayasis:basica-kt:0.2.3")
+//	implementation("com.github.nayasis:basica-kt:0.2.4")
 //	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT"){ isChanging = true }
 	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
