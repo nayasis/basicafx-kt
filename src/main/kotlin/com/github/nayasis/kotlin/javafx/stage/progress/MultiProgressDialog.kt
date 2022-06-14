@@ -6,6 +6,7 @@ class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractPro
     fun updateProgress(index: Int, percent: Number) = stage.updateProgress(index,percent)
     fun updateMessage(index: Int, message: String?) = stage.updateMessage(index,message)
     fun updateSubMessage(index: Int, message: String?) = stage.updateSubMessage(index,message)
+    fun updateSubMessageAsProgress(index: Int, format: String = "%.1f%%") = stage.updateSubMessageAsProgress(index,format)
     fun getProgress(index: Int): Double = stage.progressBars[index].progress
 
     fun runSync(task: ((dialog: MultiProgressDialog) -> Unit)?) = super.internalRunSync(task)

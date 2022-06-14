@@ -105,6 +105,10 @@ class ProgressDialogStage: Stage {
         }
     }
 
+    fun updateSubMessageAsProgress(index: Int, format: String = "%.1f%%") {
+        updateSubMessage(index,format.format(progressBars[index].progress*100))
+    }
+
     fun updateTitle(title: String?) {
         runLater { titleHeader.text = title ?: "" }
     }

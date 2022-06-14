@@ -6,6 +6,7 @@ class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
     fun updateProgress(percent: Number) = stage.updateProgress(0,percent)
     fun updateMessage(message: String?) = stage.updateMessage(0,message)
     fun updateSubMessage(message: String?) = stage.updateSubMessage(0,message)
+    fun updateSubMessageAsProgress(format: String = "%.1f%%") = stage.updateSubMessageAsProgress(0,format)
     fun getProgress(): Double = stage.progressBars[0].progress
 
     fun runSync(task: ((dialog: ProgressDialog) -> Unit)?) = super.internalRunSync(task)
