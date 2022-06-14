@@ -15,6 +15,8 @@ private val logger = KotlinLogging.logger {}
 abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
 
     val stage = ProgressDialogStage(progressCount)
+    val size: Int
+        get() = stage.progressBars.size
 
     init {
         updateTitle(title)
