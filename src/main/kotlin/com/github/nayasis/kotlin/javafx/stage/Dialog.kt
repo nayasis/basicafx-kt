@@ -3,6 +3,8 @@ package com.github.nayasis.kotlin.javafx.stage
 import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
 import com.github.nayasis.kotlin.basica.core.io.Paths
 import com.github.nayasis.kotlin.basica.core.io.div
+import com.github.nayasis.kotlin.basica.core.io.exists
+import com.github.nayasis.kotlin.basica.core.io.isReadable
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
@@ -29,6 +31,7 @@ import tornadofx.FileChooserMode.*
 import tornadofx.hgrow
 import tornadofx.vgrow
 import java.io.File
+import java.nio.file.Path
 import kotlin.Double.Companion.MAX_VALUE
 
 private val logger = KotlinLogging.logger {}
@@ -104,15 +107,11 @@ class Dialog { companion object {
         }
     }
 
-    fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: File? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<File> {
+    fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: Path? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<File> {
         val chooser = FileChooser().apply {
             this.title = title
             this.extensionFilters.add( ExtensionFilter(description.ifEmpty{extension}, extension.split(",;")) )
-            this.initialDirectory = if( initialDirectory != null && initialDirectory.exists() && initialDirectory.canRead() ) {
-                initialDirectory
-            } else {
-                dirDesktop()
-            }
+            this.initialDirectory = if( initialDirectory.exists() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
         }
         option(chooser)
         return when(mode) {
@@ -127,30 +126,22 @@ class Dialog { companion object {
             }
             else -> emptyList()
         }
-
-
     }
 
-    fun dirPicker(title: String = "", initialDirectory: File? = null, owner: Window? = null, option: DirectoryChooser.() -> Unit = {}): File? {
+    fun dirPicker(title: String = "", initialDirectory: Path? = null, owner: Window? = null, option: DirectoryChooser.() -> Unit = {}): File? {
         val chooser = DirectoryChooser().apply {
             this.title = title
-            this.initialDirectory = if( initialDirectory != null && initialDirectory.exists() && initialDirectory.canRead() ) {
-                initialDirectory
-            } else {
-                dirDesktop()
-            }
+            this.initialDirectory = if( initialDirectory.exists() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
         }
         option(chooser)
         return chooser.showDialog(owner)
     }
 
     private fun dirDesktop(): File {
-        return Paths.userHome.let {
-            when{
-                Platforms.isWindows -> it / "Desktop"
-                else -> it
-            }
-        }.toFile()
+        return Paths.userHome.let { when{
+            Platforms.isWindows -> it / "Desktop"
+            else -> it
+        }}.toFile()
     }
 
 }}
