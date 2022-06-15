@@ -1,13 +1,12 @@
 package com.github.nayasis.kotlin.javafx.stage
 
 import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
-import com.github.nayasis.kotlin.basica.core.path.Paths
-import com.github.nayasis.kotlin.basica.core.path.div
+import com.github.nayasis.kotlin.basica.core.io.Paths
+import com.github.nayasis.kotlin.basica.core.io.div
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
 import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
-import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialogStage
 import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.control.Button

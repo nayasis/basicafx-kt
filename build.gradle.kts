@@ -36,7 +36,6 @@ repositories {
 dependencies {
 
 //	implementation("com.github.nayasis:basica-kt:0.2.4")
-//	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT"){ isChanging = true }
 	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")

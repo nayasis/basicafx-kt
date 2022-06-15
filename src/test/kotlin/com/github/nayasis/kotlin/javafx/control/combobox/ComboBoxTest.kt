@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
 
 class ComboBoxTest: App(ComboBoxTestView::class,MyStylesheet::class)
 
-private val list = ('A'..'Z').mapIndexed{ i, ch -> ItemCombo("$ch") }
+private val list = ('A'..'Z').mapIndexed{ _,ch -> ItemCombo("$ch") }
 
 class ComboBoxTestView: View("ComboBox test") {
 
