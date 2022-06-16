@@ -107,7 +107,7 @@ class Dialog { companion object {
         }
     }
 
-    fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: Path? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<File> {
+    fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: Path? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<Path> {
         val chooser = FileChooser().apply {
             this.title = title
             this.extensionFilters.add( ExtensionFilter(description.ifEmpty{extension}, extension.split(",;")) )
@@ -125,16 +125,16 @@ class Dialog { companion object {
                 if (result == null) emptyList() else listOf(result)
             }
             else -> emptyList()
-        }
+        }.map { it.toPath() }
     }
 
-    fun dirPicker(title: String = "", initialDirectory: Path? = null, owner: Window? = null, option: DirectoryChooser.() -> Unit = {}): File? {
+    fun dirPicker(title: String = "", initialDirectory: Path? = null, owner: Window? = null, option: DirectoryChooser.() -> Unit = {}): Path? {
         val chooser = DirectoryChooser().apply {
             this.title = title
             this.initialDirectory = if( initialDirectory.exists() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
         }
         option(chooser)
-        return chooser.showDialog(owner)
+        return chooser.showDialog(owner)?.toPath()
     }
 
     private fun dirDesktop(): File {
