@@ -18,9 +18,9 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     val size: Int
         get() = stage.progressBars.size
 
-    var onSuccess: (() -> Unit)? = null
-    var onFail: ((exception: Throwable) -> Unit)? = null
-    var onDone: (() -> Unit)? = null
+    protected var onSuccess: (() -> Unit)? = null
+    protected var onFail: ((exception: Throwable) -> Unit)? = null
+    protected var onDone: (() -> Unit)? = null
 
     init {
         updateTitle(title)

@@ -12,4 +12,19 @@ class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
     fun runSync(task: ((dialog: ProgressDialog) -> Unit)?) = super.internalRunSync(task)
     fun runAsync(task: ((dialog: ProgressDialog) -> Unit)?) = super.internalRunAsync(task)
 
+    fun setOnSuccess(callback: (() -> Unit)): ProgressDialog {
+        super.onSuccess = callback
+        return this
+    }
+
+    fun setOnFail(callback: ((exception: Throwable) -> Unit)): ProgressDialog {
+        super.onFail = callback
+        return this
+    }
+
+    fun setOnDone(callback: (() -> Unit)): ProgressDialog {
+        super.onDone = callback
+        return this
+    }
+
 }

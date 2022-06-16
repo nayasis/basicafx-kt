@@ -12,4 +12,19 @@ class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractPro
     fun runSync(task: ((dialog: MultiProgressDialog) -> Unit)?) = super.internalRunSync(task)
     fun runAsync(task: ((dialog: MultiProgressDialog) -> Unit)?) = super.internalRunAsync(task)
 
+    fun setOnSuccess(callback: (() -> Unit)): MultiProgressDialog {
+        super.onSuccess = callback
+        return this
+    }
+
+    fun setOnFail(callback: ((exception: Throwable) -> Unit)): MultiProgressDialog {
+        super.onFail = callback
+        return this
+    }
+
+    fun setOnDone(callback: (() -> Unit)): MultiProgressDialog {
+        super.onDone = callback
+        return this
+    }
+
 }
