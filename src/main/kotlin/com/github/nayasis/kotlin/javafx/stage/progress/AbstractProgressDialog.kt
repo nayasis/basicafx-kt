@@ -18,6 +18,10 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     val size: Int
         get() = stage.progressBars.size
 
+    var onSuccess: (() -> Unit)? = null
+    var onFail: ((exception: Throwable) -> Unit)? = null
+    var onDone: (() -> Unit)? = null
+
     init {
         updateTitle(title)
     }
@@ -33,13 +37,10 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     protected fun <T: AbstractProgressDialog> internalRunSync(task: ((dialog: T) -> Unit)?) {
         stage.show()
         if(task == null) return
-        val self = this
+        val self = this as T
         val status = TaskStatus()
         runAsync(status) {
-            task.invoke(self as T)
-            runLater {
-                stage.close()
-            }
+            runTask(task,self)
         }
         status.completed.awaitUntil()
     }
@@ -48,11 +49,27 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     protected fun <T: AbstractProgressDialog> internalRunAsync(task: ((dialog: T) -> Unit)?) {
         stage.show()
         if(task == null) return
-        val self = this
+        val self = this as T
         runAsync {
-            task.invoke(self as T)
-            runLater {
-                stage.close()
+            runTask(task,self)
+        }
+    }
+
+    private fun <T: AbstractProgressDialog> runTask(task: ((dialog: T) -> Unit)?, dialog: T) {
+        try {
+            task?.invoke(dialog)
+            runLater { stage.close() }
+            onSuccess?.let {
+                runLater { it.invoke() }
+            }
+        } catch (e: Throwable) {
+            runLater { stage.close() }
+            onFail?.let {
+                runLater { it.invoke(e) }
+            }
+        } finally {
+            onDone?.let {
+                runLater { it.invoke() }
             }
         }
     }
