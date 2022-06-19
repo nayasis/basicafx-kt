@@ -127,7 +127,7 @@ class ItemComboBox: ComboBox<ItemCombo> {
         }
 
         addKeyPressed { event ->
-            @Suppress("NON_EXHAUSTIVE_WHEN")
+            @Suppress("NON_EXHAUSTIVE_WHEN_STATEMENT")
             when (event.code) {
                 UP, KP_UP -> {
                     event.consume()
