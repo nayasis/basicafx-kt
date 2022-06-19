@@ -59,7 +59,7 @@ var <S> TableView<S>.focused: Position
 
 data class Position(val row: Int = -1, val col: Int = -1)
 
-fun <S> TableView<S>.select(row: Int, col: Int = -1): TableView<S> {
+fun <S> TableView<S>.select(row: Int, col: Int = 0): TableView<S> {
     selectionModel.clearSelection()
     when {
         row >= 0 && col >= 0 -> {
@@ -83,7 +83,7 @@ var <S> TableView<S>.selected: Position
     }
 
 fun <S> TableView<S>.selectBy(row: S?): TableView<S> {
-    return select(indexOf(row),-1)
+    return select(indexOf(row),0)
 }
 
 fun <S> TableView<S>.indexOf(row: S?): Int {
@@ -94,7 +94,7 @@ fun <S> TableView<S>.indexOf(row: S?): Int {
     }
 }
 
-fun <S> TableView<S>.focus(row: Int, col: Int = -1): TableView<S> {
+fun <S> TableView<S>.focus(row: Int, col: Int = 0): TableView<S> {
     select(row, col)
     requestFocus()
     when {
@@ -109,7 +109,7 @@ fun <S> TableView<S>.focus(row: Int, col: Int = -1): TableView<S> {
 }
 
 fun <S> TableView<S>.focusBy(row: S?): TableView<S> {
-    return focus(indexOf(row),-1)
+    return focus(indexOf(row),0)
 }
 
 fun <S> TableView<S>.scroll(row: Int, middle: Boolean = true): TableView<S> {
