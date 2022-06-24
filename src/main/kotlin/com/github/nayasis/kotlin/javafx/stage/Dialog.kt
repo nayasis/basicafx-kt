@@ -5,6 +5,7 @@ import com.github.nayasis.kotlin.basica.core.io.Paths
 import com.github.nayasis.kotlin.basica.core.io.div
 import com.github.nayasis.kotlin.basica.core.io.exists
 import com.github.nayasis.kotlin.basica.core.io.isReadable
+import com.github.nayasis.kotlin.basica.core.string.toPath
 import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
@@ -111,7 +112,7 @@ class Dialog { companion object {
         val chooser = FileChooser().apply {
             this.title = title
             this.extensionFilters.add( ExtensionFilter(description.ifEmpty{extension}, extension.split(",;")) )
-            this.initialDirectory = if( initialDirectory.exists() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
+            this.initialDirectory = if( initialDirectory.exists() && initialDirectory != "".toPath() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
         }
         option(chooser)
         return when(mode) {
@@ -131,7 +132,7 @@ class Dialog { companion object {
     fun dirPicker(title: String = "", initialDirectory: Path? = null, owner: Window? = null, option: DirectoryChooser.() -> Unit = {}): Path? {
         val chooser = DirectoryChooser().apply {
             this.title = title
-            this.initialDirectory = if( initialDirectory.exists() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
+            this.initialDirectory = if( initialDirectory.exists() && initialDirectory != "".toPath() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
         }
         option(chooser)
         return chooser.showDialog(owner)?.toPath()
