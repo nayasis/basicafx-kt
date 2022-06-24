@@ -96,7 +96,6 @@ fun <S> TableView<S>.indexOf(row: S?): Int {
 
 fun <S> TableView<S>.focus(row: Int, col: Int = -1): TableView<S> {
     select(row, col)
-    requestFocus()
     when {
         row >= 0 && col >= 0 -> {
             val colIndex = min( max(col, 0), visibleLeafColumns.size - 1 )
