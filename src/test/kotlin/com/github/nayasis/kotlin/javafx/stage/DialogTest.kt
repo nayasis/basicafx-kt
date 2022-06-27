@@ -10,10 +10,8 @@ import tornadofx.View
 import tornadofx.action
 import tornadofx.button
 import tornadofx.launch
-import tornadofx.runLater
 import tornadofx.vbox
 import java.lang.Thread.sleep
-import kotlin.math.floor
 
 private val logger = KotlinLogging.logger {}
 
