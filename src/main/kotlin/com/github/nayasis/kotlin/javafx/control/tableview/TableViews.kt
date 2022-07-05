@@ -107,8 +107,8 @@ fun <S> TableView<S>.focus(row: Int, col: Int = -1): TableView<S> {
     return this
 }
 
-fun <S> TableView<S>.focusBy(row: S?): TableView<S> {
-    return focus(indexOf(row),-1)
+fun <S> TableView<S>.focusBy(row: S?, col: Int = -1): TableView<S> {
+    return focus(indexOf(row),col)
 }
 
 fun <S> TableView<S>.scroll(row: Int, middle: Boolean = true): TableView<S> {
