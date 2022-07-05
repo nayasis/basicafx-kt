@@ -8,7 +8,7 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 
 @Suppress("UNUSED_VARIABLE")
-private fun TextField.addMask(pattern: String,pass: Char = '#',modifier: ((inputText:String) -> String)? = null): TextField {
+fun TextField.addMask(pattern: String,pass: Char = '#',modifier: ((inputText:String) -> String)? = null): TextField {
     val maskChars = pattern.toCharArray().toSet().filter { it != pass }.toSet()
     this.addKeyReleased{ e ->
         if( e.code in listOf(HOME,END,LEFT,RIGHT,SHIFT,CONTROL,CAPS,ESCAPE))
