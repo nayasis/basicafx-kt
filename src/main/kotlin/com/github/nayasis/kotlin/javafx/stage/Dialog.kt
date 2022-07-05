@@ -155,8 +155,8 @@ fun Alert.expand(content: String?): Alert {
                 isEditable = false
                 maxWidth = MAX_VALUE
                 maxHeight = MAX_VALUE
-                vgrow = ALWAYS
-                hgrow = ALWAYS
+                GridPane.setVgrow(this,ALWAYS)
+                GridPane.setHgrow(this,ALWAYS)
             },0,0)
         }
     }

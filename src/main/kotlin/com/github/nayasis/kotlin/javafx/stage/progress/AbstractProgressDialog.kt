@@ -19,7 +19,7 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
         get() = stage.progressBars.size
 
     protected var onSuccess: (() -> Unit)? = null
-    protected var onFail: ((exception: Throwable) -> Unit)? = null
+    protected var onFail: ((exception: Throwable) -> Unit)? = { e -> throw e }
     protected var onDone: (() -> Unit)? = null
 
     init {
