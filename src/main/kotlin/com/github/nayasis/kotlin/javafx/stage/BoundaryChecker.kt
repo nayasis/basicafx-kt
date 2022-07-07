@@ -48,10 +48,10 @@ class BoundaryChecker {
     }
 
     fun isShownOnScreen(window: Window): Boolean =
-        isShownOnScreen(Rectangle2D(window.x,window.y,window.width,window.height))
+        isShownOnScreen(window.boundary)
 
     fun isShownOnScreen(dialog: Dialog<*>): Boolean =
-        isShownOnScreen(Rectangle2D(dialog.x,dialog.y,dialog.width,dialog.height))
+        isShownOnScreen(dialog.boundary)
 
     fun isShownOnScreen(rectangle: Rectangle2D): Boolean =
         Screen.getScreensForRectangle(rectangle).isNotEmpty()
@@ -70,7 +70,7 @@ class BoundaryChecker {
      * if there is no screen related to stage, return primary screen.
      */
     fun getMajorScreen(scene: Scene): Screen =
-        getMajorScreen(Rectangle2D(scene.x,scene.y,scene.width,scene.height))
+        getMajorScreen(scene.boundary)
 
     /**
      * get screen which has maximum staged area potion.
@@ -78,10 +78,8 @@ class BoundaryChecker {
      * if there is no screen related to stage, return primary screen.
      */
     fun getMajorScreen(boundary: Rectangle2D): Screen {
-
         var major = Screen.getPrimary()
         var max   = 0.0
-
         for( screen in Screen.getScreens() ) {
             val area = screen.bounds.getIntersectedArea(boundary)
             if( area > max ) {
@@ -89,9 +87,7 @@ class BoundaryChecker {
                 max = area
             }
         }
-
         return major
-
     }
 
 }
