@@ -181,12 +181,12 @@ fun Scene.isZoomed(): Boolean {
     return zoomed.get()
 }
 
-var Scene.previousZoomSize: InsetProperty? by FieldProperty{ null }
+var Scene.previousZoomInset: InsetProperty? by FieldProperty{ null }
 
 fun Scene.setZoom(enable: Boolean) {
     zoomed.set(enable)
     if( enable ) {
-        previousZoomSize = InsetProperty(window)
+        previousZoomInset = InsetProperty(window)
         BoundaryChecker().getMajorScreen(window).visualBounds.let {
             window.x      = it.minX
             window.y      = it.minY
@@ -194,8 +194,8 @@ fun Scene.setZoom(enable: Boolean) {
             window.height = it.height
         }
     } else {
-        previousZoomSize?.bind(window)
-        previousZoomSize = null
+        previousZoomInset?.bind(window)
+        previousZoomInset = null
     }
 
 }
