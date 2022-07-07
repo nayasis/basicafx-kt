@@ -13,6 +13,7 @@ import javafx.stage.Stage
 import javafx.stage.Window
 import javafx.stage.WindowEvent
 import mu.KotlinLogging
+import java.io.Serializable
 
 private val logger = KotlinLogging.logger {}
 
@@ -78,24 +79,6 @@ fun Stage.setZoom(enable: Boolean) {
     scene?.setZoom(enable)
 }
 
-/**
- * Previous inset property before window maximized.
- *
- * It is activated by [Stage.watchMaximized]
- */
-var Stage.previousInset: InsetProperty? by FieldProperty{null}
-
-/**
- * Manage previous window inset (x,y,width,height) when maximized property is changed.
- *
- * Previous inset property is [Stage.previousInset]
- */
-fun Stage.watchMaximized() {
-    maximizedProperty().addListener { _, _, maximized ->
-        previousInset = if(maximized) InsetProperty(this) else null
-    }
-}
-
 fun Stage.addCloseRequest(event: EventHandler<WindowEvent>) =
     this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,event)
 
@@ -112,5 +95,49 @@ val Dialog<*>.boundary: Rectangle2D
     get() = Rectangle2D(this.x, this.y, this.width, this.height)
 
 val Scene?.stage: Stage?
-    get() = this?.window as Stage
+    get() = this?.window as Stage?
 
+
+/**
+ * Previous inset property before window maximized.
+ *
+ * It is activated by [Stage.watchMaximized]
+ */
+var Stage.previousBoundary: MaximizedProperty by FieldProperty{MaximizedProperty()}
+
+/**
+ * Manage previous window inset (x,y,width,height) when maximized property is changed.
+ *
+ * Previous inset property is [Stage.previousBoundary]
+ */
+fun Stage.watchMaximized() {
+    maximizedProperty().addListener { _, _, maximized ->
+        if(maximized) {
+            previousBoundary.boundary.width = this.width.toInt()
+            previousBoundary.boundary.height = this.height.toInt()
+            previousBoundary.maximized = true
+        } else {
+            previousBoundary.boundary.width = 0
+            previousBoundary.boundary.height = 0
+            previousBoundary.maximized = false
+        }
+    }
+    xProperty().addListener { _, _, x ->
+        previousBoundary.boundary.x = x.toInt()
+    }
+    yProperty().addListener { _, _, y ->
+        previousBoundary.boundary.y = y.toInt()
+    }
+}
+
+class MaximizedProperty: Serializable {
+    var maximized = false
+    var boundary = InsetProperty()
+    fun bind(stage: Stage?) {
+        if(stage == null) return
+        if(maximized) {
+            boundary.bind(stage)
+            stage.isMaximized = maximized
+        }
+    }
+}
