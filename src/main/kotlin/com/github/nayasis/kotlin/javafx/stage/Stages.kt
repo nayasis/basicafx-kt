@@ -1,11 +1,14 @@
 package com.github.nayasis.kotlin.javafx.stage
 
+import com.github.nayasis.kotlin.basica.core.extention.FieldProperty
+import com.github.nayasis.kotlin.javafx.property.InsetProperty
 import com.github.nayasis.kotlin.javafx.scene.*
 import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
 import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.control.Button
+import javafx.scene.control.Dialog
 import javafx.stage.Stage
 import javafx.stage.Window
 import javafx.stage.WindowEvent
@@ -75,6 +78,24 @@ fun Stage.setZoom(enable: Boolean) {
     scene?.setZoom(enable)
 }
 
+/**
+ * Previous inset property before window maximized.
+ *
+ * It is activated by [Stage.watchMaximized]
+ */
+var Stage.previousInset: InsetProperty? by FieldProperty{null}
+
+/**
+ * Manage previous window inset (x,y,width,height) when maximized property is changed.
+ *
+ * Previous inset property is [Stage.previousInset]
+ */
+fun Stage.watchMaximized() {
+    maximizedProperty().addListener { _, _, maximized ->
+        previousInset = if(maximized) InsetProperty(this) else null
+    }
+}
+
 fun Stage.addCloseRequest(event: EventHandler<WindowEvent>) =
     this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,event)
 
@@ -84,5 +105,12 @@ val Stage.focusedNode: Node?
 val Window.boundary: Rectangle2D
     get() = Rectangle2D(this.x, this.y, this.width, this.height)
 
+val Scene.boundary: Rectangle2D
+    get() = Rectangle2D(this.x, this.y, this.width, this.height)
+
+val Dialog<*>.boundary: Rectangle2D
+    get() = Rectangle2D(this.x, this.y, this.width, this.height)
+
 val Scene?.stage: Stage?
     get() = this?.window as Stage
+
