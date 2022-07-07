@@ -105,7 +105,7 @@ data class StageProperty(
 
         if( stage?.scene == null ) return
 
-        if(previousBoundary != null) {
+        if(previousBoundary?.maximized == true) {
             previousBoundary!!.bind(stage)
         } else {
             inset?.bind(stage)

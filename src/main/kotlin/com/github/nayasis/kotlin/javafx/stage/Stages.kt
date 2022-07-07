@@ -122,12 +122,12 @@ fun Stage.watchMaximized() {
             previousBoundary.maximized = false
         }
     }
-    xProperty().addListener { _, _, x ->
+    xProperty().addListener { _, x, _ ->
         if(!isMaximized) {
             previousBoundary.boundary.x = x.toInt()
         }
     }
-    yProperty().addListener { _, _, y ->
+    yProperty().addListener { _, y, _ ->
         if(!isMaximized) {
             previousBoundary.boundary.y = y.toInt()
         }
