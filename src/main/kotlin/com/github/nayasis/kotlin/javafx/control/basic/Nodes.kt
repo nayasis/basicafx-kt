@@ -49,21 +49,20 @@ val EventTarget.children: List<EventTarget>
             is Group -> children
             is HBox -> children
             is VBox -> children
-            is Control -> (skin as? SkinBase<*>)?.children ?: getChildrenReflectively()
-            is Parent -> getChildrenReflectively()
+            is Control -> (skin as? SkinBase<*>)?.children ?: emptyList()
             else -> emptyList()
         }
     }
 
-@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-private fun Parent.getChildrenReflectively(): List<Node> {
-    val getter = this.javaClass.findMethodByName("getChildren")
-    if (getter != null && java.util.List::class.java.isAssignableFrom(getter.returnType)) {
-        getter.isAccessible = true
-        return getter.invoke(this) as List<Node>
-    }
-    return emptyList()
-}
+//@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+//private fun Parent.getChildrenReflectively(): List<Node> {
+//    val getter = this.javaClass.findMethodByName("getChildren")
+//    if (getter != null && java.util.List::class.java.isAssignableFrom(getter.returnType)) {
+//        getter.isAccessible = true
+//        return getter.invoke(this) as List<Node>
+//    }
+//    return emptyList()
+//}
 
 val EventTarget.allChildren: List<EventTarget>
     get() = HashSet<EventTarget>().let{
