@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.github.nayasis.kotlin.javafx.control.basic.allChildren
 import com.github.nayasis.kotlin.javafx.control.basic.fxId
 import com.github.nayasis.kotlin.javafx.scene.previousZoomInset
+import com.github.nayasis.kotlin.javafx.stage.MaximizedProperty
 import com.github.nayasis.kotlin.javafx.stage.previousBoundary
 import javafx.event.EventTarget
 import javafx.scene.Node
@@ -27,7 +28,7 @@ data class StageProperty(
     var inset: InsetProperty?                  = null,
     var maximized: Boolean                     = false,
     var previousZoomInset: InsetProperty?      = null,
-    var previousInset: InsetProperty?          = null,
+    var previousBoundary: MaximizedProperty?   = null,
     var tables: HashMap<String,TableProperty>? = null,
     var checks: HashMap<String,Boolean>?       = null,
     var values: HashMap<String,String>?        = null,
@@ -69,7 +70,7 @@ data class StageProperty(
         inset = InsetProperty(stage)
         maximized = stage.isMaximized
         previousZoomInset = stage.scene.previousZoomInset
-        previousInset = stage.previousBoundary
+        previousBoundary = stage.previousBoundary
 
         if(!includeChildren) return
 
@@ -104,11 +105,12 @@ data class StageProperty(
 
         if( stage?.scene == null ) return
 
-        inset?.bind(stage)
-        stage.scene.previousZoomInset = previousZoomInset
-
-        previousInset?.bind(stage)
-        stage.isMaximized = maximized
+        if(previousBoundary != null) {
+            previousBoundary!!.bind(stage)
+        } else {
+            inset?.bind(stage)
+        }
+        previousZoomInset?.let { stage.scene.previousZoomInset = it }
 
         if(!includeChildren) return
 
