@@ -49,7 +49,13 @@ val EventTarget.children: List<EventTarget>
             is Group -> children
             is HBox -> children
             is VBox -> children
-            is Control -> (skin as? SkinBase<*>)?.children ?: emptyList()
+            is Control -> {
+                try {
+                    (skin as? SkinBase<*>)?.children ?: emptyList()
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            }
             else -> emptyList()
         }
     }
