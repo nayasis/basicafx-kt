@@ -59,53 +59,50 @@ class ItemComboBox: ComboBox<ItemCombo> {
         return selectedItem
     }
 
+    fun clear(): ItemComboBox {
+        items.clear()
+        return this
+    }
+
     fun getItem(value: String?): ItemCombo? {
         return items.firstOrNull{ it.value == value }
     }
 
-    fun setItem(value: String, label: String = value, index: Int? = null): ItemComboBox {
-        return setItem(ItemCombo(value,label),index) {
-            it.label = label
-        }
+    fun addItem(value: String, label: String = value, ref: Any? = null, index: Int? = null, overwriteOnExist: Boolean = true): ItemComboBox {
+        return addItem(ItemCombo(value,label,ref),index,overwriteOnExist)
     }
 
-    fun setItem(value: String, label: String = value, ref: Any?, index: Int? = null): ItemComboBox {
-        return setItem(ItemCombo(value,label,ref),index) {
-            it.label = label
-            it.ref   = ref
-        }
-    }
-
-    fun setItem(item: ItemCombo, index: Int? = null): ItemComboBox {
-        return setItem(item, index) {
-            it.label = item.label
-            it.ref   = item.ref
-        }
-    }
-
-    fun setItem(item: ItemCombo, index: Int? = null, onExist: (ItemCombo) -> Unit, ): ItemComboBox {
+    fun addItem(item: ItemCombo, index: Int? = null, overwriteOnExist: Boolean = true): ItemComboBox {
         items.firstOrNull{ it.value == item.value }.let {
-            if( it == null ) {
+            if( it != null && overwriteOnExist ) {
+                it.label = item.label
+                it.ref   = item.ref
+            } else {
                 if( index == null ) {
                     items.add(item)
                 } else {
                     items.add(index,item)
                 }
-            } else {
-                onExist(it)
             }
         }
         return this
     }
 
-    fun setItem(items: Collection<ItemCombo>): ItemComboBox {
-        val checker = this.items.associateBy { it.value }
-        for( item in items ) {
-            if( checker.containsKey(item.value) ) {
-                checker[item.value]!!.label = item.label
-            } else {
-                this.items.add(item)
+    fun addItems(items: Collection<ItemCombo>, overwriteOnExist: Boolean = true): ItemComboBox {
+        if( overwriteOnExist ) {
+            val checker = this.items.associateBy { it.value }
+            for( item in items ) {
+                if( checker.containsKey(item.value) ) {
+                    checker[item.value]!!.run {
+                        label = item.label
+                        ref   = item.ref
+                    }
+                } else {
+                    this.items.add(item)
+                }
             }
+        } else {
+            this.items.addAll(items)
         }
         return this
     }
@@ -130,7 +127,7 @@ class ItemComboBox: ComboBox<ItemCombo> {
         }
 
         addKeyPressed { event ->
-            @Suppress("NON_EXHAUSTIVE_WHEN")
+            @Suppress("NON_EXHAUSTIVE_WHEN_STATEMENT")
             when (event.code) {
                 UP, KP_UP -> {
                     event.consume()

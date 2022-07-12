@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
 
 class ComboBoxTest: App(ComboBoxTestView::class,MyStylesheet::class)
 
-private val list = ('A'..'Z').mapIndexed{ i, ch -> ItemCombo("$ch") }
+private val list = ('A'..'Z').mapIndexed{ _,ch -> ItemCombo("$ch") }
 
 class ComboBoxTestView: View("ComboBox test") {
 
@@ -44,7 +44,7 @@ class ComboBoxTestView: View("ComboBox test") {
         }}
 
         button("add C") { action {
-            combo.setItem("C",index=2)
+            combo.addItem("C",index=2)
         }}
 
         button("remove first") { action {

@@ -14,9 +14,9 @@ import kotlin.math.max
 import kotlin.math.min
 
 data class InsetProperty(
-    var x:      Int = 100,
-    var y:      Int = 100,
-    var width:  Int = 500,
+    var x: Int      = 100,
+    var y: Int      = 100,
+    var width: Int  = 500,
     var height: Int = 600,
 ): Serializable {
 
@@ -57,7 +57,8 @@ data class InsetProperty(
         height = bounds.height - (insets.top + insets.bottom)
     }
 
-    fun read(window: Window) {
+    fun read(window: Window?) {
+        if(window == null) return
         x      = window.x.toInt()
         y      = window.y.toInt()
         width  = window.width.toInt()
@@ -92,6 +93,7 @@ data class InsetProperty(
         return if (r == null) false else r.x >= x && r.y >= y && r.x <= (x+width) && r.y <= (y+height)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun intersects(r: InsetProperty?): Boolean {
         return if (r == null) false else (r.x+r.width) > x && (r.y+r.height) > y && r.x < (x+width) && r.y < (y+height)
     }

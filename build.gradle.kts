@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
 	`maven`
-	kotlin("jvm") version "1.5.21"
-	kotlin("plugin.noarg") version "1.5.21"
+	kotlin("jvm") version "1.6.10"
+	kotlin("plugin.noarg") version "1.6.10"
 }
 
 noArg {
@@ -18,7 +18,7 @@ java {
 }
 
 group = "com.github.nayasis"
-version = "0.1.7-SNAPSHOT"
+version = "0.1.12-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
@@ -33,9 +33,11 @@ repositories {
 	maven { url = uri("https://jitpack.io") }
 }
 
+val JAVA_FX_VERSION = "17"
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.1.18")
+	implementation("com.github.nayasis:basica-kt:0.2.8")
+//	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
@@ -43,30 +45,30 @@ dependencies {
 	implementation("org.controlsfx:controlsfx:11.1.1")
 
 	// javafx
-	implementation("org.openjfx:javafx-base:13")
-	"supportImplementation"("org.openjfx:javafx-base:13:win")
-	"supportImplementation"("org.openjfx:javafx-base:13:mac")
-	"supportImplementation"("org.openjfx:javafx-base:13:linux")
-	implementation("org.openjfx:javafx-graphics:13")
-	"supportImplementation"("org.openjfx:javafx-graphics:13:win")
-	"supportImplementation"("org.openjfx:javafx-graphics:13:mac")
-	"supportImplementation"("org.openjfx:javafx-graphics:13:linux")
-	implementation("org.openjfx:javafx-controls:13")
-	"supportImplementation"("org.openjfx:javafx-controls:13:win")
-	"supportImplementation"("org.openjfx:javafx-controls:13:mac")
-	"supportImplementation"("org.openjfx:javafx-controls:13:linux")
-	implementation("org.openjfx:javafx-fxml:13")
-	"supportImplementation"("org.openjfx:javafx-fxml:13:win")
-	"supportImplementation"("org.openjfx:javafx-fxml:13:mac")
-	"supportImplementation"("org.openjfx:javafx-fxml:13:linux")
-	implementation("org.openjfx:javafx-web:13")
-	"supportImplementation"("org.openjfx:javafx-web:13:win")
-	"supportImplementation"("org.openjfx:javafx-web:13:mac")
-	"supportImplementation"("org.openjfx:javafx-web:13:linux")
-	implementation("org.openjfx:javafx-swing:13")
-	"supportImplementation"("org.openjfx:javafx-swing:13:win")
-	"supportImplementation"("org.openjfx:javafx-swing:13:mac")
-	"supportImplementation"("org.openjfx:javafx-swing:13:linux")
+	implementation("org.openjfx:javafx-base:$JAVA_FX_VERSION")
+	"supportImplementation"("org.openjfx:javafx-base:$JAVA_FX_VERSION:win")
+	"supportImplementation"("org.openjfx:javafx-base:$JAVA_FX_VERSION:mac")
+	"supportImplementation"("org.openjfx:javafx-base:$JAVA_FX_VERSION:linux")
+	implementation("org.openjfx:javafx-graphics:$JAVA_FX_VERSION")
+	"supportImplementation"("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:win")
+	"supportImplementation"("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:mac")
+	"supportImplementation"("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:linux")
+	implementation("org.openjfx:javafx-controls:$JAVA_FX_VERSION")
+	"supportImplementation"("org.openjfx:javafx-controls:$JAVA_FX_VERSION:win")
+	"supportImplementation"("org.openjfx:javafx-controls:$JAVA_FX_VERSION:mac")
+	"supportImplementation"("org.openjfx:javafx-controls:$JAVA_FX_VERSION:linux")
+	implementation("org.openjfx:javafx-fxml:$JAVA_FX_VERSION")
+	"supportImplementation"("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:win")
+	"supportImplementation"("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:mac")
+	"supportImplementation"("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:linux")
+	implementation("org.openjfx:javafx-web:$JAVA_FX_VERSION")
+	"supportImplementation"("org.openjfx:javafx-web:$JAVA_FX_VERSION:win")
+	"supportImplementation"("org.openjfx:javafx-web:$JAVA_FX_VERSION:mac")
+	"supportImplementation"("org.openjfx:javafx-web:$JAVA_FX_VERSION:linux")
+	implementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION")
+	"supportImplementation"("org.openjfx:javafx-swing:$JAVA_FX_VERSION:win")
+	"supportImplementation"("org.openjfx:javafx-swing:$JAVA_FX_VERSION:mac")
+	"supportImplementation"("org.openjfx:javafx-swing:$JAVA_FX_VERSION:linux")
 
 	// spring
 	"supportImplementation"("org.springframework.boot:spring-boot-starter-web:2.5.6")
@@ -83,24 +85,24 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
 	testImplementation("ch.qos.logback:logback-classic:1.2.3")
 
-	testImplementation("org.openjfx:javafx-base:13:win")
-	testImplementation("org.openjfx:javafx-base:13:mac")
-	testImplementation("org.openjfx:javafx-base:13:linux")
-	testImplementation("org.openjfx:javafx-graphics:13:win")
-	testImplementation("org.openjfx:javafx-graphics:13:mac")
-	testImplementation("org.openjfx:javafx-graphics:13:linux")
-	testImplementation("org.openjfx:javafx-controls:13:win")
-	testImplementation("org.openjfx:javafx-controls:13:mac")
-	testImplementation("org.openjfx:javafx-controls:13:linux")
-	testImplementation("org.openjfx:javafx-fxml:13:win")
-	testImplementation("org.openjfx:javafx-fxml:13:mac")
-	testImplementation("org.openjfx:javafx-fxml:13:linux")
-	testImplementation("org.openjfx:javafx-web:13:win")
-	testImplementation("org.openjfx:javafx-web:13:mac")
-	testImplementation("org.openjfx:javafx-web:13:linux")
-	testImplementation("org.openjfx:javafx-swing:13:win")
-	testImplementation("org.openjfx:javafx-swing:13:mac")
-	testImplementation("org.openjfx:javafx-swing:13:linux")
+	testImplementation("org.openjfx:javafx-base:$JAVA_FX_VERSION:win")
+	testImplementation("org.openjfx:javafx-base:$JAVA_FX_VERSION:mac")
+	testImplementation("org.openjfx:javafx-base:$JAVA_FX_VERSION:linux")
+	testImplementation("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:win")
+	testImplementation("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:mac")
+	testImplementation("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:linux")
+	testImplementation("org.openjfx:javafx-controls:$JAVA_FX_VERSION:win")
+	testImplementation("org.openjfx:javafx-controls:$JAVA_FX_VERSION:mac")
+	testImplementation("org.openjfx:javafx-controls:$JAVA_FX_VERSION:linux")
+	testImplementation("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:win")
+	testImplementation("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:mac")
+	testImplementation("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:linux")
+	testImplementation("org.openjfx:javafx-web:$JAVA_FX_VERSION:win")
+	testImplementation("org.openjfx:javafx-web:$JAVA_FX_VERSION:mac")
+	testImplementation("org.openjfx:javafx-web:$JAVA_FX_VERSION:linux")
+	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:win")
+	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:mac")
+	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:linux")
 
 }
 

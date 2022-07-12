@@ -1,5 +1,6 @@
 package com.github.nayasis.kotlin.javafx.stage
 
+import com.github.nayasis.kotlin.basica.core.number.floor
 import javafx.application.Application
 import javafx.scene.text.Font
 import mu.KotlinLogging
@@ -40,11 +41,24 @@ class DialogTestView: View("dialog test") {
             Dialog.progress("header") {
                 val max = 40
                 for (i in 1..max) {
-                    println( "$i to $max" )
-                    updateProgress(i.toLong(), max.toLong())
-                    updateMessage("$i / $max")
-                    updateTitle("title : $i")
+                    it.updateProgress(i, max)
+                    it.updateMessage("$i / $max")
+                    it.updateTitle("title : $i")
+                    it.updateSubMessage("${(it.getProgress()*100).toInt()}%")
                     sleep(100)
+                }
+            }
+        }}
+        button("progress-multi") {action {
+            Dialog.progressMulti(2,"header") {
+                val max = 40
+                for( idx in 0..1) {
+                    for (i in 1..max) {
+                        it.updateProgress(idx, i, max)
+                        it.updateMessage(idx,"$i / $max")
+                        it.updateSubMessage(idx,"${(it.getProgress(idx)*100).floor(1)}%")
+                        sleep(100)
+                    }
                 }
             }
         }}
@@ -55,7 +69,7 @@ class DialogTestView: View("dialog test") {
                 for (i in 1..max) {
                     println("$i / $max")
                     progress.updateMessage("$i / $max")
-                    progress.updateProgress(i.toLong(), max.toLong())
+                    progress.updateProgress(i, max)
                     sleep(100)
                 }
                 progress.close()
@@ -67,12 +81,10 @@ class DialogTestView: View("dialog test") {
 
     init {
         val userAgentStylesheet = Application.getUserAgentStylesheet()
-
-        logger.trace {
-            "style sheet : ${userAgentStylesheet}"
-            "font : ${Font.getDefault().name}"
-        }
-
+        logger.trace {"""
+            style sheet : $userAgentStylesheet
+            font        : ${Font.getDefault().name}
+        """.trimIndent()}
     }
 
 }

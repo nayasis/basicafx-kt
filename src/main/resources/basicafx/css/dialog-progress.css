@@ -1,46 +1,31 @@
-@import "/basicafx/css/progress-bar.css";
-
 .root {
-  -fx-font : 11px Arial;
-}
-
-.dialog-pane {
-  -fx-background-color  : rgba(0, 0, 0, 0);
+  -fx-font: 10px Arial;
+  -fx-border-color: #bfbfbf;
   -fx-background-radius : 5px;
-  -fx-border-radius     : 5px;
-  -fx-border-color      : -fx-box-border;
-  -fx-pref-height       : 90px;
-  -fx-pref-width        : 400px;
+  -fx-border-radius: 5px;
 }
 
-.dialog-pane.dragged {
+.root.dragged {
   -fx-border-color: #486a9a;
 }
 
-/* remove button area */
-.dialog-pane > .button-bar > .container {
-  -fx-padding: 0;
-}
-
-.dialog-pane:header .header-panel {
+.header {
+  -fx-border-color: #bfbfbf;
+  -fx-border-width: 0 0 1 0;
   -fx-background-radius : 5 5 0 0;
+  -fx-background-color: -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 90%));
 }
 
-.dialog-pane:header .header-panel .label {
-  -fx-font-size   : 13px;
-  -fx-font-weight : bold;
+.header .label {
+  -fx-font-size: 12px;
+  -fx-font-weight: bold;
+  -fx-padding: 7 5 7 5;
 }
 
-.dialog-pane > .content {
-  -fx-background-radius : 0 0 5 5;
-  -fx-padding           : 8 0 0 0;
-  -fx-background-color  : -fx-box-border, linear-gradient(-fx-background, derive(-fx-background, 30%));
+.description {
+  -fx-padding: 0 5 3 5;
 }
 
-.dialog-pane > .content {
-  -fx-spacing: 8px;
-}
-
-.dialog-pane > .content > .label {
-  -fx-padding : 0 0 0 10;
+.label.sub-message {
+  -fx-text-alignment: right;
 }

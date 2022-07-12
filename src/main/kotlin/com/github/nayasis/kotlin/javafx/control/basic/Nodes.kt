@@ -1,7 +1,8 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
-import com.github.nayasis.kotlin.javafx.control.tableview.column.setStyle
+import com.github.nayasis.kotlin.javafx.model.Point
+import com.github.nayasis.kotlin.javafx.stage.stage
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.geometry.Insets
@@ -48,21 +49,26 @@ val EventTarget.children: List<EventTarget>
             is Group -> children
             is HBox -> children
             is VBox -> children
-            is Control -> (skin as? SkinBase<*>)?.children ?: getChildrenReflectively()
-            is Parent -> getChildrenReflectively()
+            is Control -> {
+                try {
+                    (skin as? SkinBase<*>)?.children ?: emptyList()
+                } catch (e: Exception) {
+                    emptyList()
+                }
+            }
             else -> emptyList()
         }
     }
 
-@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-private fun Parent.getChildrenReflectively(): List<Node> {
-    val getter = this.javaClass.findMethodByName("getChildren")
-    if (getter != null && java.util.List::class.java.isAssignableFrom(getter.returnType)) {
-        getter.isAccessible = true
-        return getter.invoke(this) as List<Node>
-    }
-    return emptyList()
-}
+//@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+//private fun Parent.getChildrenReflectively(): List<Node> {
+//    val getter = this.javaClass.findMethodByName("getChildren")
+//    if (getter != null && java.util.List::class.java.isAssignableFrom(getter.returnType)) {
+//        getter.isAccessible = true
+//        return getter.invoke(this) as List<Node>
+//    }
+//    return emptyList()
+//}
 
 val EventTarget.allChildren: List<EventTarget>
     get() = HashSet<EventTarget>().let{
@@ -73,11 +79,14 @@ val EventTarget.allChildren: List<EventTarget>
 
 val EventTarget.fxId: String
     get() = when (this) {
-        is Node -> this.id ?: ""
-        is TabPane -> this.id ?: ""
-        is Tab -> this.id ?: ""
-        else -> ""
-    }
+        is Node -> this.id
+        is TableColumnBase<*,*> -> this.id
+        is Pane -> this.id
+        is MenuItem -> this.id
+        is TabPane -> this.id
+        is Tab -> this.id
+        else -> null
+    } ?: ""
 
 val EventTarget.allChildrenById: Map<String,EventTarget>
     get() {
@@ -163,4 +172,26 @@ fun Node.setStyle(key: String, value: String?) {
 
 fun Node.removeStyle(key: String) {
     setStyle(key,null)
+}
+
+fun Node.setMoveHandler(styleClassOnDragged: String? = null) {
+    val stage = this.scene.stage
+    val offset = Point()
+    setOnMousePressed { e ->
+        offset.x = e.sceneX
+        offset.y = e.sceneY
+    }
+    setOnMouseDragged { e ->
+        stage?.x = e.screenX - offset.x
+        stage?.y = e.screenY - offset.y
+        styleClassOnDragged?.let {
+            if( it !in styleClass )
+                styleClass.add(it)
+        }
+    }
+    setOnMouseReleased {
+        styleClassOnDragged?.let {
+            styleClass.remove(it)
+        }
+    }
 }

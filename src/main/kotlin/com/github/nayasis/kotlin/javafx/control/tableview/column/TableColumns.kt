@@ -7,18 +7,7 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableColumnBase
 import javafx.util.Callback
 import tornadofx.observable
-import kotlin.collections.ArrayList
-import kotlin.collections.Collection
-import kotlin.collections.List
-import kotlin.collections.Map
-import kotlin.collections.filter
-import kotlin.collections.forEach
-import kotlin.collections.joinToString
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
 import kotlin.collections.set
-import kotlin.collections.toMap
-import kotlin.collections.toMutableMap
 import kotlin.reflect.KProperty1
 
 @Suppress("NOTHING_TO_INLINE")
@@ -49,11 +38,13 @@ fun <S,T:Any> TableColumn<S,T>.findBy(fxId: String): TableColumn<S,T>? {
 
 @Suppress("UNCHECKED_CAST")
 fun <S,T:Any> TableColumn<S,T>.children(recursive: Boolean = false): List<TableColumn<S,T>> {
-    return ArrayList<TableColumn<S,T>>().apply {
-        addAll( this@children.columns as Collection<TableColumn<S,T>> )
-        if( recursive )
-            forEach{ addAll(it.children(recursive)) }
+    val list = ArrayList<TableColumn<S,T>>()
+    (this.columns as Collection<TableColumn<S,T>>?)?.forEach {
+        list.add(it)
+        if(recursive)
+            list.addAll(it.children(recursive))
     }
+    return list
 }
 
 fun <S,T> TableColumn<S,T>.setAlign(align: Pos): TableColumn<S,T> {
@@ -72,7 +63,7 @@ val <S,T> TableColumnBase<S,T>.allStyles: Map<String,String>
 
 
 fun <S,T> TableColumnBase<S,T>.setStyle(style: Map<String,String?>) =
-    style.filter { ! it.value.isNullOrEmpty() }.map{ "${it.key}:${it.value}" }.joinToString(";").let { this.style = it }
+    style.filter { ! it.value.isNullOrEmpty() }.map{ "${it.key}:${it.value};" }.joinToString("").let { this.style = it }
 
 fun <S,T> TableColumnBase<S,T>.getStyle(key: String): String? = this.allStyles[key]
 
