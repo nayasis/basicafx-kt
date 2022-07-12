@@ -3,7 +3,9 @@ package com.github.nayasis.kotlin.javafx.property
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.github.nayasis.kotlin.javafx.control.basic.allChildren
 import com.github.nayasis.kotlin.javafx.control.basic.fxId
-import com.github.nayasis.kotlin.javafx.scene.previousZoomSize
+import com.github.nayasis.kotlin.javafx.scene.previousZoomInset
+import com.github.nayasis.kotlin.javafx.stage.MaximizedProperty
+import com.github.nayasis.kotlin.javafx.stage.previousBoundary
 import javafx.event.EventTarget
 import javafx.scene.Node
 import javafx.scene.control.*
@@ -23,17 +25,18 @@ private const val PREFIX_ID = "_tmp_id"
 private var seq = 0
 
 data class StageProperty(
-    val inset: InsetProperty = InsetProperty(),
-    var maximized: Boolean = false,
-    var previousZoomSize: InsetProperty? = null,
-    val tables: HashMap<String,TableProperty> = hashMapOf(),
-    val checks: HashMap<String,Boolean> = hashMapOf(),
-    val values: HashMap<String,String> = hashMapOf(),
-    val lists: HashMap<String,List<Int>> = hashMapOf(),
-    val visibles: HashMap<String,Boolean> = hashMapOf(),
-    val editables: HashMap<String,Boolean> = hashMapOf(),
-    val disables: HashMap<String,Boolean> = hashMapOf(),
-    val indices: HashMap<String,Int> = hashMapOf(),
+    var inset: InsetProperty?                  = null,
+    var maximized: Boolean                     = false,
+    var previousZoomInset: InsetProperty?      = null,
+    var previousBoundary: MaximizedProperty?   = null,
+    var tables: HashMap<String,TableProperty>? = null,
+    var checks: HashMap<String,Boolean>?       = null,
+    var values: HashMap<String,String>?        = null,
+    var lists: HashMap<String,List<Int>>?      = null,
+    var visibles: HashMap<String,Boolean>?     = null,
+    var editables: HashMap<String,Boolean>?    = null,
+    var disables: HashMap<String,Boolean>?     = null,
+    var indices: HashMap<String,Int>?          = null,
 ): Serializable{
 
     @JsonIgnore
@@ -55,31 +58,41 @@ data class StageProperty(
 
     fun read(stage: Stage, includeChildren: Boolean = true) {
 
-        inset.read(stage)
+        tables    = hashMapOf()
+        checks    = hashMapOf()
+        values    = hashMapOf()
+        lists     = hashMapOf()
+        visibles  = hashMapOf()
+        editables = hashMapOf()
+        disables  = hashMapOf()
+        indices   = hashMapOf()
+
+        inset = InsetProperty(stage)
         maximized = stage.isMaximized
-        previousZoomSize = stage.scene.previousZoomSize
+        previousZoomInset = stage.scene.previousZoomInset
+        previousBoundary = stage.previousBoundary
 
         if(!includeChildren) return
 
         getAllChildren(stage).forEach {
             if( skippable(it) ) return@forEach
             when(it) {
-                is TableView<*> -> tables[it.id] = TableProperty(it)
-                is CheckMenuItem -> checks[it.id] = it.isSelected
-                is CheckBox -> checks[it.id] = it.isSelected
-                is TextField -> values[it.id] = it.text ?: ""
-                is TextArea -> values[it.id] = it.text ?: ""
-                is ComboBox<*> -> indices[it.id] = it.selectionModel.selectedIndex
-                is ChoiceBox<*> -> indices[it.id] = it.selectionModel.selectedIndex
-                is CheckComboBox<*> -> lists[it.id] = it.checkModel.checkedIndices.toList()
+                is TableView<*> -> tables!![it.id] = TableProperty(it)
+                is CheckMenuItem -> checks!![it.id] = it.isSelected
+                is CheckBox -> checks!![it.id] = it.isSelected
+                is TextField -> values!![it.id] = it.text ?: ""
+                is TextArea -> values!![it.id] = it.text ?: ""
+                is ComboBox<*> -> indices!![it.id] = it.selectionModel.selectedIndex
+                is ChoiceBox<*> -> indices!![it.id] = it.selectionModel.selectedIndex
+                is CheckComboBox<*> -> lists!![it.id] = it.checkModel.checkedIndices.toList()
             }
             when(it) {
-                is Pane -> visibles[it.id] = it.isVisible
+                is Pane -> visibles!![it.id] = it.isVisible
                 is Control -> {
-                    visibles[it.id] = it.isVisible
-                    disables[it.id] = it.isDisable
+                    visibles!![it.id] = it.isVisible
+                    disables!![it.id] = it.isDisable
                     if (it is TextInputControl) {
-                        editables[it.id] = it.isEditable
+                        editables!![it.id] = it.isEditable
                     }
                 }
             }
@@ -92,40 +105,43 @@ data class StageProperty(
 
         if( stage?.scene == null ) return
 
-        inset.bind(stage)
-        stage.isMaximized = maximized
-        stage.scene.previousZoomSize = previousZoomSize
+        if(previousBoundary?.maximized == true) {
+            previousBoundary!!.bind(stage)
+        } else {
+            inset?.bind(stage)
+        }
+        previousZoomInset?.let { stage.scene.previousZoomInset = it }
 
         if(!includeChildren) return
 
         getAllChildren(stage).forEach {
             if( skippable(it) ) return@forEach
             when(it) {
-                is TableView<*> -> tables[it.id]?.bind(it as TableView<Any>)
-                is CheckMenuItem -> checks[it.id]?.let{ value -> it.isSelected = value }
-                is CheckBox -> checks[it.id]?.let{ value -> it.isSelected = value }
-                is TextField -> values[it.id]?.let{ value -> it.text = value }
-                is TextArea -> values[it.id]?.let{ value -> it.text = value }
-                is ComboBox<*> -> indices[it.id]?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
-                is ChoiceBox<*> -> indices[it.id]?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
-                is CheckComboBox<*> -> lists[it.id]?.let{ value ->
+                is TableView<*> -> tables?.get(it.id)?.bind(it as TableView<Any>)
+                is CheckMenuItem -> checks?.get(it.id)?.let{ value -> it.isSelected = value }
+                is CheckBox -> checks?.get(it.id)?.let{ value -> it.isSelected = value }
+                is TextField -> values?.get(it.id)?.let{ value -> it.text = value }
+                is TextArea -> values?.get(it.id)?.let{ value -> it.text = value }
+                is ComboBox<*> -> indices?.get(it.id)?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
+                is ChoiceBox<*> -> indices?.get(it.id)?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
+                is CheckComboBox<*> -> lists?.get(it.id)?.let{ value ->
                     it.checkModel.clearChecks()
                     it.checkModel.checkedIndices.addAll(value)
                 }
             }
             if( visibility ) {
                 when(it) {
-                    is Pane -> visibles[it.id]?.let { value -> it.isVisible = value }
+                    is Pane -> visibles?.get(it.id)?.let { value -> it.isVisible = value }
                     is Control -> {
-                        visibles[it.id]?.let { value ->
+                        visibles?.get(it.id)?.let { value ->
                             // ScrollBar.visible could not be set
                             try {
                                 it.isVisible = value
                             } catch (e: Exception) {}
                         }
-                        disables[it.id]?.let { value -> it.isDisable = value }
+                        disables?.get(it.id)?.let { value -> it.isDisable = value }
                         if (it is TextInputControl) {
-                            editables[it.id]?.let { value -> it.isEditable = value }
+                            editables?.get(it.id)?.let { value -> it.isEditable = value }
                         }
                     }
                 }
