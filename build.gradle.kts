@@ -4,6 +4,7 @@ plugins {
 	`maven`
 	kotlin("jvm") version "1.6.10"
 	kotlin("plugin.noarg") version "1.6.10"
+	id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 noArg {
@@ -15,6 +16,11 @@ java {
 	registerFeature("support") {
 		usingSourceSet(sourceSets["main"])
 	}
+}
+
+javafx {
+	version = "17"
+	modules = listOf("javafx.controls","javafx.fxml","javafx.web","javafx.swing")
 }
 
 group = "com.github.nayasis"
@@ -36,7 +42,7 @@ repositories {
 val JAVA_FX_VERSION = "17"
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.2.8")
+	implementation("com.github.nayasis:basica-kt:0.2.9")
 //	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
@@ -103,6 +109,8 @@ dependencies {
 	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:win")
 	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:mac")
 	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:linux")
+	testImplementation("org.testfx:testfx-core:4.0.16-alpha")
+	testImplementation("org.testfx:testfx-junit5:4.0.16-alpha")
 
 }
 
