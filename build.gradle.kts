@@ -4,7 +4,7 @@ plugins {
 	`maven`
 	kotlin("jvm") version "1.6.10"
 	kotlin("plugin.noarg") version "1.6.10"
-	id("org.openjfx.javafxplugin") version "0.0.10"
+//	id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 noArg {
@@ -18,10 +18,10 @@ java {
 	}
 }
 
-javafx {
-	version = "17"
-	modules = listOf("javafx.controls","javafx.fxml","javafx.web","javafx.swing")
-}
+//javafx {
+//	version = "17"
+//	modules = listOf("javafx.controls","javafx.fxml","javafx.web","javafx.swing")
+//}
 
 group = "com.github.nayasis"
 version = "0.1.12-SNAPSHOT"
