@@ -241,8 +241,8 @@ object Images {
                 try {
                     toImage(ImageIO.read(response.entity.content))
                 } catch (e: Exception) {
-                     log.error(e)
-                     null
+                    log.error(e)
+                    null
                 }
             }}
         }

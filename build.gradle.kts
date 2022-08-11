@@ -1,7 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	`maven`
 	kotlin("jvm") version "1.6.10"
 	kotlin("plugin.noarg") version "1.6.10"
 //	id("org.openjfx.javafxplugin") version "0.0.10"
@@ -24,7 +23,7 @@ java {
 //}
 
 group = "com.github.nayasis"
-version = "0.1.12-SNAPSHOT"
+version = "0.1.13-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
@@ -49,6 +48,7 @@ dependencies {
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.apache.httpcomponents:httpclient:4.5.8")
 	implementation("org.controlsfx:controlsfx:11.1.1")
+	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 
 	// javafx
 	implementation("org.openjfx:javafx-base:$JAVA_FX_VERSION")
@@ -109,8 +109,6 @@ dependencies {
 	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:win")
 	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:mac")
 	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:linux")
-	testImplementation("org.testfx:testfx-core:4.0.16-alpha")
-	testImplementation("org.testfx:testfx-junit5:4.0.16-alpha")
 
 }
 
