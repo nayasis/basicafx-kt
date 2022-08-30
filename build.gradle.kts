@@ -17,8 +17,13 @@ java {
 	}
 }
 
+//javafx {
+//	version = "17"
+//	modules = listOf("javafx.controls","javafx.fxml","javafx.web","javafx.swing")
+//}
+
 group = "com.github.nayasis"
-version = "0.1.12-SNAPSHOT"
+version = "0.1.13-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
@@ -34,15 +39,17 @@ repositories {
 }
 
 val JAVA_FX_VERSION = "17"
+
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.2.8")
+	implementation("com.github.nayasis:basica-kt:0.2.10")
 //	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.apache.httpcomponents:httpclient:4.5.8")
 	implementation("org.controlsfx:controlsfx:11.1.1")
+	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 
 	// javafx
 	implementation("org.openjfx:javafx-base:$JAVA_FX_VERSION")

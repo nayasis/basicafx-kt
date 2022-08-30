@@ -241,8 +241,8 @@ object Images {
                 try {
                     toImage(ImageIO.read(response.entity.content))
                 } catch (e: Exception) {
-                     log.error(e)
-                     null
+                    log.error(e)
+                    null
                 }
             }}
         }
@@ -462,6 +462,30 @@ private fun Dragboard.hasHtmlImgTag(): Boolean {
 
 fun Image?.isValid(): Boolean {
     return this != null && this.width > 0 && this.height > 0
+}
+
+fun Image.cropTop(pixel: Int): Image {
+    val (width, height) = width.toInt() to height.toInt()
+    return if( pixel > height ) this else
+        WritableImage(pixelReader, 0, pixel, width, height - pixel)
+}
+
+fun Image.cropBottom(pixel: Int): Image {
+    val (width, height) = width.toInt() to height.toInt()
+    return if( pixel > height ) this else
+        WritableImage(pixelReader,0,0, width, height - pixel)
+}
+
+fun Image.cropLeft(pixel: Int): Image {
+    val (width, height) = width.toInt() to height.toInt()
+    return if( pixel > width ) this else
+        WritableImage(pixelReader,pixel,0, width - pixel, height)
+}
+
+fun Image.cropRight(pixel: Int): Image {
+    val (width, height) = width.toInt() to height.toInt()
+    return if( pixel > width ) this else
+        WritableImage(pixelReader,0,0, width - pixel, height)
 }
 
 private fun getRegularFile(files: List<File>?): File? {
