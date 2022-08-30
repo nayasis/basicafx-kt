@@ -1,6 +1,8 @@
 package com.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
+import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
+import com.github.nayasis.kotlin.basica.core.extention.ifNotEmpty
+import com.github.nayasis.kotlin.basica.core.extention.ifNotNull
 import com.github.nayasis.kotlin.basica.core.io.Paths
 import com.github.nayasis.kotlin.basica.core.io.div
 import com.github.nayasis.kotlin.basica.core.io.exists
@@ -10,8 +12,10 @@ import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
 import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
+import javafx.scene.Node
 import javafx.scene.control.Alert
 import javafx.scene.control.Alert.AlertType
+import javafx.scene.control.Alert.AlertType.*
 import javafx.scene.control.Button
 import javafx.scene.control.ButtonType
 import javafx.scene.control.TextArea
@@ -29,8 +33,6 @@ import javafx.stage.Window
 import mu.KotlinLogging
 import tornadofx.FileChooserMode
 import tornadofx.FileChooserMode.*
-import tornadofx.hgrow
-import tornadofx.vgrow
 import java.io.File
 import java.nio.file.Path
 import kotlin.Double.Companion.MAX_VALUE
@@ -39,46 +41,55 @@ private val logger = KotlinLogging.logger {}
 
 class Dialog { companion object {
 
-    fun dialog(type: AlertType, message: String?): Alert {
+    @Suppress("MemberVisibilityCanBePrivate")
+    val defaultCss = ArrayList<String>()
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var defaultTitle: String? = null
+
+    fun dialog(type: AlertType, message: String? = null): Alert {
         return Alert(type).apply {
-            title = null
             headerText = null
             contentText = message
             initModality(WINDOW_MODAL)
             initOwner(Stages.focusedWindow)
-            with( dialogPane.scene.window as Stage ) {
+            with(dialogPane.scene.window as Stage) {
                 isAlwaysOnTop = true
                 loadDefaultIcon()
+            }
+            defaultTitle.ifNotNull { title = it }
+            defaultCss.ifEmpty{ owner?.scene?.stylesheets }.ifEmpty{ owner?.scene?.root?.stylesheets }.ifNotEmpty {
+                dialogPane.scene.stylesheets.addAll(it)
             }
         }
     }
 
-    fun alert(message: String?, content: String? = null) {
-        dialog(AlertType.INFORMATION, message).expand(content).showAndWait()
+    fun alert(message: String?, content: String? = null, expanded: Boolean = true) {
+        dialog(INFORMATION, message).expand(content,expanded).showAndWait()
     }
 
-    fun confirm(message: String?, content: String? = null): Boolean {
-        return dialog(AlertType.CONFIRMATION, message).expand(content).apply {
+    fun confirm(message: String?, content: String? = null, expanded: Boolean = true): Boolean {
+        return dialog(CONFIRMATION, message).apply {
             buttonTypes.map { dialogPane.lookupButton(it) }.forEach {
                 it.addEventHandler(KeyEvent.KEY_PRESSED) { e ->
                     if (e.code == KeyCode.ENTER && e.target is Button)
                         (e.target as Button).fire()
                 }
             }
-        }.showAndWait().get() == ButtonType.OK
+        }.expand(content,expanded).showAndWait().get() == ButtonType.OK
     }
 
-    fun error(message: String?, exception: Throwable? = null) {
-        dialog(AlertType.ERROR, message ?: exception?.message).apply {
+    fun error(message: String?, exception: Throwable? = null, expanded: Boolean = false) {
+        dialog(ERROR, message ?: exception?.message).apply {
             if( exception != null ) {
                 logger.error(exception)
-                expand(exception.stackTraceToString())
+                expand(exception.stackTraceToString(),expanded)
             }
         }.showAndWait()
     }
 
-    fun error(exception: Throwable?) {
-        error(exception?.message, exception)
+    fun error(exception: Throwable?, expanded: Boolean = false) {
+        error(exception?.message, exception,expanded)
     }
 
     fun prompt(message: String?, defaultValue: String? = null): String? {
@@ -89,6 +100,10 @@ class Dialog { companion object {
             with( dialogPane.scene.window as Stage ) {
                 isAlwaysOnTop = true
                 loadDefaultIcon()
+            }
+            defaultTitle.ifNotNull { title = it }
+            defaultCss.ifEmpty{ owner?.scene?.stylesheets }.ifEmpty{ owner?.scene?.root?.stylesheets }.ifNotEmpty {
+                dialogPane.scene.stylesheets.addAll(it)
             }
         }.showAndWait()
         return if(res.isEmpty) null else res.get()
@@ -147,18 +162,36 @@ class Dialog { companion object {
 
 }}
 
-fun Alert.expand(content: String?): Alert {
-    if(content.isNotEmpty()) {
-        dialogPane.expandableContent = GridPane().apply {
+fun Alert.content(content: String?): Alert {
+    dialogPane.contentText = content
+    return this
+}
+
+fun Alert.expand(content: String?, expanded: Boolean = false): Alert {
+    return expand( if(content.isNullOrEmpty()) null else
+        GridPane().apply {
             maxWidth = MAX_VALUE
             add(TextArea(content).apply {
                 isEditable = false
-                maxWidth = MAX_VALUE
+                maxWidth  = MAX_VALUE
                 maxHeight = MAX_VALUE
                 GridPane.setVgrow(this,ALWAYS)
                 GridPane.setHgrow(this,ALWAYS)
             },0,0)
-        }
+        },
+        expanded
+    )
+}
+
+fun Alert.content(content: Node?): Alert {
+    dialogPane.content = content
+    return this
+}
+
+fun Alert.expand(content: Node?, expanded: Boolean = false): Alert {
+    dialogPane.apply {
+        expandableContent = content
+        expandedProperty().value = expanded
     }
     return this
 }
