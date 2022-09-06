@@ -2,11 +2,8 @@ package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.core.string.toFile
 import com.github.nayasis.kotlin.basica.core.string.toResource
-import com.github.nayasis.kotlin.basica.core.string.toUrl
-import com.github.nayasis.kotlin.javafx.common.JavaFxJunitRunner
+import com.github.nayasis.kotlin.javafx.test.JavaFxJunitRunner
 import mu.KotlinLogging
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import java.awt.AlphaComposite
 import javax.imageio.ImageIO
