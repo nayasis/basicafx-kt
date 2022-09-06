@@ -3,7 +3,9 @@
 package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.core.extention.isEmpty
+import com.github.nayasis.kotlin.basica.core.io.extension
 import com.github.nayasis.kotlin.basica.core.io.isFile
+import com.github.nayasis.kotlin.basica.core.io.makeDir
 import com.github.nayasis.kotlin.basica.core.string.decodeBase64
 import com.github.nayasis.kotlin.basica.core.string.encodeBase64
 import com.github.nayasis.kotlin.basica.core.string.find
@@ -42,6 +44,7 @@ import javax.imageio.ImageIO
 import javax.swing.ImageIcon
 import javax.swing.filechooser.FileSystemView
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -126,9 +129,9 @@ object Images {
 
             // copy source image to target
             graphics.drawImage(rawImage, 0, 0, null)
+            graphics.dispose()
             val stream = ByteArrayOutputStream()
             ImageIO.write(rgbImage, "jpg", stream)
-            graphics.dispose()
             stream.toByteArray()
         } catch (e: Exception) {
             byteArrayOf()
@@ -185,7 +188,7 @@ object Images {
         val src = event.dragboard
         return when {
             src.hasHtmlImgTag() -> toImage(getSrcFromImageTag(src.html))
-            src.hasRegularFile() -> toImage(getRegularFile(src.files))
+            src.hasRegularFile() -> toImage(src.files.firstOrNull())
             src.hasUrl() -> toImage(src.url)
             src.hasString() -> toImage(src.string)
             src.hasImage() -> src.image
@@ -340,7 +343,7 @@ object Images {
             if (this == null) return null
             return when {
                 hasImage()  -> toImage(toJpgBinary(image))
-                hasFiles()  -> toImage(getRegularFile(files))
+                hasFiles()  -> toImage(files.firstOrNull())
                 hasUrl()    -> toImage(url)
                 hasString() -> toImage(string)
                 else -> null
@@ -375,10 +378,6 @@ object Images {
         return resize(image, width, height)
     }
 
-    private fun getType(image: BufferedImage?): Int {
-        return if (image!!.type == 0) BufferedImage.TYPE_INT_ARGB else image.type
-    }
-
     fun resize(image: Image?, maxPixel: Double): Image? {
         if (image == null) return image
         val originalImage = toBufferedImage(image)
@@ -408,7 +407,7 @@ object Images {
         log.trace { "rotate image\n\t- src : ${width} x ${height}\n\t- trg : ${canvasWidth} x ${canvasHeight}" }
 
         val originalImage = toBufferedImage(image)
-        val bufferedImage = BufferedImage(canvasWidth.toInt(), canvasHeight.toInt(), getType(originalImage))
+        val bufferedImage = BufferedImage(canvasWidth, canvasHeight, getType(originalImage))
 
         with(bufferedImage.createGraphics()) {
             translate((canvasWidth - width) / 2.0, (canvasHeight - height) / 2.0)
@@ -452,14 +451,6 @@ object Images {
 
 }
 
-private fun Dragboard.hasRegularFile(): Boolean {
-    return this.hasFiles() && getRegularFile(this.files) != null
-}
-
-private fun Dragboard.hasHtmlImgTag(): Boolean {
-    return this.hasHtml() && this.html.find("(?is)^<img\\W".toPattern())
-}
-
 fun Image?.isValid(): Boolean {
     return this != null && this.width > 0 && this.height > 0
 }
@@ -488,6 +479,174 @@ fun Image.cropRight(pixel: Int): Image {
         WritableImage(pixelReader,0,0, width - pixel, height)
 }
 
-private fun getRegularFile(files: List<File>?): File? {
-    return files?.firstOrNull { it.isFile }
+fun Image?.toBufferedImage(another: BufferedImage? = null): BufferedImage? {
+    return this?.let { SwingFXUtils.fromFXImage(it,another) }
+}
+
+fun ByteArray?.toBufferedImage(): BufferedImage? {
+    return this?.let {
+        try {
+            ByteArrayInputStream(it).use { bis ->
+                ImageIO.read(bis)
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+}
+
+fun ByteArray?.toImage(another: WritableImage? = null): Image? {
+    return this.toBufferedImage().toImage(another)
+}
+
+fun Image?.toBinary(format: String = "jpg"): ByteArray {
+    return this.toBufferedImage().toBinary(format)
+}
+
+fun BufferedImage?.toBinary(format: String = "jpg"): ByteArray {
+    return this?.let { bimg ->
+        ByteArrayOutputStream().use { bos ->
+            ImageIO.write(bimg,format,bos)
+            bos.toByteArray()
+        }
+    } ?: byteArrayOf()
+}
+
+fun BufferedImage?.toImage(another: WritableImage? = null): Image? {
+    return this?.let { SwingFXUtils.toFXImage(it,another) }
+}
+
+fun BufferedImage?.removeAlpha(): BufferedImage? {
+    return this?.let { src ->
+        val newCanvas = BufferedImage(src.width,src.height,BufferedImage.TYPE_INT_RGB)
+        newCanvas.createGraphics().run {
+            composite = AlphaComposite.Src
+            drawImage(src,0,0,null)
+            dispose()
+        }
+        return newCanvas
+    }
+}
+
+fun Image?.toJpgBinary(): ByteArray {
+    return this.toBufferedImage().toJpgBinary()
+}
+
+fun BufferedImage?.toJpgBinary(): ByteArray {
+    return this.removeAlpha().toBinary("jpg")
+}
+
+fun Image?.copy(): WritableImage? {
+    return this?.let { src ->
+        val width  = src.width.toInt()
+        val height = src.height.toInt()
+        val pixelReader = src.pixelReader
+        WritableImage(width, height).apply {
+            for (y in 0 until height) {
+                for (x in 0 until width) {
+                    val color = pixelReader.getColor(x, y)
+                    pixelWriter.setColor(x, y, color)
+                }
+            }
+        }
+    }
+}
+
+fun BufferedImage?.copy(): BufferedImage? {
+    return this?.let { src ->
+        BufferedImage(src.width,src.height,src.type).apply {
+            graphics.run {
+                drawImage(src,0,0,null)
+                dispose()
+            }
+        }
+    }
+}
+
+fun BufferedImage?.resize(width: Int, height: Int): BufferedImage? {
+    return this?.let { image ->
+        BufferedImage(width, height, getType(image)).apply {
+            createGraphics().run {
+                drawImage(image,0,0,width,height,null)
+                dispose()
+            }
+        }
+    }
+}
+
+fun BufferedImage?.resize(maxPixel: Int): BufferedImage? {
+    return this?.let { image ->
+        var w = image.width.coerceAtLeast(1).toDouble()
+        var h = image.height.coerceAtLeast(1).toDouble()
+        when {
+            w < maxPixel && h < maxPixel -> image
+            w > h -> {
+                h = h * maxPixel / width
+                w = maxPixel.toDouble()
+                image.resize(w.toInt(),h.toInt())
+            }
+            else -> {
+                w = w * maxPixel / height
+                h = maxPixel.toDouble()
+                image.resize(w.toInt(),h.toInt())
+            }
+        }
+    }
+}
+
+fun Image?.resize(width: Int, height: Int): Image? {
+    return this.toBufferedImage().resize(width,height).toImage()
+}
+
+fun Image?.resize(maxPixel: Int): Image? {
+    return this.toBufferedImage().resize(maxPixel).toImage()
+}
+
+fun BufferedImage?.rotate(angle: Double): BufferedImage? {
+    return this?.let { image ->
+
+        val radian = toRadians(angle)
+        val sin = abs(sin(radian))
+        val cos = abs(cos(radian))
+
+        val w = floor(image.width * cos + image.height * sin).toInt()
+        val h = floor(image.height * cos + image.width * sin).toInt()
+
+        log.trace { """
+            >> rotate image
+            - src : ${image.width} x ${image.height}
+            - trg : ${w} x ${h}
+        """.trimIndent() }
+
+        BufferedImage(w, h, getType(image)).apply {
+            createGraphics().run {
+                translate((w - width) / 2.0, (h - height) / 2.0)
+                rotate(radian, image.width.toDouble() / 2, image.height.toDouble() / 2)
+                drawRenderedImage(image, null)
+                dispose()
+            }
+        }
+    }
+}
+
+fun Image?.rotate(angle: Double): Image? {
+    return this.toBufferedImage().rotate(angle).toImage()
+}
+
+fun Image?.write(path: Path) {
+    toBufferedImage().write(path)
+}
+
+fun BufferedImage?.write(path: Path) {
+    this?.let { image ->
+        val extension = path.extension
+        if(extension.equals("jpg",true))
+            image.removeAlpha()
+        path.parent.makeDir()
+        ImageIO.write(image,extension,path.toFile())
+    }
+}
+
+private fun getType(image: BufferedImage?): Int {
+    return if (image!!.type == 0) BufferedImage.TYPE_INT_ARGB else image.type
 }

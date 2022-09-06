@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
+import java.awt.AlphaComposite
 import javax.imageio.ImageIO
 
 private val logger = KotlinLogging.logger {  }
@@ -33,30 +34,37 @@ class ImagesTest {
         }
     }
 
+    val fullWidth  = 1920
+    val fullHeight = 1080
+
     @Test
     fun writePng() {
         JavaFxJunitRunner {
 
-            val image = "image/test.png".toResource()?.let { Images.toImage(it) } ?: return@JavaFxJunitRunner
+            val image = "image/test.png".toResource()
+                ?.let { Images.toImage(it) }
+                .resize(fullWidth,fullHeight)
+                .toBufferedImage()
+                ?: return@JavaFxJunitRunner
 
-            val buffered = Images.toBufferedImage(image) ?: return@JavaFxJunitRunner
+            val newWidth = getWidth("4:3", fullHeight)
 
-            val x = 10
-            val y = 10
-            val w = 100
-            val h = 100
+            val x = (fullWidth - newWidth) / 2
 
-            buffered.graphics.fillRect(x,y,w,h)
 
-            val file = "test.png".toFile()
-            logger.debug { ">> file : $file" }
-            ImageIO.write(buffered, "png",file)
+            image.createGraphics().run {
+                composite = AlphaComposite.Clear
+                fillRect(x,0,newWidth,fullHeight)
+                dispose()
+            }
+
+            ImageIO.write(image, "png","test.png".toFile())
         }
     }
 
-    @Test
-    fun merong() {
-        logger.debug { "merong ?" }
+    fun getWidth(ratio: String, baseHeight: Int): Int {
+        val (width,height) = ratio.split(":").map { it.toInt() }.let { it[0] to it[1] }
+        return (1.0 * width * baseHeight / height).toInt()
     }
 
 }
