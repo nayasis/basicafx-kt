@@ -95,5 +95,3 @@ fun Clipboard.set(image: Image?) {
 }
 
 fun Clipboard.getText(): String = this.string
-
-fun Clipboard.getImg(): Image? = Images.toImage(this)
