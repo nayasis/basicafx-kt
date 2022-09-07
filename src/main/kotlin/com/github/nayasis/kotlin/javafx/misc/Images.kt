@@ -22,6 +22,7 @@ import javafx.scene.layout.BackgroundSize
 import javafx.scene.layout.BackgroundSize.AUTO
 import mu.KotlinLogging
 import net.sf.image4j.codec.ico.ICODecoder
+import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
@@ -45,9 +46,11 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-private val log = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 private val CARRIAGE_RETURN = "[\n\r]".toRegex()
+
+const val DEFAULT_USER_AGENT  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
 
 fun Image?.isValid(): Boolean {
     return this != null && this.width > 0 && this.height > 0
@@ -105,11 +108,13 @@ fun URL?.toBufferedImage(): BufferedImage? {
     return when {
         this == null -> null
         this.protocol == "file" -> this.toFile().toBufferedImage()
-        else -> httpClient.use{ it.execute(HttpGet("$this"))?.use { response ->
+        else -> httpClient.use{ it.execute(HttpGet("$this").apply {
+            setHeader("User-Agent", DEFAULT_USER_AGENT)
+        })?.use { response ->
             try {
                 ImageIO.read(response.entity.content)
             } catch (e: Exception) {
-                log.error(e)
+                logger.error(e)
                 null
             }
         }}
@@ -125,18 +130,7 @@ fun Path?.toImage(): Image? {
 }
 
 fun URL?.toImage(): Image? {
-    return when {
-        this == null -> null
-        this.protocol == "file" -> this.toFile().toImage()
-        else -> httpClient.use{ it.execute(HttpGet("$this"))?.use { response ->
-            try {
-                ImageIO.read(response.entity.content).toImage()
-            } catch (e: Exception) {
-                log.error(e)
-                null
-            }
-        }}
-    }
+    return this?.toBufferedImage().toImage()
 }
 
 fun String?.toImage(): Image? {
@@ -322,7 +316,7 @@ fun BufferedImage?.rotate(angle: Double): BufferedImage? {
         val trgWidth  = floor(srcWidth * cos + srcHeight * sin).toInt()
         val newHeight = floor(srcHeight * cos + srcWidth * sin).toInt()
 
-        log.trace { """
+        logger.trace { """
             >> rotate image
             - src : $srcWidth x $srcHeight
             - trg : $trgWidth x $newHeight
@@ -383,6 +377,8 @@ private val sslSocket = SSLConnectionSocketFactory(SSLContexts.custom()
 
 private val httpClient: CloseableHttpClient
     get() {
-        return HttpClients.custom().setSSLSocketFactory(sslSocket).build()
+        return HttpClients.custom().apply {
+            setSSLSocketFactory(sslSocket)
+        }.build()
     }
 
