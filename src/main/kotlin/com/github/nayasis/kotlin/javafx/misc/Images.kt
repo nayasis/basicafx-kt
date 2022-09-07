@@ -22,7 +22,6 @@ import javafx.scene.layout.BackgroundSize
 import javafx.scene.layout.BackgroundSize.AUTO
 import mu.KotlinLogging
 import net.sf.image4j.codec.ico.ICODecoder
-import org.apache.http.client.HttpClient
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory

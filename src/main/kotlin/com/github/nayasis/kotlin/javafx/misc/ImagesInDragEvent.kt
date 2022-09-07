@@ -7,7 +7,7 @@ import javafx.scene.input.DragEvent
 import javafx.scene.input.Dragboard
 import mu.KotlinLogging
 
-private val log = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 fun DragEvent?.isAcceptable(): Boolean {
     return when {
@@ -49,7 +49,7 @@ private fun getSrcFromImageTag(imgTag: String): String? {
     val type = info[0].lowercase()
     val url  = info[1].replace("(?is)&amp;".toRegex(), "&")
 
-    log.trace { "html : ${imgTag}\ntype : ${type}\nurl  : ${url}" }
+    logger.trace { "html : ${imgTag}\ntype : ${type}\nurl  : ${url}" }
 
     return when(type) {
         "src" -> url
