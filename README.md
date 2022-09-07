@@ -1,6 +1,9 @@
 # basicafx
 
-basic JavaFx 13 library bases on Kotlin.
+basic JavaFx library bases on Kotlin.
+- minimum version
+  - Java : 11 or above
+  - JavaFx : 17 or above
 
 [![](https://jitpack.io/v/nayasis/basicafx-kt.svg)](https://jitpack.io/#nayasis/basicafx-kt)
 
@@ -25,7 +28,7 @@ basic JavaFx 13 library bases on Kotlin.
 <dependency>
   <groupId>com.github.nayasis</groupId>
   <artifactId>basicafx-kt</artifactId>
-  <version>0.1.5</version>
+  <version>x.y.z</version>
 </dependency>
 ```
 
@@ -43,6 +46,6 @@ repositories {
 
 ```kotlin
 dependencies {
-  implementation( "com.github.nayasis:basicafx-kt:0.1.5" )
+  implementation( "com.github.nayasis:basicafx-kt:x.y.z" )
 }
 ```
