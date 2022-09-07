@@ -4,12 +4,14 @@ import com.github.nayasis.kotlin.basica.core.string.toFile
 import com.github.nayasis.kotlin.basica.core.string.toResource
 import com.github.nayasis.kotlin.javafx.test.JavaFxJunitRunner
 import mu.KotlinLogging
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import java.awt.AlphaComposite
 import javax.imageio.ImageIO
 
 private val logger = KotlinLogging.logger {  }
 
+@Disabled
 class ImagesTest {
 
     @Test
@@ -39,7 +41,6 @@ class ImagesTest {
             val newWidth = getWidth("4:3", fullHeight)
 
             val x = (fullWidth - newWidth) / 2
-
 
             image.createGraphics().run {
                 composite = AlphaComposite.Clear
