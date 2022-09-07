@@ -42,7 +42,7 @@ val JAVA_FX_VERSION = "17"
 
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.2.10")
+	implementation("com.github.nayasis:basica-kt:0.2.11")
 //	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
