@@ -1,6 +1,9 @@
 # basicafx
 
-basic JavaFx 13 library bases on Kotlin.
+basic JavaFx library bases on Kotlin.
+- minimum version
+  - Java : 11 or above
+  - JavaFx : 17 or above
 
 [![](https://jitpack.io/v/nayasis/basicafx-kt.svg)](https://jitpack.io/#nayasis/basicafx-kt)
 
