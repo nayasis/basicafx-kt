@@ -8,6 +8,7 @@ import com.github.nayasis.kotlin.basica.core.string.decodeBase64
 import com.github.nayasis.kotlin.basica.core.string.encodeBase64
 import com.github.nayasis.kotlin.basica.core.string.find
 import com.github.nayasis.kotlin.basica.core.string.toFile
+import com.github.nayasis.kotlin.basica.core.string.toPath
 import com.github.nayasis.kotlin.basica.core.string.toUrl
 import com.github.nayasis.kotlin.basica.core.url.toFile
 import com.github.nayasis.kotlin.basica.etc.error
@@ -313,22 +314,24 @@ fun BufferedImage?.rotate(angle: Double): BufferedImage? {
     return this?.let { image ->
 
         val radian = toRadians(angle)
-        val sin = abs(sin(radian))
-        val cos = abs(cos(radian))
+        val sin    = abs(sin(radian))
+        val cos    = abs(cos(radian))
 
-        val w = floor(image.width * cos + image.height * sin).toInt()
-        val h = floor(image.height * cos + image.width * sin).toInt()
+        val srcWidth  = image.width
+        val srcHeight = image.height
+        val trgWidth  = floor(srcWidth * cos + srcHeight * sin).toInt()
+        val newHeight = floor(srcHeight * cos + srcWidth * sin).toInt()
 
         log.trace { """
             >> rotate image
-            - src : ${image.width} x ${image.height}
-            - trg : ${w} x ${h}
+            - src : $srcWidth x $srcHeight
+            - trg : $trgWidth x $newHeight
         """.trimIndent() }
 
-        BufferedImage(w, h, getType(image)).apply {
+        BufferedImage(trgWidth, newHeight, getType(image)).apply {
             createGraphics().run {
-                translate((w - width) / 2.0, (h - height) / 2.0)
-                rotate(radian, image.width.toDouble() / 2, image.height.toDouble() / 2)
+                translate((trgWidth - srcWidth) / 2.0, (newHeight - srcHeight) / 2.0)
+                rotate(radian, srcWidth.toDouble() / 2, srcHeight.toDouble() / 2)
                 drawRenderedImage(image, null)
                 dispose()
             }
@@ -340,12 +343,20 @@ fun Image?.rotate(angle: Double): Image? {
     return this.toBufferedImage().rotate(angle).toImage()
 }
 
+fun Image?.write(path: String) {
+    toBufferedImage().write(path)
+}
+
 fun Image?.write(path: Path) {
     toBufferedImage().write(path)
 }
 
 fun Image?.write(file: File) {
     toBufferedImage().write(file)
+}
+
+fun BufferedImage?.write(path: String) {
+    this.write(path.toPath())
 }
 
 fun BufferedImage?.write(path: Path) {
@@ -357,7 +368,7 @@ fun BufferedImage?.write(file: File) {
         val extension = file.extension
         if(extension.equals("jpg",true))
             image.removeAlpha()
-        file.toPath().parent.makeDir()
+        file.toPath().toAbsolutePath().parent.makeDir()
         ImageIO.write(image,extension,file)
     }
 }

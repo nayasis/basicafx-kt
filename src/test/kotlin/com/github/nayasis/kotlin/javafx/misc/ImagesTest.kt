@@ -57,4 +57,12 @@ class ImagesTest {
         return (1.0 * width * baseHeight / height).toInt()
     }
 
+    @Test
+    fun rotate() {
+        JavaFxJunitRunner {
+            val image = "image/test.png".toResource().toImage().rotate(90.0)
+            image.write("test.png".toFile())
+        }
+    }
+
 }
