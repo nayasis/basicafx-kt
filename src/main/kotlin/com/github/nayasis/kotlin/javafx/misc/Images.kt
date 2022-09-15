@@ -8,6 +8,7 @@ import com.github.nayasis.kotlin.basica.core.string.decodeBase64
 import com.github.nayasis.kotlin.basica.core.string.encodeBase64
 import com.github.nayasis.kotlin.basica.core.string.find
 import com.github.nayasis.kotlin.basica.core.string.toFile
+import com.github.nayasis.kotlin.basica.core.string.toPath
 import com.github.nayasis.kotlin.basica.core.string.toUrl
 import com.github.nayasis.kotlin.basica.core.url.toFile
 import com.github.nayasis.kotlin.basica.etc.error
@@ -44,9 +45,11 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-private val log = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 private val CARRIAGE_RETURN = "[\n\r]".toRegex()
+
+const val DEFAULT_USER_AGENT  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
 
 fun Image?.isValid(): Boolean {
     return this != null && this.width > 0 && this.height > 0
@@ -104,11 +107,13 @@ fun URL?.toBufferedImage(): BufferedImage? {
     return when {
         this == null -> null
         this.protocol == "file" -> this.toFile().toBufferedImage()
-        else -> httpClient.use{ it.execute(HttpGet("$this"))?.use { response ->
+        else -> httpClient.use{ it.execute(HttpGet("$this").apply {
+            setHeader("User-Agent", DEFAULT_USER_AGENT)
+        })?.use { response ->
             try {
                 ImageIO.read(response.entity.content)
             } catch (e: Exception) {
-                log.error(e)
+                logger.error(e)
                 null
             }
         }}
@@ -124,18 +129,7 @@ fun Path?.toImage(): Image? {
 }
 
 fun URL?.toImage(): Image? {
-    return when {
-        this == null -> null
-        this.protocol == "file" -> this.toFile().toImage()
-        else -> httpClient.use{ it.execute(HttpGet("$this"))?.use { response ->
-            try {
-                ImageIO.read(response.entity.content).toImage()
-            } catch (e: Exception) {
-                log.error(e)
-                null
-            }
-        }}
-    }
+    return this?.toBufferedImage().toImage()
 }
 
 fun String?.toImage(): Image? {
@@ -313,22 +307,24 @@ fun BufferedImage?.rotate(angle: Double): BufferedImage? {
     return this?.let { image ->
 
         val radian = toRadians(angle)
-        val sin = abs(sin(radian))
-        val cos = abs(cos(radian))
+        val sin    = abs(sin(radian))
+        val cos    = abs(cos(radian))
 
-        val w = floor(image.width * cos + image.height * sin).toInt()
-        val h = floor(image.height * cos + image.width * sin).toInt()
+        val srcWidth  = image.width
+        val srcHeight = image.height
+        val trgWidth  = floor(srcWidth * cos + srcHeight * sin).toInt()
+        val newHeight = floor(srcHeight * cos + srcWidth * sin).toInt()
 
-        log.trace { """
+        logger.trace { """
             >> rotate image
-            - src : ${image.width} x ${image.height}
-            - trg : ${w} x ${h}
+            - src : $srcWidth x $srcHeight
+            - trg : $trgWidth x $newHeight
         """.trimIndent() }
 
-        BufferedImage(w, h, getType(image)).apply {
+        BufferedImage(trgWidth, newHeight, getType(image)).apply {
             createGraphics().run {
-                translate((w - width) / 2.0, (h - height) / 2.0)
-                rotate(radian, image.width.toDouble() / 2, image.height.toDouble() / 2)
+                translate((trgWidth - srcWidth) / 2.0, (newHeight - srcHeight) / 2.0)
+                rotate(radian, srcWidth.toDouble() / 2, srcHeight.toDouble() / 2)
                 drawRenderedImage(image, null)
                 dispose()
             }
@@ -340,12 +336,20 @@ fun Image?.rotate(angle: Double): Image? {
     return this.toBufferedImage().rotate(angle).toImage()
 }
 
+fun Image?.write(path: String) {
+    toBufferedImage().write(path)
+}
+
 fun Image?.write(path: Path) {
     toBufferedImage().write(path)
 }
 
 fun Image?.write(file: File) {
     toBufferedImage().write(file)
+}
+
+fun BufferedImage?.write(path: String) {
+    this.write(path.toPath())
 }
 
 fun BufferedImage?.write(path: Path) {
@@ -357,7 +361,7 @@ fun BufferedImage?.write(file: File) {
         val extension = file.extension
         if(extension.equals("jpg",true))
             image.removeAlpha()
-        file.toPath().parent.makeDir()
+        file.toPath().toAbsolutePath().parent.makeDir()
         ImageIO.write(image,extension,file)
     }
 }
@@ -372,6 +376,8 @@ private val sslSocket = SSLConnectionSocketFactory(SSLContexts.custom()
 
 private val httpClient: CloseableHttpClient
     get() {
-        return HttpClients.custom().setSSLSocketFactory(sslSocket).build()
+        return HttpClients.custom().apply {
+            setSSLSocketFactory(sslSocket)
+        }.build()
     }
 
