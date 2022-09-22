@@ -16,22 +16,21 @@ inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,T?>, noin
     return this
 }
 
-inline fun <reified S,T> TableColumn<S,T>.cellValue(callback: Callback<TableColumn.CellDataFeatures<S,T>, ObservableValue<T>>, noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
-    this.cellValueFactory = callback
+@JvmName("cellProperty")
+inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,ObservableValue<T>>,noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
+    this.cellValueFactory = Callback { prop.call(it.value) }
     this.also(option)
+    return this
+}
+
+inline fun <reified S,T> TableColumn<S,T>.cellValue(callback: Callback<TableColumn.CellDataFeatures<S,T>, ObservableValue<T>>): TableColumn<S,T> {
+    this.cellValueFactory = callback
     return this
 }
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified S,T> TableColumn<S,T>.cellValueByDefault(noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
     this.cellValueFactory = Callback { SimpleObjectProperty(it.value as T) }
-    this.also(option)
-    return this
-}
-
-@JvmName("cellProperty")
-inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,ObservableValue<T>>,noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
-    this.cellValueFactory = Callback { prop.call(it.value) }
     this.also(option)
     return this
 }
