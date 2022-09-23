@@ -10,16 +10,14 @@ import tornadofx.observable
 import kotlin.collections.set
 import kotlin.reflect.KProperty1
 
-inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,T?>, noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
+inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,T?>): TableColumn<S,T> {
     this.cellValueFactory = Callback { observable(it.value, prop) }
-    this.also(option)
     return this
 }
 
 @JvmName("cellProperty")
-inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,ObservableValue<T>>,noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
+inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,ObservableValue<T>>): TableColumn<S,T> {
     this.cellValueFactory = Callback { prop.call(it.value) }
-    this.also(option)
     return this
 }
 
@@ -29,9 +27,8 @@ inline fun <reified S,T> TableColumn<S,T>.cellValue(callback: Callback<TableColu
 }
 
 @Suppress("UNCHECKED_CAST")
-inline fun <reified S,T> TableColumn<S,T>.cellValueByDefault(noinline option: TableColumn<S,T>.() -> Unit = {}): TableColumn<S,T> {
+inline fun <reified S,T> TableColumn<S,T>.cellValueByDefault(): TableColumn<S,T> {
     this.cellValueFactory = Callback { SimpleObjectProperty(it.value as T) }
-    this.also(option)
     return this
 }
 
