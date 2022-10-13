@@ -5,6 +5,7 @@ import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages
 import com.github.nayasis.kotlin.javafx.misc.runAndWait
+import com.github.nayasis.kotlin.javafx.misc.runSync
 import com.github.nayasis.kotlin.javafx.preloader.CloseNotificator
 import com.github.nayasis.kotlin.javafx.preloader.NPreloader
 import com.github.nayasis.kotlin.javafx.preloader.Notificator
@@ -63,7 +64,7 @@ abstract class SpringFxApp: App {
             setupDefaultExceptionHandler()
         } catch (e: Throwable) {
             closePreloader()
-            runAndWait {
+            runSync {
                 Dialog.error(e)
                 stop()
             }
