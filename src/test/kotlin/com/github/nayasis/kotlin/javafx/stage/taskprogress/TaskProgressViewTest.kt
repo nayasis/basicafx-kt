@@ -50,7 +50,12 @@ class TaskProgressViewer: View("task progress view") {
         prefHeight = 250.0
     }
 
-    fun task(): Task<Void?> {
+    fun task(fn: () -> Unit = {
+        for(i in 0..99) {
+            logger.debug { "Found ${i+1} friends!" }
+            Thread.sleep(300)
+        }
+    }): Task<Void?> {
         return object: Task<Void?>() {
             override fun call(): Void? {
                 try {
@@ -60,25 +65,26 @@ class TaskProgressViewer: View("task progress view") {
                 }
                 updateMessage("Finding friends . . .")
                 updateProgress(0, 100)
-                for (i in 0..99) {
-                    if (isCancelled) {
-                        updateMessage("Cancelled")
-                        break
-                    }
-                    updateProgress((i + 1).toLong(), 100)
-                    updateMessage("Found ${i+1} friends!")
-                    logger.debug { "Found ${i+1} friends!" }
-
-                    try {
-                        Thread.sleep(300)
-                    } catch (interrupted: InterruptedException) {
-                        if (isCancelled) {
-                            updateMessage("Cancelled")
-                            break
-                        }
-                    }
-                }
-                updateMessage("Found all.")
+                fn.invoke()
+//                for (i in 0..99) {
+////                    if (isCancelled) {
+////                        updateMessage("Cancelled")
+////                        break
+////                    }
+//                    updateProgress((i + 1).toLong(), 100)
+//                    updateMessage("Found ${i+1} friends!")
+//                    logger.debug { "Found ${i+1} friends!" }
+//
+//                    try {
+//                        Thread.sleep(300)
+//                    } catch (interrupted: InterruptedException) {
+//                        if (isCancelled) {
+//                            updateMessage("Cancelled")
+//                            break
+//                        }
+//                    }
+//                }
+//                updateMessage("Found all.")
                 return null
             }
         }
