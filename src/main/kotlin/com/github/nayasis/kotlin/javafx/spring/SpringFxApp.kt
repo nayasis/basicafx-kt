@@ -4,7 +4,7 @@ import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages
-import com.github.nayasis.kotlin.javafx.misc.runAndWait
+import com.github.nayasis.kotlin.javafx.misc.runSync
 import com.github.nayasis.kotlin.javafx.preloader.CloseNotificator
 import com.github.nayasis.kotlin.javafx.preloader.NPreloader
 import com.github.nayasis.kotlin.javafx.preloader.Notificator
@@ -19,7 +19,8 @@ import mu.KotlinLogging
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
-import org.springframework.boot.SpringApplication
+import org.springframework.boot.builder.SpringApplicationBuilder
+import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.core.env.Environment
 import org.springframework.core.env.get
@@ -46,12 +47,13 @@ abstract class SpringFxApp: App {
     constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, stylesheet: KClass<out Stylesheet>, scope: Scope = FX.defaultScope) : super(primaryView, stylesheet, scope)
     constructor(icon: Image, primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(icon, primaryView, *stylesheet)
 
-    private val options = Options()
-
     override fun init() {
         try {
-            setOptions(options)
-            ctx = SpringApplication.run(this.javaClass, *parameters.raw.toTypedArray())
+            ctx = SpringApplicationBuilder(this.javaClass).apply {
+                setInitializers()?.let {
+                    initializers(*it.toTypedArray())
+                }
+            }.run(*parameters.raw.toTypedArray())
             ctx.autowireCapableBeanFactory.autowireBean(this)
             FX.dicontainer = object: DIContainer {
                 override fun <T: Any> getInstance(type: KClass<T>): T = ctx.getBean(type.java)
@@ -60,7 +62,7 @@ abstract class SpringFxApp: App {
             setupDefaultExceptionHandler()
         } catch (e: Throwable) {
             closePreloader()
-            runAndWait {
+            runSync {
                 Dialog.error(e)
                 stop()
             }
@@ -83,7 +85,7 @@ abstract class SpringFxApp: App {
 
     override fun start(stage: Stage) {
         try {
-            onStart(DefaultParser().parse(options, parameters.raw.toTypedArray()))
+            onStart(DefaultParser().parse(setOptions() ?: Options(), parameters.raw.toTypedArray()))
             onStart(stage)
         } catch (e: Exception) {
             if (Platform.isFxApplicationThread()) {
@@ -108,10 +110,11 @@ abstract class SpringFxApp: App {
         exitProcess(0)
     }
 
-    open fun setOptions(options: Options) {}
     open fun onStart(command: CommandLine) {}
     open fun onStart(stage: Stage) {}
     open fun onStop(context: ConfigurableApplicationContext) {}
+    open fun setOptions(): Options? { return null }
+    open fun setInitializers(): List<ApplicationContextInitializer<*>>? { return null }
 
     companion object {
 

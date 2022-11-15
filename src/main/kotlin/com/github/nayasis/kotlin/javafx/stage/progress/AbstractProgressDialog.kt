@@ -31,7 +31,9 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     fun updateTitle(title: String?) = stage.updateTitle(title)
 
     fun show() = stage.show()
-    fun close() = runLater { stage.close() }
+    fun close() = runLater {
+        stage.close()
+    }
 
     @Suppress("UNCHECKED_CAST")
     protected fun <T: AbstractProgressDialog> internalRunSync(task: ((dialog: T) -> Unit)?) {

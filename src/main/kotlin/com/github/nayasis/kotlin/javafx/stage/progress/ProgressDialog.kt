@@ -9,8 +9,22 @@ class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
     fun updateSubMessageAsProgress(format: String = "%.1f%%") = stage.updateSubMessageAsProgress(0,format)
     fun getProgress(): Double = stage.progressBars[0].progress
 
-    fun runSync(task: ((dialog: ProgressDialog) -> Unit)?) = super.internalRunSync(task)
-    fun runAsync(task: ((dialog: ProgressDialog) -> Unit)?) = super.internalRunAsync(task)
+    fun runSync(task: ((dialog: ProgressDialog) -> Unit)?) {
+        super.internalRunSync(task)
+    }
+
+    fun runAsync(task: ((dialog: ProgressDialog) -> Unit)?): ProgressDialog {
+        super.internalRunAsync(task)
+        return this
+    }
+
+    fun run(async: Boolean, task: ((dialog: ProgressDialog) -> Unit)?) {
+        if(async) {
+            super.internalRunAsync(task)
+        } else {
+            super.internalRunSync(task)
+        }
+    }
 
     fun setOnSuccess(callback: (() -> Unit)): ProgressDialog {
         super.onSuccess = callback

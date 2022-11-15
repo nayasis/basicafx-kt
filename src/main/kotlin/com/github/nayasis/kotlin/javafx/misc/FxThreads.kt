@@ -1,9 +1,16 @@
 package com.github.nayasis.kotlin.javafx.misc
 
-import com.sun.javafx.application.PlatformImpl
+import tornadofx.FXTask
+import tornadofx.TaskStatus
+import tornadofx.awaitUntil
+import tornadofx.runAsync
 
 /**
  * run the specified function on JavaFx thread in future and wait for termination.
- * @param fn function
+ * @param func function
  */
-fun runAndWait(fn: () -> Unit) = PlatformImpl.runAndWait(fn)
+fun <T> runSync(func: FXTask<*>.() -> T) {
+    val status = TaskStatus()
+    runAsync(status, func)
+    status.completed.awaitUntil()
+}

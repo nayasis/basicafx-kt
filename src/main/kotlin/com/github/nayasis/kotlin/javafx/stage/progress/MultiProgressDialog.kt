@@ -9,8 +9,22 @@ class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractPro
     fun updateSubMessageAsProgress(index: Int, format: String = "%.1f%%") = stage.updateSubMessageAsProgress(index,format)
     fun getProgress(index: Int): Double = stage.progressBars[index].progress
 
-    fun runSync(task: ((dialog: MultiProgressDialog) -> Unit)?) = super.internalRunSync(task)
-    fun runAsync(task: ((dialog: MultiProgressDialog) -> Unit)?) = super.internalRunAsync(task)
+    fun runSync(task: ((dialog: MultiProgressDialog) -> Unit)?) {
+        super.internalRunSync(task)
+    }
+
+    fun runAsync(task: ((dialog: MultiProgressDialog) -> Unit)?): MultiProgressDialog {
+        super.internalRunAsync(task)
+        return this
+    }
+
+    fun run(async: Boolean, task: ((dialog: MultiProgressDialog) -> Unit)?) {
+        if(async) {
+            super.internalRunAsync(task)
+        } else {
+            super.internalRunSync(task)
+        }
+    }
 
     fun setOnSuccess(callback: (() -> Unit)): MultiProgressDialog {
         super.onSuccess = callback
