@@ -62,10 +62,12 @@ abstract class SpringFxApp: App {
             setupDefaultExceptionHandler()
         } catch (e: Throwable) {
             closePreloader()
-            runSync {
+            try {
                 Dialog.error(e)
-                stop()
+            } catch (de: Exception) {
+                logger.error(e)
             }
+            stop()
         }
     }
 
