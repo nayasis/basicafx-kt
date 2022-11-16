@@ -4,7 +4,7 @@ import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages
-import com.github.nayasis.kotlin.javafx.misc.runSync
+import com.github.nayasis.kotlin.javafx.misc.runAndWait
 import com.github.nayasis.kotlin.javafx.preloader.CloseNotificator
 import com.github.nayasis.kotlin.javafx.preloader.NPreloader
 import com.github.nayasis.kotlin.javafx.preloader.Notificator
@@ -62,10 +62,8 @@ abstract class SpringFxApp: App {
             setupDefaultExceptionHandler()
         } catch (e: Throwable) {
             closePreloader()
-            try {
+            runAndWait {
                 Dialog.error(e)
-            } catch (de: Exception) {
-                logger.error(e)
             }
             stop()
         }
@@ -147,6 +145,7 @@ abstract class SpringFxApp: App {
         val context: ConfigurableApplicationContext
             get() = ctx
 
+        @Suppress("MemberVisibilityCanBePrivate")
         val environment: Environment
             get() = ctx.environment
 
