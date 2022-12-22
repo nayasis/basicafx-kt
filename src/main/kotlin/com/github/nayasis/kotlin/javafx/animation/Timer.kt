@@ -7,18 +7,18 @@ import javafx.event.ActionEvent
 import javafx.event.EventHandler
 import javafx.util.Duration
 
-object Timer {
+class Timer { companion object {
 
-    fun run(time: Duration, action: EventHandler<ActionEvent>, vararg values: KeyValue, count: Int = 1 ): Timeline {
-        return timeline(time, action, *values, count = count).also {
+    fun run(time: Duration, count: Int = 1, action: EventHandler<ActionEvent> ): Timeline {
+        return timeline(time, count, action).also {
             it.playFromStart()
         }
     }
 
-    fun timeline(time: Duration, action: EventHandler<ActionEvent>, vararg values: KeyValue, count: Int = 0 ): Timeline {
-        return Timeline( KeyFrame(time,action,*values) ).apply {
+    fun timeline(time: Duration, count: Int = 0, action: EventHandler<ActionEvent> ): Timeline {
+        return Timeline( KeyFrame(time,action) ).apply {
             cycleCount = if(count > 0) count else Timeline.INDEFINITE
         }
     }
 
-}
+}}
