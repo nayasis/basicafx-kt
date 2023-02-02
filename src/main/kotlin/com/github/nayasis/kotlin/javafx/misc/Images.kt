@@ -145,10 +145,7 @@ fun String?.toImage(): Image? {
 }
 
 fun ImageIcon?.toImage(): Image? {
-    return this?.let {
-        @Suppress("CAST_NEVER_SUCCEEDS")
-        (it as BufferedImage).toImage()
-    }
+    return this?.image?.let { (it as BufferedImage).toImage() }
 }
 
 fun ByteArray?.toImage(another: WritableImage? = null): Image? {
