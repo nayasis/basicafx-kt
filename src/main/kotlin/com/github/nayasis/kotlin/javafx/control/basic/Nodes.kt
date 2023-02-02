@@ -1,6 +1,5 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
-import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
 import com.github.nayasis.kotlin.javafx.model.Point
 import com.github.nayasis.kotlin.javafx.stage.stage
 import javafx.event.EventHandler
@@ -8,7 +7,6 @@ import javafx.event.EventTarget
 import javafx.geometry.Insets
 import javafx.scene.Group
 import javafx.scene.Node
-import javafx.scene.Parent
 import javafx.scene.control.*
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
@@ -16,7 +14,6 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
 import mu.KotlinLogging
-import tornadofx.findMethodByName
 
 private val log = KotlinLogging.logger{}
 
@@ -60,22 +57,18 @@ val EventTarget.children: List<EventTarget>
         }
     }
 
-//@Suppress("UNCHECKED_CAST", "PLATFORM_CLASS_MAPPED_TO_KOTLIN")
-//private fun Parent.getChildrenReflectively(): List<Node> {
-//    val getter = this.javaClass.findMethodByName("getChildren")
-//    if (getter != null && java.util.List::class.java.isAssignableFrom(getter.returnType)) {
-//        getter.isAccessible = true
-//        return getter.invoke(this) as List<Node>
-//    }
-//    return emptyList()
-//}
-
 val EventTarget.allChildren: List<EventTarget>
     get() = HashSet<EventTarget>().let{
         findChildren(this,it)
         it.remove(this)
         it
     }.toList()
+
+val Node.allParents: List<Node>
+    get() = ArrayList<Node>().let{
+        findParent(this.parent,it)
+        it
+    }
 
 val EventTarget.fxId: String
     get() = when (this) {
@@ -89,9 +82,10 @@ val EventTarget.fxId: String
     } ?: ""
 
 val EventTarget.allChildrenById: Map<String,EventTarget>
-    get() {
-        return this.allChildren.filter { it.fxId.isNotEmpty() }.associateBy { it.fxId }
-    }
+    get() = this.allChildren.filter { it.fxId.isNotEmpty() }.associateBy { it.fxId }
+
+val Node.allParentsById: Map<String,Node>
+    get() = this.allParents.filter { it.fxId.isNotEmpty() }.associateBy { it.fxId }
 
 var Node.leftAnchor: Double?
     get() = AnchorPane.getLeftAnchor(this)
@@ -117,6 +111,13 @@ fun Node.clearAnchor() {
     this.rightAnchor  = null
     this.bottomAnchor = null
     this.topAnchor    = null
+}
+
+private fun findParent(node: Node?, list: ArrayList<Node>) {
+    node?.let {
+        list.add(node)
+        node.parent?.let { findParent(it, list) }
+    }
 }
 
 private fun findChildren(node: EventTarget?, set: HashSet<EventTarget>) {
