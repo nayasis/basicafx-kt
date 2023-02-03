@@ -30,6 +30,8 @@ import org.apache.http.impl.client.HttpClients
 import org.apache.http.ssl.SSLContexts
 import java.awt.AlphaComposite
 import java.awt.image.BufferedImage
+import java.awt.image.BufferedImage.TYPE_CUSTOM
+import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -79,8 +81,8 @@ fun Image.cropRight(pixel: Int): Image {
         WritableImage(pixelReader,0,0, width - pixel, height)
 }
 
-fun Image?.toBufferedImage(another: BufferedImage? = null): BufferedImage? {
-    return this?.let { SwingFXUtils.fromFXImage(it,another) }
+fun Image.toBufferedImage(another: BufferedImage? = null): BufferedImage {
+    return this.let { SwingFXUtils.fromFXImage(it,another) }
 }
 
 fun ByteArray?.toBufferedImage(): BufferedImage? {
@@ -96,11 +98,11 @@ fun ByteArray?.toBufferedImage(): BufferedImage? {
 }
 
 fun File?.toBufferedImage(): BufferedImage? {
-    return this.toImage().toBufferedImage()
+    return this.toImage()?.toBufferedImage()
 }
 
 fun Path?.toBufferedImage(): BufferedImage? {
-    return this.toImage().toBufferedImage()
+    return this.toImage()?.toBufferedImage()
 }
 
 fun URL?.toBufferedImage(): BufferedImage? {
@@ -129,7 +131,7 @@ fun Path?.toImage(): Image? {
 }
 
 fun URL?.toImage(): Image? {
-    return this?.toBufferedImage().toImage()
+    return this?.toBufferedImage()?.toImage()
 }
 
 fun String?.toImage(): Image? {
@@ -149,19 +151,19 @@ fun ImageIcon?.toImage(): Image? {
 }
 
 fun ByteArray?.toImage(another: WritableImage? = null): Image? {
-    return this.toBufferedImage().toImage(another)
+    return this.toBufferedImage()?.toImage(another)
 }
 
-fun BufferedImage?.toImage(another: WritableImage? = null): Image? {
-    return this?.let { SwingFXUtils.toFXImage(it,another) }
+fun BufferedImage.toImage(another: WritableImage? = null): Image {
+    return this.let { SwingFXUtils.toFXImage(it,another) }
 }
 
-fun Image?.toBinary(format: String = "jpg"): ByteArray {
+fun Image.toBinary(format: String = "jpg"): ByteArray {
     return this.toBufferedImage().toBinary(format)
 }
 
-fun BufferedImage?.toBinary(format: String = "jpg"): ByteArray {
-    return this?.let { bimg ->
+fun BufferedImage.toBinary(format: String = "jpg"): ByteArray {
+    return this.let { bimg ->
         ByteArrayOutputStream().use { bos ->
             ImageIO.write(bimg,format,bos)
             bos.toByteArray()
@@ -169,32 +171,32 @@ fun BufferedImage?.toBinary(format: String = "jpg"): ByteArray {
     } ?: byteArrayOf()
 }
 
-fun BufferedImage?.removeAlpha(): BufferedImage? {
-    return this?.let { src ->
-        val newCanvas = BufferedImage(src.width,src.height,BufferedImage.TYPE_INT_RGB)
-        newCanvas.createGraphics().run {
-            composite = AlphaComposite.Src
-            drawImage(src,0,0,null)
-            dispose()
+fun BufferedImage.removeAlpha(): BufferedImage {
+    return this.let { src ->
+        BufferedImage(src.width,src.height,BufferedImage.TYPE_INT_RGB).apply {
+            createGraphics().run {
+                composite = AlphaComposite.Src
+                drawImage(src,0,0,null)
+                dispose()
+            }
         }
-        return newCanvas
     }
 }
 
-fun Image?.toJpgBinary(): ByteArray {
+fun Image.toJpgBinary(): ByteArray {
     return this.toBufferedImage().toJpgBinary()
 }
 
-fun BufferedImage?.toJpgBinary(): ByteArray {
+fun BufferedImage.toJpgBinary(): ByteArray {
     return this.removeAlpha().toBinary("jpg")
 }
 
 fun File?.toJpgBinary(): ByteArray {
-    return this.toImage().toJpgBinary()
+    return this?.toImage()?.toJpgBinary() ?: byteArrayOf()
 }
 
 fun Path?.toJpgBinary(): ByteArray {
-    return this.toImage().toJpgBinary()
+    return this?.toImage()?.toJpgBinary() ?: byteArrayOf()
 }
 
 fun File?.toIconImage(): List<Image> {
@@ -213,45 +215,41 @@ fun InputStream?.toIconImage(): List<Image> {
     }} ?: emptyList()
 }
 
-fun Image?.toBackgroundImage(): BackgroundImage? {
-    return this?.let { image ->
-        val sizeProperty = BackgroundSize(AUTO, AUTO, true, true, true, false)
-        return BackgroundImage(image, ROUND, ROUND, CENTER, sizeProperty)
-    }
+fun Image.toBackgroundImage(): BackgroundImage {
+    val sizeProperty = BackgroundSize(AUTO, AUTO, true, true, true, false)
+    return BackgroundImage(this, ROUND, ROUND, CENTER, sizeProperty)
 }
 
 fun String?.toBackgroundImage(): BackgroundImage? {
     return this?.let { url ->
-        Image("$url", 0.0, 0.0, false, true, true).toBackgroundImage()
+        Image(url, 0.0, 0.0, false, true, true).toBackgroundImage()
     }
 }
 
-fun String?.toBase64Image() {
-    this.toImage()?.let { it.toJpgBinary().toBufferedImage() }?.let { image ->
-        val output = ByteArrayOutputStream()
-        ImageIO.write(image, "jpg", output)
-        "data:image/jpeg;base64,${output.toByteArray().encodeBase64().replace(CARRIAGE_RETURN, "")}"
+fun String?.toBase64Image(): String? {
+    return this.toImage()?.let { it.toJpgBinary().toBufferedImage() }?.let { image ->
+        ByteArrayOutputStream().use { output ->
+            ImageIO.write(image, "jpg", output)
+            "data:image/jpeg;base64,${output.toByteArray().encodeBase64().replace(CARRIAGE_RETURN, "")}"
+        }
     }
 }
 
-fun Image?.copy(): WritableImage? {
-    return this?.let { src ->
-        val width  = src.width.toInt()
-        val height = src.height.toInt()
-        val pixelReader = src.pixelReader
-        WritableImage(width, height).apply {
-            for (y in 0 until height) {
-                for (x in 0 until width) {
-                    val color = pixelReader.getColor(x, y)
-                    pixelWriter.setColor(x, y, color)
-                }
+fun Image.copy(): WritableImage {
+    val width  = width.toInt()
+    val height = height.toInt()
+    return WritableImage(width, height).also {
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                val color = pixelReader.getColor(x, y)
+                it.pixelWriter.setColor(x, y, color)
             }
         }
     }
 }
 
-fun BufferedImage?.copy(): BufferedImage? {
-    return this?.let { src ->
+fun BufferedImage.copy(): BufferedImage {
+    return this.let { src ->
         BufferedImage(src.width,src.height,src.type).apply {
             graphics.run {
                 drawImage(src,0,0,null)
@@ -261,8 +259,8 @@ fun BufferedImage?.copy(): BufferedImage? {
     }
 }
 
-fun BufferedImage?.resize(width: Int, height: Int): BufferedImage? {
-    return this?.let { image ->
+fun BufferedImage.resize(width: Int, height: Int): BufferedImage {
+    return this.let { image ->
         BufferedImage(width, height, getType(image)).apply {
             createGraphics().run {
                 drawImage(image,0,0,width,height,null)
@@ -272,8 +270,8 @@ fun BufferedImage?.resize(width: Int, height: Int): BufferedImage? {
     }
 }
 
-fun BufferedImage?.resize(maxPixel: Int): BufferedImage? {
-    return this?.let { image ->
+fun BufferedImage.resize(maxPixel: Int): BufferedImage {
+    return this.let { image ->
         var w = image.width.coerceAtLeast(1).toDouble()
         var h = image.height.coerceAtLeast(1).toDouble()
         when {
@@ -292,16 +290,16 @@ fun BufferedImage?.resize(maxPixel: Int): BufferedImage? {
     }
 }
 
-fun Image?.resize(width: Int, height: Int): Image? {
+fun Image.resize(width: Int, height: Int): Image {
     return this.toBufferedImage().resize(width,height).toImage()
 }
 
-fun Image?.resize(maxPixel: Int): Image? {
+fun Image.resize(maxPixel: Int): Image {
     return this.toBufferedImage().resize(maxPixel).toImage()
 }
 
-fun BufferedImage?.rotate(angle: Double): BufferedImage? {
-    return this?.let { image ->
+fun BufferedImage.rotate(angle: Double): BufferedImage {
+    return this.let { image ->
 
         val radian = toRadians(angle)
         val sin    = abs(sin(radian))
@@ -314,8 +312,8 @@ fun BufferedImage?.rotate(angle: Double): BufferedImage? {
 
         logger.trace { """
             >> rotate image
-            - src : $srcWidth x $srcHeight
-            - trg : $trgWidth x $newHeight
+               - src : $srcWidth x $srcHeight
+               - trg : $trgWidth x $newHeight
         """.trimIndent() }
 
         BufferedImage(trgWidth, newHeight, getType(image)).apply {
@@ -329,32 +327,32 @@ fun BufferedImage?.rotate(angle: Double): BufferedImage? {
     }
 }
 
-fun Image?.rotate(angle: Double): Image? {
+fun Image.rotate(angle: Double): Image {
     return this.toBufferedImage().rotate(angle).toImage()
 }
 
-fun Image?.write(path: String) {
+fun Image.write(path: String) {
     toBufferedImage().write(path)
 }
 
-fun Image?.write(path: Path) {
+fun Image.write(path: Path) {
     toBufferedImage().write(path)
 }
 
-fun Image?.write(file: File) {
+fun Image.write(file: File) {
     toBufferedImage().write(file)
 }
 
-fun BufferedImage?.write(path: String) {
+fun BufferedImage.write(path: String) {
     this.write(path.toPath())
 }
 
-fun BufferedImage?.write(path: Path) {
+fun BufferedImage.write(path: Path) {
     this.write(path.toFile())
 }
 
-fun BufferedImage?.write(file: File) {
-    this?.let { image ->
+fun BufferedImage.write(file: File) {
+    this.let { image ->
         val extension = file.extension
         if(extension.equals("jpg",true))
             image.removeAlpha()
@@ -364,7 +362,11 @@ fun BufferedImage?.write(file: File) {
 }
 
 private fun getType(image: BufferedImage?): Int {
-    return if (image!!.type == 0) BufferedImage.TYPE_INT_ARGB else image.type
+    return when(image?.type) {
+        null -> TYPE_CUSTOM
+        0    -> TYPE_INT_ARGB
+        else -> image.type
+    }
 }
 
 private val sslSocket = SSLConnectionSocketFactory(SSLContexts.custom()
