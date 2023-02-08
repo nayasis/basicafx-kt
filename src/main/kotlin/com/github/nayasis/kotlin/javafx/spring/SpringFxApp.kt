@@ -128,7 +128,7 @@ abstract class SpringFxApp: App {
         fun loadMessage(resourcePath: String) = Messages.loadFromResource(resourcePath)
 
         @Suppress("MemberVisibilityCanBePrivate")
-        fun notifyPreloader( notificator: Notificator ) {
+        fun notifyPreloader(notificator: Notificator) {
             LauncherImpl.notifyPreloader(null,notificator)
         }
 

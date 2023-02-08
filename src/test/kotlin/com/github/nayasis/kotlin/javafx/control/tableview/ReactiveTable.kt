@@ -71,7 +71,7 @@ class ReactiveTable: View() {
                 if( it != null ) {
                     text = "${it}"
                     style {
-                        if( (it ?: 0) < 20 ) {
+                        if( it < 20 ) {
                             backgroundColor += c("#8b0000")
                             textFill = Color.WHITE
                         } else {

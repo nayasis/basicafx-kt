@@ -1,6 +1,5 @@
 package com.github.nayasis.kotlin.javafx.misc
 
-import com.sun.javafx.application.PlatformImpl
 import javafx.application.Platform
 import tornadofx.FXTask
 import tornadofx.TaskStatus
