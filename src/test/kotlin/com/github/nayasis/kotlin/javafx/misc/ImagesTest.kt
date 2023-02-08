@@ -36,8 +36,8 @@ class ImagesTest {
         JavaFxJunitRunner {
 
             val image = "image/test.png".toResource().toImage()
-                .resize(fullWidth,fullHeight)
-                .toBufferedImage()
+                ?.resize(fullWidth,fullHeight)
+                ?.toBufferedImage()
                 ?: return@JavaFxJunitRunner
 
             val newWidth = getWidth("4:3", fullHeight)
@@ -62,8 +62,8 @@ class ImagesTest {
     @Test
     fun rotate() {
         JavaFxJunitRunner {
-            val image = "image/test.png".toResource().toImage().rotate(90.0)
-            image.write("test.png".toFile())
+            val image = "image/test.png".toResource().toImage()?.rotate(90.0)
+            image?.write("test.png".toFile())
         }
     }
 
