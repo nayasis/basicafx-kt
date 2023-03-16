@@ -45,7 +45,7 @@ val JAVA_FX_OS = when {
 
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.2.15")
+	implementation("com.github.nayasis:basica-kt:0.2.18")
 //	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
