@@ -1,27 +1,36 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
-	`maven`
+	java
+	`maven-publish`
 	kotlin("jvm") version "1.8.10"
 	kotlin("plugin.noarg") version "1.8.10"
 	id("org.jetbrains.dokka") version "1.7.20"
+	id("org.openjfx.javafxplugin") version "0.0.10"
 }
 
 noArg {
+	annotation("com.github.nayasis.kotlin.spring.kotlin.annotation.NoArg")
 	invokeInitializers = true
 }
 
 java {
-	// for 'supportImplementation'
 	registerFeature("support") {
 		usingSourceSet(sourceSets["main"])
 	}
+	withJavadocJar()
+	withSourcesJar()
+}
+
+javafx {
+	version = "19.0.2.1"
+	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
 }
 
 group = "com.github.nayasis"
 version = "0.1.13-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_11
+java.targetCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
 	resolutionStrategy.cacheChangingModulesFor(0, "seconds")
@@ -35,14 +44,6 @@ repositories {
 	maven { url = uri("https://jitpack.io") }
 }
 
-val JAVA_FX_VERSION = "19"
-val JAVA_FX_OS = when {
-	Os.isFamily("windows") -> "win"
-	Os.isFamily("mac")     -> "mac"
-	Os.isFamily("unix")    -> "linux"
-	else -> "linux"
-}
-
 dependencies {
 
 	implementation("com.github.nayasis:basica-kt:0.2.18")
@@ -54,53 +55,20 @@ dependencies {
 	implementation("org.controlsfx:controlsfx:11.1.1")
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 
-	// javafx
-	implementation("org.openjfx:javafx-base:$JAVA_FX_VERSION")
-	"supportImplementation"("org.openjfx:javafx-base:$JAVA_FX_VERSION:win")
-	"supportImplementation"("org.openjfx:javafx-base:$JAVA_FX_VERSION:mac")
-	"supportImplementation"("org.openjfx:javafx-base:$JAVA_FX_VERSION:linux")
-	implementation("org.openjfx:javafx-graphics:$JAVA_FX_VERSION")
-	"supportImplementation"("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:win")
-	"supportImplementation"("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:mac")
-	"supportImplementation"("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:linux")
-	implementation("org.openjfx:javafx-controls:$JAVA_FX_VERSION")
-	"supportImplementation"("org.openjfx:javafx-controls:$JAVA_FX_VERSION:win")
-	"supportImplementation"("org.openjfx:javafx-controls:$JAVA_FX_VERSION:mac")
-	"supportImplementation"("org.openjfx:javafx-controls:$JAVA_FX_VERSION:linux")
-	implementation("org.openjfx:javafx-fxml:$JAVA_FX_VERSION")
-	"supportImplementation"("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:win")
-	"supportImplementation"("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:mac")
-	"supportImplementation"("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:linux")
-	implementation("org.openjfx:javafx-web:$JAVA_FX_VERSION")
-	"supportImplementation"("org.openjfx:javafx-web:$JAVA_FX_VERSION:win")
-	"supportImplementation"("org.openjfx:javafx-web:$JAVA_FX_VERSION:mac")
-	"supportImplementation"("org.openjfx:javafx-web:$JAVA_FX_VERSION:linux")
-	implementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION")
-	"supportImplementation"("org.openjfx:javafx-swing:$JAVA_FX_VERSION:win")
-	"supportImplementation"("org.openjfx:javafx-swing:$JAVA_FX_VERSION:mac")
-	"supportImplementation"("org.openjfx:javafx-swing:$JAVA_FX_VERSION:linux")
-
 	// spring
 	"supportImplementation"("org.springframework.boot:spring-boot-starter-web:2.5.6")
-	"supportImplementation"("ch.qos.logback:logback-classic:1.2.9")
+	"supportImplementation"("ch.qos.logback:logback-classic:1.3.5")
 
 	// kotlin
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("io.github.microutils:kotlin-logging:2.0.10")
+	implementation("io.github.microutils:kotlin-logging:3.0.5")
 	implementation("au.com.console:kassava:2.1.0")
 
 	// test
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
-	testImplementation("ch.qos.logback:logback-classic:1.2.6")
-
-	testImplementation("org.openjfx:javafx-base:$JAVA_FX_VERSION:$JAVA_FX_OS")
-	testImplementation("org.openjfx:javafx-graphics:$JAVA_FX_VERSION:$JAVA_FX_OS")
-	testImplementation("org.openjfx:javafx-controls:$JAVA_FX_VERSION:$JAVA_FX_OS")
-	testImplementation("org.openjfx:javafx-fxml:$JAVA_FX_VERSION:$JAVA_FX_OS")
-	testImplementation("org.openjfx:javafx-web:$JAVA_FX_VERSION:$JAVA_FX_OS")
-	testImplementation("org.openjfx:javafx-swing:$JAVA_FX_VERSION:$JAVA_FX_OS")
+	testImplementation("ch.qos.logback:logback-classic:1.3.5")
 
 }
 
@@ -118,6 +86,10 @@ tasks.withType<KotlinCompile> {
 	}
 }
 
-tasks.withType<Wrapper> {
-	gradleVersion = "6.8.3"
+publishing {
+	publications {
+		create<MavenPublication>("maven") {
+			from(components["java"])
+		}
+	}
 }

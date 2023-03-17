@@ -3,7 +3,7 @@ package com.github.nayasis.kotlin.javafx.stage
 import com.github.nayasis.kotlin.basica.core.io.extension
 import com.github.nayasis.kotlin.basica.core.string.toPath
 import com.github.nayasis.kotlin.basica.core.string.toResource
-import com.github.nayasis.kotlin.basica.core.url.inStream
+import com.github.nayasis.kotlin.basica.core.url.toInputStream
 import com.github.nayasis.kotlin.javafx.misc.toIconImage
 import javafx.scene.image.Image
 import java.io.File
@@ -16,7 +16,7 @@ class IconContainer {
     fun add(icon: Image) = icons.add(icon)
 
     fun add(resourcePath: String) {
-        resourcePath.toResource()?.inStream()?.use { bis ->
+        resourcePath.toResource()?.toInputStream()?.use { bis ->
             if( resourcePath.toPath().extension == "ico" ) {
                 icons.addAll(bis.toIconImage())
             } else {
