@@ -69,7 +69,7 @@ abstract class SpringFxApp: App {
         }
     }
 
-    private fun setupDefaultExceptionHandler() {
+    open fun setupDefaultExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler { _, e ->
             if (Platform.isFxApplicationThread()) {
                 runCatching {
