@@ -22,6 +22,7 @@ import javafx.scene.layout.BackgroundSize
 import javafx.scene.layout.BackgroundSize.AUTO
 import mu.KotlinLogging
 import net.sf.image4j.codec.ico.ICODecoder
+import org.apache.http.client.config.RequestConfig
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.conn.ssl.NoopHostnameVerifier
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory
@@ -105,12 +106,29 @@ fun Path?.toBufferedImage(): BufferedImage? {
     return this.toImage()?.toBufferedImage()
 }
 
-fun URL?.toBufferedImage(): BufferedImage? {
+/**
+ * convert to buffered image
+ *
+ * @param connectionTimeout         timeout to establish a connection with a remote host
+ * @param socketTimeout             timeout to wait for response data
+ * @param connectionRequestTimeout  timeout pulling out of a connection pool
+ * @return BufferedImage
+ */
+fun URL?.toBufferedImage(
+    connectionTimeout: Int = 1 * 1000,
+    socketTimeout: Int = 3 * 1000,
+    connectionRequestTimeout: Int = 1 * 1000,
+): BufferedImage? {
     return when {
         this == null -> null
         this.protocol == "file" -> this.toFile().toBufferedImage()
         else -> httpClient.use{ it.execute(HttpGet("$this").apply {
             setHeader("User-Agent", DEFAULT_USER_AGENT)
+            config = RequestConfig.custom()
+                .setConnectTimeout(connectionTimeout) // 원격 호스트와의 연결을 설정하는 시간
+                .setSocketTimeout(socketTimeout) // 데이터를 기다리는 시간
+                .setConnectionRequestTimeout(connectionRequestTimeout) // 커넥션 풀로부터 꺼내올 때의 타임아웃
+                .build()
         })?.use { response ->
             try {
                 ImageIO.read(response.entity.content)
@@ -130,11 +148,35 @@ fun Path?.toImage(): Image? {
     return this?.let { if(it.isFile()) Image("${it.toFile().toURI()}") else null }
 }
 
-fun URL?.toImage(): Image? {
-    return this?.toBufferedImage()?.toImage()
+/**
+ * convert to image
+ *
+ * @param connectionTimeout         timeout to establish a connection with a remote host
+ * @param socketTimeout             timeout to wait for response data
+ * @param connectionRequestTimeout  timeout pulling out of a connection pool
+ * @return Image
+ */
+fun URL?.toImage(
+    connectionTimeout: Int = 1 * 1000,
+    socketTimeout: Int = 3 * 1000,
+    connectionRequestTimeout: Int = 1 * 1000,
+): Image? {
+    return this?.toBufferedImage(connectionTimeout, socketTimeout, connectionRequestTimeout)?.toImage()
 }
 
-fun String?.toImage(): Image? {
+/**
+ * convert to image
+ *
+ * @param connectionTimeout         timeout to establish a connection with a remote host
+ * @param socketTimeout             timeout to wait for response data
+ * @param connectionRequestTimeout  timeout pulling out of a connection pool
+ * @return Image
+ */
+fun String?.toImage(
+    connectionTimeout: Int = 1 * 1000,
+    socketTimeout: Int = 3 * 1000,
+    connectionRequestTimeout: Int = 1 * 1000,
+): Image? {
     return this?.let { url -> when {
         url.find("^http(s?)://".toRegex()) -> url.toUrl().toImage()
         url.find("^data:.*?;base64,".toRegex()) -> {
