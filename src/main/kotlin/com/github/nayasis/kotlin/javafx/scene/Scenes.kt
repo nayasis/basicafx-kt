@@ -1,6 +1,6 @@
 package com.github.nayasis.kotlin.javafx.scene
 
-import com.github.nayasis.kotlin.basica.core.extention.FieldProperty
+import com.github.nayasis.kotlin.basica.core.extension.FieldProperty
 import com.github.nayasis.kotlin.basica.core.string.message
 import com.github.nayasis.kotlin.javafx.model.Point
 import com.github.nayasis.kotlin.javafx.property.InsetProperty

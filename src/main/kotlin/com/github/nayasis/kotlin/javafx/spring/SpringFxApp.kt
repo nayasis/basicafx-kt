@@ -1,6 +1,6 @@
 package com.github.nayasis.kotlin.javafx.spring
 
-import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
+import com.github.nayasis.kotlin.basica.core.extension.ifEmpty
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.basica.model.Messages

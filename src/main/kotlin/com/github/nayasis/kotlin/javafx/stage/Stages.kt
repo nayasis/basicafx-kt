@@ -1,6 +1,6 @@
 package com.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.core.extention.FieldProperty
+import com.github.nayasis.kotlin.basica.core.extension.FieldProperty
 import com.github.nayasis.kotlin.javafx.property.InsetProperty
 import com.github.nayasis.kotlin.javafx.scene.*
 import javafx.event.EventHandler

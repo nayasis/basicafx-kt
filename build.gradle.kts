@@ -5,9 +5,11 @@ plugins {
 	`maven-publish`
 	kotlin("jvm") version "1.8.10"
 	kotlin("plugin.noarg") version "1.8.10"
-	id("org.jetbrains.dokka") version "1.7.20"
-	id("org.openjfx.javafxplugin") version "0.0.10"
+	id("org.openjfx.javafxplugin") version "0.0.14"
 }
+
+group = "com.github.nayasis"
+version = "0.1.13-SNAPSHOT"
 
 noArg {
 	annotation("com.github.nayasis.kotlin.spring.kotlin.annotation.NoArg")
@@ -15,6 +17,8 @@ noArg {
 }
 
 java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
 	registerFeature("support") {
 		usingSourceSet(sourceSets["main"])
 	}
@@ -23,14 +27,9 @@ java {
 }
 
 javafx {
-	version = "19.0.2.1"
+	version = "20"
 	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
 }
-
-group = "com.github.nayasis"
-version = "0.1.13-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_11
-java.targetCompatibility = JavaVersion.VERSION_11
 
 configurations.all {
 	resolutionStrategy.cacheChangingModulesFor(0, "seconds")
@@ -46,8 +45,8 @@ repositories {
 
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.2.22")
-//	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
+//	implementation("com.github.nayasis:basica-kt:0.2.22")
+	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")

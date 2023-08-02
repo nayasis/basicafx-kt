@@ -1,8 +1,8 @@
 package com.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.core.extention.ifEmpty
-import com.github.nayasis.kotlin.basica.core.extention.ifNotEmpty
-import com.github.nayasis.kotlin.basica.core.extention.ifNotNull
+import com.github.nayasis.kotlin.basica.core.extension.ifEmpty
+import com.github.nayasis.kotlin.basica.core.extension.ifNotEmpty
+import com.github.nayasis.kotlin.basica.core.extension.ifNotNull
 import com.github.nayasis.kotlin.basica.core.io.Paths
 import com.github.nayasis.kotlin.basica.core.io.div
 import com.github.nayasis.kotlin.basica.core.io.exists
