@@ -23,7 +23,7 @@ fun DragEvent?.isAcceptable(): Boolean {
 
 fun DragEvent?.toImage(): Image? {
     return this?.dragboard?.let { when {
-        it.hasHtmlImgTag() -> getSrcFromImageTag(it.html).toImage()
+        it.hasHtmlImgTag() -> getSrcFromImageTag(it.html)?.toImage()
         it.hasRegularFile() -> it.files.firstOrNull()?.toImage()
         it.hasUrl() -> it.url?.toImage()
         it.hasString() -> it.string?.toImage()

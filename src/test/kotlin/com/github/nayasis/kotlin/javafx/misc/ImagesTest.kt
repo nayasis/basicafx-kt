@@ -37,7 +37,7 @@ class ImagesTest {
     fun writePng() {
         JavaFxJunitRunner {
 
-            val image = "image/test.png".toResource().toImage()
+            val image = "image/test.png".toResource()?.toImage()
                 ?.resize(fullWidth,fullHeight)
                 ?.toBufferedImage()
                 ?: return@JavaFxJunitRunner
@@ -64,7 +64,7 @@ class ImagesTest {
     @Test
     fun rotate() {
         JavaFxJunitRunner {
-            val image = "image/test.png".toResource().toImage()?.rotate(90.0)
+            val image = "image/test.png".toResource()?.toImage()?.rotate(90.0)
             image?.write("test.png".toFile())
         }
     }
