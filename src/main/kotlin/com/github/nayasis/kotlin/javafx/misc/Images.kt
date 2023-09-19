@@ -206,12 +206,24 @@ fun ImageIcon.toImage(): Image {
     return this.image.let { (it as BufferedImage).toImage() }
 }
 
+fun ImageIcon.toImageOrNull(): Image? {
+    return runCatching { toImage() }.getOrNull()
+}
+
 fun ByteArray.toImage(another: WritableImage? = null): Image {
     return this.toBufferedImage().toImage(another)
 }
 
+fun ByteArray.toImageOrNull(another: WritableImage? = null): Image? {
+    return runCatching { this.toImage(another) }.getOrNull()
+}
+
 fun BufferedImage.toImage(another: WritableImage? = null): Image {
     return this.let { SwingFXUtils.toFXImage(it,another) }
+}
+
+fun BufferedImage.toImageOrNull(another: WritableImage? = null): Image? {
+    return runCatching { this.toImage(another) }.getOrNull()
 }
 
 fun Image.toBinary(format: String = "jpg"): ByteArray {
