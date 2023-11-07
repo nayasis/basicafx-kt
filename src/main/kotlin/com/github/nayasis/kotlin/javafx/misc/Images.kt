@@ -120,9 +120,9 @@ fun URL.toBufferedImage(
         else -> httpClient.use{ it.execute(HttpGet("$this").apply {
             setHeader("User-Agent", DEFAULT_USER_AGENT)
             config = RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout) // 원격 호스트와의 연결을 설정하는 시간
-                .setSocketTimeout(socketTimeout) // 데이터를 기다리는 시간
-                .setConnectionRequestTimeout(connectionRequestTimeout) // 커넥션 풀로부터 꺼내올 때의 타임아웃
+                .setConnectTimeout(connectionTimeout) // 연결을 기다리는 시간
+                .setSocketTimeout(socketTimeout) // 응답을 기다리는 시간
+                .setConnectionRequestTimeout(connectionRequestTimeout) // 커넥션 풀 대기시간
                 .build()
         }).use { response ->
             ImageIO.read(response.entity.content)
@@ -188,18 +188,26 @@ fun String.toImage(
     connectionRequestTimeout: Int = 1 * 1000,
 ): Image {
     return this.let { url -> when {
-        url.find("^http(s?)://".toRegex()) -> url.toUrl().toImage()
+        url.find("^http(s?)://".toRegex()) -> url.toUrl().toImage(connectionTimeout,socketTimeout,connectionRequestTimeout)
         url.find("^data:.*?;base64,".toRegex()) -> {
             val encoded = url.replaceFirst("^data:.*?;base64,".toRegex(), "")
-            encoded.decodeBase64<ByteArray>()!!.toImage()
+            encoded.decodeBase64<ByteArray>().toImage()
         }
         url.toFile().exists() -> url.toFile().toImage()
         else -> throw IOException("can not be converted to image. ($this)")
     }}
 }
 
-fun String.toImageOrNull(): Image? {
-    return runCatching { toImage() }.getOrNull()
+fun String.toImageOrNull(
+    connectionTimeout: Int        = 1 * 1000,
+    socketTimeout: Int            = 3 * 1000,
+    connectionRequestTimeout: Int = 1 * 1000,
+): Image? {
+    return runCatching { toImage(
+        connectionTimeout,
+        socketTimeout,
+        connectionRequestTimeout,
+    ) }.getOrNull()
 }
 
 fun ImageIcon.toImage(): Image {
