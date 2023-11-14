@@ -29,6 +29,7 @@ import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.ssl.SSLContexts
 import java.awt.AlphaComposite
+import java.awt.RenderingHints.*
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_CUSTOM
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
@@ -210,8 +211,23 @@ fun String.toImageOrNull(
     ) }.getOrNull()
 }
 
+fun ImageIcon.toBufferedImage(): BufferedImage {
+    val buffered = BufferedImage(iconWidth, iconHeight, BufferedImage.TYPE_INT_ARGB)
+    buffered.createGraphics().apply {
+        setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC)
+        setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY)
+        setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
+        setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY)
+        setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_GASP)
+    }.let { graphics ->
+        paintIcon(null, graphics,0,0)
+        graphics.dispose()
+    }
+    return buffered
+}
+
 fun ImageIcon.toImage(): Image {
-    return this.image.let { (it as BufferedImage).toImage() }
+    return this.toBufferedImage().toImage()
 }
 
 fun ImageIcon.toImageOrNull(): Image? {
