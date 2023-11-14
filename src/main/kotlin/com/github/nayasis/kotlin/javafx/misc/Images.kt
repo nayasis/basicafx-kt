@@ -307,7 +307,7 @@ fun String.toBase64Image(): String {
     }
 }
 
-fun Image.copy(): WritableImage {
+fun Image.toWritableImage(): WritableImage {
     val width  = width.toInt()
     val height = height.toInt()
     return WritableImage(width, height).also {
@@ -413,6 +413,10 @@ fun Image.write(path: Path) {
 
 fun Image.write(file: File) {
     toBufferedImage().write(file)
+}
+
+fun Image.copy(): Image {
+    return toBufferedImage().copy().toImage()
 }
 
 fun BufferedImage.write(path: String) {
