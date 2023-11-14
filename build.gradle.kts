@@ -17,8 +17,8 @@ noArg {
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_17
-	targetCompatibility = JavaVersion.VERSION_17
+	sourceCompatibility = JavaVersion.VERSION_13
+	targetCompatibility = JavaVersion.VERSION_13
 	registerFeature("support") {
 		usingSourceSet(sourceSets["main"])
 	}
@@ -81,7 +81,7 @@ tasks.withType<KotlinCompile> {
 		freeCompilerArgs = listOf(
 			"-Xjsr305=strict"
 		)
-		jvmTarget = "17"
+		jvmTarget = "13"
 	}
 }
 
