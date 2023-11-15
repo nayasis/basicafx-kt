@@ -17,8 +17,8 @@ noArg {
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_13
-	targetCompatibility = JavaVersion.VERSION_13
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
 	registerFeature("support") {
 		usingSourceSet(sourceSets["main"])
 	}
@@ -27,7 +27,7 @@ java {
 }
 
 javafx {
-	version = "20"
+	version = "21.0.1"
 	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
 }
 
@@ -81,7 +81,7 @@ tasks.withType<KotlinCompile> {
 		freeCompilerArgs = listOf(
 			"-Xjsr305=strict"
 		)
-		jvmTarget = "13"
+		jvmTarget = "11"
 	}
 }
 
