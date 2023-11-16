@@ -1,6 +1,6 @@
 package com.github.nayasis.kotlin.javafx.property
 
-import com.github.nayasis.kotlin.basica.core.extention.isNotEmpty
+import com.github.nayasis.kotlin.basica.core.extension.isNotEmpty
 import com.github.nayasis.kotlin.javafx.control.tableview.allColumns
 import com.github.nayasis.kotlin.javafx.control.tableview.fillFxId
 import javafx.scene.control.TableView

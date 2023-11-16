@@ -1,6 +1,6 @@
 package com.github.nayasis.kotlin.javafx.property
 
-import com.github.nayasis.kotlin.basica.core.extention.ifNotNull
+import com.github.nayasis.kotlin.basica.core.extension.ifNotNull
 import com.github.nayasis.kotlin.javafx.control.tableview.Position
 import com.github.nayasis.kotlin.javafx.control.tableview.fillFxId
 import com.github.nayasis.kotlin.javafx.control.tableview.focused
