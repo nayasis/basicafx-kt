@@ -17,22 +17,22 @@ fun <T> runSync(func: FXTask<*>.() -> T) {
     status.completed.awaitUntil()
 }
 
-fun runAndWait(func: () -> Unit) {
-    if(Platform.isFxApplicationThread()) {
-        func.invoke()
-    } else {
-        val doneLatch = CountDownLatch(1)
-        Platform.runLater {
-            try {
-                func.invoke()
-            } finally {
-                doneLatch.countDown()
-            }
-        }
-        try {
-            doneLatch.await()
-        } catch (ex: InterruptedException) {
-            ex.printStackTrace()
-        }
-    }
-}
+//fun runAndWait(func: () -> Unit) {
+//    if(Platform.isFxApplicationThread()) {
+//        func.invoke()
+//    } else {
+//        val doneLatch = CountDownLatch(1)
+//        Platform.runLater {
+//            try {
+//                func.invoke()
+//            } finally {
+//                doneLatch.countDown()
+//            }
+//        }
+//        try {
+//            doneLatch.await()
+//        } catch (ex: InterruptedException) {
+//            ex.printStackTrace()
+//        }
+//    }
+//}
