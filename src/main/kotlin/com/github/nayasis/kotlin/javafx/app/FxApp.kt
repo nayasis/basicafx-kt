@@ -3,6 +3,7 @@ package com.github.nayasis.kotlin.javafx.app
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.javafx.preloader.BasePreloader
+import com.github.nayasis.kotlin.javafx.stage.Dialog
 import javafx.application.Platform
 import javafx.scene.image.Image
 import javafx.stage.Stage
@@ -12,7 +13,6 @@ import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import tornadofx.*
 import kotlin.reflect.KClass
-import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
@@ -35,8 +35,7 @@ abstract class FxApp: App {
             environment = Environment(parameters.raw.toTypedArray(), "application.yml")
         } catch (e: Throwable) {
             logger.error(e)
-            throw e
-            stop()
+            BasePreloader.notifyError(e.message,e)
         }
     }
 
@@ -45,7 +44,7 @@ abstract class FxApp: App {
             if (Platform.isFxApplicationThread()) {
                 runCatching {
                     runLater {
-                        BasePreloader.notifyError(e.message, e.rootCause)
+                        Dialog.error(e.message,e.rootCause)
                     }
                 }.onFailure { logger.error(it) }
             } else {
@@ -61,20 +60,12 @@ abstract class FxApp: App {
             super.start(stage)
         } catch (e: Throwable) {
             logger.error(e)
-            throw e
-            stop()
+            BasePreloader.notifyError(e.message,e)
         }
-    }
-
-    final override fun stop() {
-        runCatching { stop() }.onFailure { logger.error(it) }
-        runCatching { super.stop() }.onFailure { logger.error(it) }
-        exitProcess(0)
     }
 
     open fun onStart(command: CommandLine) {}
     open fun onStart(stage: Stage) {}
-    open fun onStop() {}
     open fun setOptions(): Options? { return null }
 
 }
