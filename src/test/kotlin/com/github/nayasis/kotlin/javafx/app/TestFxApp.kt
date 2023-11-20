@@ -4,7 +4,7 @@ import com.github.nayasis.kotlin.javafx.preloader.BaseSplash
 import com.github.nayasis.kotlin.javafx.preloader.BasePreloader
 import tornadofx.*
 
-fun main(args: Array<String>) {
+fun main() {
     BasePreloader.set(TestSplash::class)
     launch<TestFxApp>()
 }
@@ -16,7 +16,7 @@ class TestFxApp: FxApp(TestFxView::class)
 class TestFxView: View("test view") {
     override val root = vbox {
         label("test label")
-        textfield { "gagaga" }
+        textfield {}
     }
 
     override fun onBeforeShow() {
@@ -26,7 +26,7 @@ class TestFxView: View("test view") {
 ////            NPreloader.notifyError("test", RuntimeException("test error"))
 //            throw RuntimeException("test error")
 //        }
-        BasePreloader.close()
+//        BasePreloader.close()
     }
 
 }

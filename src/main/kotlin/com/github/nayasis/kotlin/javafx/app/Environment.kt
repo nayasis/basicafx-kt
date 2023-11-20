@@ -17,6 +17,7 @@ class Environment(
         args?.let { merge(it) }
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun load(yamlPath: String): LinkedHashMap<String,Any> {
         val map = LinkedHashMap<String,Any>()
         yamlPath.toResource()?.toInputStream()?.let {

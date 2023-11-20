@@ -33,6 +33,7 @@ abstract class FxApp: App {
             setupDefaultExceptionHandler()
             FX.dicontainer = ctx
             environment = Environment(parameters.raw.toTypedArray(), "application.yml")
+            LoggerConfig(environment).initialize()
         } catch (e: Throwable) {
             logger.error(e)
             BasePreloader.notifyError(e.message,e)
