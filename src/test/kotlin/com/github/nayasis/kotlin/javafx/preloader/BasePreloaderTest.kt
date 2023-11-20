@@ -1,6 +1,6 @@
 package com.github.nayasis.kotlin.javafx.preloader
 
-import com.github.nayasis.kotlin.javafx.spring.SpringFxApp
+import com.github.nayasis.kotlin.javafx.misc.runSync
 import javafx.beans.property.SimpleIntegerProperty
 import tornadofx.App
 import tornadofx.View
@@ -10,14 +10,15 @@ import tornadofx.button
 import tornadofx.label
 import tornadofx.launch
 import tornadofx.vbox
+import java.lang.Thread.sleep
 
 fun main(args: Array<String>) {
-    SpringFxApp.setPreloader(TestSplash::class)
-    launch<BaseSplashTest>(*args)
+    BasePreloader.set(TestSplash::class)
+    launch<BasePreloaderTest>(*args)
 
 }
 
-class BaseSplashTest: App(MainView::class)
+class BasePreloaderTest: App(MainView::class)
 
 class MainView: View("Hello world!") {
 
@@ -32,6 +33,13 @@ class MainView: View("Hello world!") {
         label( "Hello world" ) {
             bind( count )
         }
+    }
+
+    override fun onBeforeShow() {
+        runSync {
+            sleep(1000)
+        }
+        BasePreloader.close()
     }
 }
 

@@ -4,9 +4,6 @@ import com.github.nayasis.kotlin.basica.core.string.toUri
 import com.github.nayasis.kotlin.javafx.control.basic.bottomAnchor
 import com.github.nayasis.kotlin.javafx.control.basic.leftAnchor
 import com.github.nayasis.kotlin.javafx.control.basic.rightAnchor
-import com.github.nayasis.kotlin.javafx.preloader.CloseNotificator
-import com.github.nayasis.kotlin.javafx.preloader.NPreloader
-import com.github.nayasis.kotlin.javafx.preloader.ProgressNotificator
 import com.github.nayasis.kotlin.javafx.stage.addMoveHandler
 import com.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
 import com.github.nayasis.kotlin.tornadofx.extension.toScene
@@ -33,13 +30,12 @@ open class BaseSplash(
     width: Int,
     height: Int,
     imageUrl: String? = null,
-): NPreloader() {
+): BasePreloader() {
 
-    private val view = PreloaderLayout(width,height,imageUrl)
-    private lateinit var stage: Stage
+    private val view = SplashView(width,height,imageUrl)
 
-    override fun start(primaryStage: Stage) {
-        stage = primaryStage.apply {
+    override fun onStart(stage: Stage) {
+        stage.apply {
             initStyle(StageStyle.TRANSPARENT)
             scene = view.toScene("/basicafx/css/splash.css")
             isAlwaysOnTop = true
@@ -56,13 +52,9 @@ open class BaseSplash(
         }
     }
 
-    override fun onClose(notificator: CloseNotificator) {
-        runLater { stage.close() }
-    }
-
 }
 
-class PreloaderLayout(
+class SplashView(
     width: Int,
     height: Int,
     imagePath: String?,
@@ -86,12 +78,11 @@ class PreloaderLayout(
             rightAnchor = 0.0
             bottomAnchor = 0.0
         }
-        if( imagePath != null ) {
+        imagePath?.toUri()?.let { uri ->
             style(true) {
-                this.backgroundImage.add(imagePath.toUri())
+                backgroundImage.add(uri)
             }
         }
-
     }
 
 }

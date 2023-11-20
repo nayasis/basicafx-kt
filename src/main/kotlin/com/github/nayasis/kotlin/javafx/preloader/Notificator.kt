@@ -1,22 +1,20 @@
 package com.github.nayasis.kotlin.javafx.preloader
 
-import javafx.application.Preloader
+import javafx.application.Preloader.PreloaderNotification
 import java.lang.Double.isInfinite
 import java.lang.Double.isNaN
-
-interface Notificator: Preloader.PreloaderNotification
 
 class ProgressNotificator(
     var progress: Double = 0.0,
     var message: String? = null,
-): Notificator {
+): PreloaderNotification {
 
-    constructor(index:Number, max:Number, message: String? = null): this(0.0,message) {
+    constructor(index: Number, max:Number, message: String? = null): this(0.0, message) {
         progress(index,max)
     }
 
     fun progress(index: Number, max: Number) {
-        this.progress = progress(index.toDouble(), max.toDouble())
+        progress = progress(index.toDouble(), max.toDouble())
     }
 
     private fun progress(index: Double, max: Double): Double {
@@ -29,15 +27,16 @@ class ProgressNotificator(
         }
     }
 
-    private fun isInvalid(number: Double): Boolean {
-        return isInfinite(number) || isNaN(number) || number < 0
-    }
+    private fun isInvalid(number: Double): Boolean
+        = isInfinite(number) || isNaN(number) || number < 0
 
 }
 
 class ErrorNotificator(
     var message: String? = null,
     var throwable: Throwable? = null,
-): Notificator
+): PreloaderNotification
 
-class CloseNotificator: Notificator
+class CloseNotificator: PreloaderNotification
+
+class HideNotificator: PreloaderNotification
