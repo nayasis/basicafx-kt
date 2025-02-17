@@ -1,11 +1,9 @@
 package com.github.nayasis.kotlin.javafx.control.tableview
 
-import au.com.console.kassava.kotlinToString
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.geometry.Pos
-import javafx.scene.Parent
 import javafx.scene.control.TableView
 import javafx.scene.paint.Color
 import tornadofx.*
@@ -130,6 +128,11 @@ class Person{
     }
 
     override fun toString(): String {
-        return kotlinToString(arrayOf(Person::id,Person::name,Person::birthday,Person::ageProperty))
+        return "Person(id=$id, name=$name, birthday=$birthday, age=${ageProperty.value})"
     }
+
+
+//    override fun toString(): String {
+//        return kotlinToString(arrayOf(Person::id,Person::name,Person::birthday,Person::ageProperty))
+//    }
 }

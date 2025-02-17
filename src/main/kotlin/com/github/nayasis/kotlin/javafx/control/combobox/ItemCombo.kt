@@ -1,7 +1,5 @@
 package com.github.nayasis.kotlin.javafx.control.combobox
 
-import au.com.console.kassava.kotlinEquals
-import au.com.console.kassava.kotlinHashCode
 import java.io.Serializable
 
 data class ItemCombo(
@@ -12,7 +10,15 @@ data class ItemCombo(
 
     constructor(value: String): this(value,value)
 
-    override fun equals(other: Any?): Boolean = kotlinEquals(other, arrayOf(ItemCombo::value))
-    override fun hashCode(): Int = kotlinHashCode(arrayOf(ItemCombo::value))
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as ItemCombo
+        return value == other.value
+    }
+
+    override fun hashCode(): Int {
+        return value?.hashCode() ?: 0
+    }
 
 }

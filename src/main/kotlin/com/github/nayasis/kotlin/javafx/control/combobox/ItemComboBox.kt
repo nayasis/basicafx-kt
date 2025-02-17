@@ -17,7 +17,7 @@ private val logger = KotlinLogging.logger {}
 class ItemComboBox: ComboBox<ItemCombo> {
 
     constructor()
-    constructor(items: Collection<ItemCombo>?) {
+    constructor(items: Collection<ItemCombo>? = null) {
         if( ! items.isNullOrEmpty() )
             this.items.addAll(items)
     }
