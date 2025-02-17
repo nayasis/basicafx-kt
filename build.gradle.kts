@@ -38,15 +38,12 @@ configurations.all {
 repositories {
 	mavenLocal()
 	mavenCentral()
-	jcenter()
 	maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.3.1")
-//	implementation("com.github.nayasis:basica-kt:0.3.2-SNAPSHOT")
-//	implementation("com.github.nayasis:basica-kt:develop-SNAPSHOT")
+	implementation("com.github.nayasis:basica-kt:0.3.2")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
@@ -54,7 +51,7 @@ dependencies {
 	implementation("org.controlsfx:controlsfx:11.1.1")
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
-	implementation("ch.qos.logback:logback-classic:1.4.11")
+	implementation("ch.qos.logback:logback-classic:1.5.13")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
@@ -65,12 +62,10 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging:3.0.5")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.7.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-	implementation("au.com.console:kassava:2.1.0")
 
 	// test
 	testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
-	testImplementation("ch.qos.logback:logback-classic:1.3.5")
 
 }
 

@@ -51,6 +51,21 @@ fun <S,T:Any> TableColumn<S,T>.children(recursive: Boolean = false): List<TableC
     return list
 }
 
+/**
+ * it could cause flickering when observable item changed.
+ * use cellFormat instead.
+ *
+ * ```
+ *  col.cellFormat { amount ->
+ *    text = "$ $amount"
+ *    alignment = CENTER_RIGHT
+ *  }
+ * ```
+ * @receiver TableColumn<S,T>
+ * @param align Pos
+ * @return TableColumn<S,T>
+ */
+@Deprecated("use #cellFormat instead")
 fun <S,T> TableColumn<S,T>.setAlign(align: Pos): TableColumn<S,T> {
     this.setStyle("-fx-alignment", align.name)
     return this

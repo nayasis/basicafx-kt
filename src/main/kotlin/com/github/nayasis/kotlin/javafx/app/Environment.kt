@@ -11,16 +11,16 @@ class Environment(
     configYamlPath: String = "application.yml",
 ) {
 
-    val all: LinkedHashMap<String,Any> = load(configYamlPath)
+    val all: LinkedHashMap<String,Any> = loadYml(configYamlPath)
 
     init {
         args?.let { merge(it) }
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun load(yamlPath: String): LinkedHashMap<String,Any> {
+    private fun loadYml(path: String): LinkedHashMap<String,Any> {
         val map = LinkedHashMap<String,Any>()
-        yamlPath.toResource()?.toInputStream()?.let {
+        path.toResource()?.toInputStream()?.let {
             Yaml().loadAll(it)
         }?.map { it as Map<*,*> }?.map {
             it.flattenKeys() as Map<String,Any>
