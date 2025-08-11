@@ -11,6 +11,8 @@ import com.github.nayasis.kotlin.basica.core.string.toFile
 import com.github.nayasis.kotlin.basica.core.string.toPath
 import com.github.nayasis.kotlin.basica.core.string.toUrl
 import com.github.nayasis.kotlin.basica.core.url.toFile
+import com.microsoft.playwright.Page
+import com.microsoft.playwright.options.WaitUntilState
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
@@ -21,13 +23,6 @@ import javafx.scene.layout.BackgroundSize
 import javafx.scene.layout.BackgroundSize.AUTO
 import mu.KotlinLogging
 import net.sf.image4j.codec.ico.ICODecoder
-import org.apache.http.client.config.RequestConfig
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.conn.ssl.NoopHostnameVerifier
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory
-import org.apache.http.impl.client.CloseableHttpClient
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.ssl.SSLContexts
 import java.awt.AlphaComposite
 import java.awt.RenderingHints.*
 import java.awt.image.BufferedImage
@@ -53,7 +48,9 @@ private val logger = KotlinLogging.logger {}
 
 private val CARRIAGE_RETURN = "[\n\r]".toRegex()
 
-const val DEFAULT_USER_AGENT  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+private const val DEFAULT_USER_AGENT  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+
+private var webBrowser: WebBrowser? = null
 
 fun Image?.isValid(): Boolean {
     return this != null && this.width > 0 && this.height > 0
@@ -89,8 +86,12 @@ fun Image.toBufferedImage(another: BufferedImage? = null): BufferedImage {
 
 fun ByteArray.toBufferedImage(): BufferedImage {
     return this.let {
-        ByteArrayInputStream(it).use { bis ->
-            ImageIO.read(bis)
+        if(it.isEmpty()) {
+            BufferedImage(0,0, BufferedImage.TYPE_INT_ARGB)
+        } else {
+            ByteArrayInputStream(it).use { bis ->
+                ImageIO.read(bis)
+            }
         }
     }
 }
@@ -112,22 +113,27 @@ fun Path.toBufferedImage(): BufferedImage {
  * @return BufferedImage
  */
 fun URL.toBufferedImage(
-    connectionTimeout: Int = 1 * 1000,
-    socketTimeout: Int = 3 * 1000,
-    connectionRequestTimeout: Int = 1 * 1000,
-): BufferedImage {
+    connectionTimeout: Double = 30_000.0,
+): BufferedImage? {
+
     return when {
         this.protocol == "file" -> this.toFile().toBufferedImage()
-        else -> httpClient.use{ it.execute(HttpGet("$this").apply {
-            setHeader("User-Agent", DEFAULT_USER_AGENT)
-            config = RequestConfig.custom()
-                .setConnectTimeout(connectionTimeout) // 연결을 기다리는 시간
-                .setSocketTimeout(socketTimeout) // 응답을 기다리는 시간
-                .setConnectionRequestTimeout(connectionRequestTimeout) // 커넥션 풀 대기시간
-                .build()
-        }).use { response ->
-            ImageIO.read(response.entity.content)
-        }}
+        else -> {
+            if (webBrowser == null) {
+                webBrowser = WebBrowser()
+                Runtime.getRuntime().addShutdownHook(Thread {
+                    webBrowser?.close()
+                    webBrowser = null
+                })
+            }
+            webBrowser?.withPage { page ->
+                page.navigate(this.toString(),
+                    Page.NavigateOptions().apply {
+                        timeout = connectionTimeout
+                    }
+                ).body().toBufferedImage()
+            }
+        }
     }
 }
 
@@ -168,12 +174,9 @@ fun URL.toImage(
     socketTimeout: Int            = 3 * 1000,
     connectionRequestTimeout: Int = 1 * 1000,
 ): Image {
-    return this.toBufferedImage(connectionTimeout, socketTimeout, connectionRequestTimeout).toImage()
+    return this.toBufferedImage(connectionTimeout, socketTimeout, connectionRequestTimeout)?.toImage() ?: throw IOException("can not be converted to image. ($this)")
 }
 
-fun URL.toImageOrNull(): Image? {
-    return runCatching { toImage() }.getOrNull()
-}
 
 /**
  * convert to image
@@ -234,20 +237,20 @@ fun ImageIcon.toImageOrNull(): Image? {
     return runCatching { toImage() }.getOrNull()
 }
 
-fun ByteArray.toImage(another: WritableImage? = null): Image {
+fun ByteArray.toImage(another: WritableImage? = null) {
     return this.toBufferedImage().toImage(another)
 }
 
-fun ByteArray.toImageOrNull(another: WritableImage? = null): Image? {
-    return runCatching { this.toImage(another) }.getOrNull()
+fun ByteArray.toImageOrNull(): Image? {
+    return runCatching { this.toImage() }.getOrNull()
 }
 
-fun BufferedImage.toImage(another: WritableImage? = null): Image {
-    return this.let { SwingFXUtils.toFXImage(it,another) }
+fun BufferedImage.toImage(): Image {
+    return this.let { SwingFXUtils.toFXImage(it,null) }
 }
 
-fun BufferedImage.toImageOrNull(another: WritableImage? = null): Image? {
-    return runCatching { this.toImage(another) }.getOrNull()
+fun BufferedImage.toImageOrNull(): Image? {
+    return runCatching { this.toImage() }.getOrNull()
 }
 
 fun Image.toBinary(format: String = "jpg"): ByteArray {
@@ -460,15 +463,4 @@ private fun getType(image: BufferedImage?): Int {
         else -> image.type
     }
 }
-
-private val sslSocket = SSLConnectionSocketFactory(SSLContexts.custom()
-    .loadTrustMaterial(null) { _, _ -> true }
-    .build(), NoopHostnameVerifier.INSTANCE)
-
-private val httpClient: CloseableHttpClient
-    get() {
-        return HttpClients.custom().apply {
-            setSSLSocketFactory(sslSocket)
-        }.build()
-    }
 

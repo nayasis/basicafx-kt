@@ -7,7 +7,7 @@ import javafx.scene.layout.Pane
 import java.util.*
 
 class Localizator (
-    val node: Node?,
+    node: Node?,
     val locale: Locale = Locale.getDefault()
 ) {
 
@@ -28,6 +28,7 @@ class Localizator (
             is TabPane      -> set(node)
             is ScrollPane   -> set(node)
             is Pane         -> set(node)
+            else            -> {}
         }
     }
 

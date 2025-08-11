@@ -1,49 +1,41 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
 	java
-	`maven-publish`
-	kotlin("jvm") version "1.9.20"
+	signing
+	kotlin("jvm") version "2.2.0"
 	kotlin("plugin.noarg") version "1.9.20"
-	id("org.openjfx.javafxplugin") version "0.0.14"
+	id("com.vanniktech.maven.publish") version "0.31.0"
+	id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 group = "com.github.nayasis"
-version = "0.2.1-SNAPSHOT"
+version = "0.2.2"
 
 noArg {
 	invokeInitializers = true
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_11
-	targetCompatibility = JavaVersion.VERSION_11
-	registerFeature("support") {
-		usingSourceSet(sourceSets["main"])
+	toolchain {
+		languageVersion.set(JavaLanguageVersion.of(22))
 	}
-	withJavadocJar()
-	withSourcesJar()
 }
 
 javafx {
-	version = "19.0.2.1"
+	version = "24.0.2"
 	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
-}
-
-configurations.all {
-	resolutionStrategy.cacheChangingModulesFor(0, "seconds")
-	resolutionStrategy.cacheDynamicVersionsFor(5, "minutes")
 }
 
 repositories {
 	mavenLocal()
 	mavenCentral()
-	maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
 
-	implementation("com.github.nayasis:basica-kt:0.3.2")
+	implementation("io.github.nayasis:basica-kt:0.3.5")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
@@ -52,6 +44,7 @@ dependencies {
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
 	implementation("ch.qos.logback:logback-classic:1.5.13")
+	implementation("com.microsoft.playwright:playwright:1.54.0")
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
@@ -69,24 +62,59 @@ dependencies {
 
 }
 
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll("-Xjsr305=strict")
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
-	exclude("**/*")
 }
 
-tasks.withType<KotlinCompile> {
-	kotlinOptions {
-		freeCompilerArgs = listOf(
-			"-Xjsr305=strict"
-		)
-		jvmTarget = "11"
-	}
+tasks.withType<JavaCompile> {
+	options.release.set(22)
 }
 
-publishing {
-	publications {
-		create<MavenPublication>("maven") {
-			from(components["java"])
+// Playwright 설치 task 추가
+tasks.register("installPlaywright") {
+	group = "playwright"
+	description = "Install Playwright browsers"
+	doLast {
+		exec {
+			commandLine("npx", "playwright", "install", "chromium")
 		}
 	}
+}
+
+mavenPublishing {
+	signAllPublications()
+	publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+	pom {
+		name.set(rootProject.name)
+		description.set("Basic Kotlin utility library providing common functionality for Kotlin applications.")
+		url.set("https://github.com/nayasis/basica-kt")
+		licenses {
+			license {
+				name.set("Apache License, Version 2.0")
+				url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+			}
+		}
+		developers {
+			developer {
+				id.set("nayasis")
+				name.set("nayasis")
+				email.set("nayasis@gmail.com")
+			}
+		}
+		scm {
+			connection.set("scm:git:github.com/nayasis/basica-kt.git")
+			developerConnection.set("scm:git:ssh://github.com/nayasis/basica-kt.git")
+			url.set("https://github.com/nayasis/basica-kt/tree/master")
+		}
+	}
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.compilerOptions {
+	freeCompilerArgs.set(listOf("-XXLanguage:+BreakContinueInInlineLambdas"))
 }
