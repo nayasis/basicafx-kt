@@ -14,9 +14,9 @@ import kotlin.math.min
 
 private val logger = KotlinLogging.logger {}
 
+@Suppress("unused")
 class ItemComboBox: ComboBox<ItemCombo> {
 
-    constructor()
     constructor(items: Collection<ItemCombo>? = null) {
         if( ! items.isNullOrEmpty() )
             this.items.addAll(items)
@@ -44,7 +44,7 @@ class ItemComboBox: ComboBox<ItemCombo> {
         get() {
             return try {
                 selectionModel.selectedItem
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }

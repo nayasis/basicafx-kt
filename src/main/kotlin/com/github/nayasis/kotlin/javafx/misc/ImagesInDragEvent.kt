@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.core.string.find

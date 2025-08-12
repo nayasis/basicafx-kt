@@ -2,7 +2,6 @@ package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.core.string.toResource
 import com.github.nayasis.kotlin.javafx.common.createTempFile
-import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -14,8 +13,6 @@ import java.io.IOException
 import java.nio.file.Files
 import javax.imageio.ImageIO
 import kotlin.io.path.exists
-
-private val logger = KotlinLogging.logger {}
 
 @ExtendWith(ApplicationExtension::class)
 class ImagesTest {

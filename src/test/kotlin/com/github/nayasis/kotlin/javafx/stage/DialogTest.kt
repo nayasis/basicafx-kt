@@ -1,14 +1,11 @@
 package com.github.nayasis.kotlin.javafx.stage
 
 import com.github.nayasis.kotlin.basica.core.number.floor
-import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.control.Alert.AlertType.INFORMATION
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import tornadofx.*
 import java.lang.Thread.sleep
-
-private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
     launch<DialogTest>(*args)

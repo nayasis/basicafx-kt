@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.javafx.model.Point

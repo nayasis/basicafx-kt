@@ -1,5 +1,6 @@
 package com.github.nayasis.kotlin.javafx.stage.taskprogress
 
+import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.geometry.Insets
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.concurrent.Service
@@ -55,7 +56,7 @@ class TaskProgressViewer: View("task progress view") {
                 try {
                     Thread.sleep(ThreadLocalRandom.current().nextInt(200, 2000).toLong())
                 } catch (e: InterruptedException) {
-                    //e.printStackTrace();
+                    logger.error(e)
                 }
                 updateMessage("Finding friends . . .")
                 updateProgress(0, 100)
@@ -115,7 +116,7 @@ class TaskProgressViewer: View("task progress view") {
     private fun multipleTasksExecutorOnStage() {
         val executorService = Executors.newCachedThreadPool()
         val tasks = ArrayList<Task<Void?>>()
-        for (i in 0..9) {
+        (0..9).forEach { i ->
             val task = task()
             executorService.submit(task)
             tasks.add(task)
@@ -154,7 +155,7 @@ class TaskProgressViewer: View("task progress view") {
     private fun multipleTasksExecutorPopup() {
         val executorService = Executors.newCachedThreadPool()
         val tasks: MutableList<Task<Void?>> = ArrayList()
-        for (i in 0..9) {
+        (0..9).forEach { i ->
             val task = task()
             executorService.submit(task)
             tasks.add(task)

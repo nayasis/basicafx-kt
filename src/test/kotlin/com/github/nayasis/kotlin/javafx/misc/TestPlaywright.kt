@@ -5,10 +5,7 @@ import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import java.nio.file.Files
 import kotlin.io.path.ExperimentalPathApi
-import kotlin.io.path.createTempDirectory
-import kotlin.io.path.deleteRecursively
 
 class TestPlaywright {
     @OptIn(ExperimentalPathApi::class)

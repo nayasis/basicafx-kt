@@ -16,6 +16,7 @@ import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger {}
 
+@Suppress("unused")
 abstract class FxApp: App {
 
     constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(primaryView, *stylesheet)

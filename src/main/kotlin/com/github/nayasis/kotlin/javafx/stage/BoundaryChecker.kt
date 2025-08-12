@@ -1,6 +1,5 @@
 package com.github.nayasis.kotlin.javafx.stage
 
-import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.geometry.Rectangle2D
 import javafx.scene.Scene
 import javafx.scene.control.Dialog
@@ -9,8 +8,6 @@ import javafx.stage.Window
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
-
-private val logger = KotlinLogging.logger {}
 
 @Suppress("MemberVisibilityCanBePrivate")
 class BoundaryChecker {

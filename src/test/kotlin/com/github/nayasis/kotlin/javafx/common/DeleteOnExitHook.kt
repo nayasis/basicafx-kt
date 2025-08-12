@@ -17,12 +17,4 @@ object DeleteOnExitHook {
         deletePaths.add(path)
     }
 
-    fun remove(path: Path): Boolean {
-        return deletePaths.remove(path)
-    }
-
-    fun clear() {
-        deletePaths.clear()
-    }
-
 }

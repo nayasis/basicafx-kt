@@ -1,4 +1,4 @@
-@file:Suppress("MemberVisibilityCanBePrivate")
+@file:Suppress("MemberVisibilityCanBePrivate", "unused")
 
 package com.github.nayasis.kotlin.javafx.misc
 
@@ -150,18 +150,18 @@ fun String.toImage(
 }
 
 fun ImageIcon.toBufferedImage(): BufferedImage {
-    val buffered = BufferedImage(iconWidth, iconHeight, BufferedImage.TYPE_INT_ARGB)
-    buffered.createGraphics().apply {
-        setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC)
-        setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY)
-        setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
-        setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY)
-        setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_GASP)
-    }.let { graphics ->
-        paintIcon(null, graphics,0,0)
-        graphics.dispose()
+    return BufferedImage(iconWidth, iconHeight, TYPE_INT_ARGB).also {
+        it.createGraphics().apply {
+            setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC)
+            setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY)
+            setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
+            setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY)
+            setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_GASP)
+        }.let { graphics ->
+            paintIcon(null, graphics,0,0)
+            graphics.dispose()
+        }
     }
-    return buffered
 }
 
 fun ImageIcon.toImage(): Image {
@@ -175,7 +175,7 @@ fun ImageIcon.toImageOrNull(): Image? {
 fun ByteArray.toBufferedImage(): BufferedImage {
     return this.let {
         if(it.isEmpty()) {
-            BufferedImage(0,0, BufferedImage.TYPE_INT_ARGB)
+            BufferedImage(0,0, TYPE_INT_ARGB)
         } else {
             ByteArrayInputStream(it).use { bis ->
                 ImageIO.read(bis)
@@ -269,7 +269,7 @@ fun String.toBackgroundImage(): BackgroundImage {
 }
 
 fun String.toBase64Image(): String {
-    return this.toImage().let { it.toJpgBinary().toBufferedImage() }.let { image ->
+    return this.toImage().toJpgBinary().toBufferedImage().let { image ->
         ByteArrayOutputStream().use { output ->
             ImageIO.write(image, "jpg", output)
             "data:image/jpeg;base64,${output.toByteArray().encodeBase64().replace(CARRIAGE_RETURN, "")}"
