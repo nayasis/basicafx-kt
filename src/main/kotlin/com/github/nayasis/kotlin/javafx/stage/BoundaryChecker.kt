@@ -1,11 +1,11 @@
 package com.github.nayasis.kotlin.javafx.stage
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.geometry.Rectangle2D
 import javafx.scene.Scene
 import javafx.scene.control.Dialog
 import javafx.stage.Screen
 import javafx.stage.Window
-import mu.KotlinLogging
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min

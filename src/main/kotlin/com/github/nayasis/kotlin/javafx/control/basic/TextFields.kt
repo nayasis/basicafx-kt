@@ -1,9 +1,9 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.basica.core.string.mask
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode.*
-import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 

@@ -1,12 +1,12 @@
 package com.github.nayasis.kotlin.javafx.stage
 
 import com.github.nayasis.kotlin.javafx.model.Point
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.event.EventHandler
 import javafx.scene.Cursor
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.MouseEvent.*
 import javafx.stage.Stage
-import mu.KotlinLogging
 
 private val log = KotlinLogging.logger{}
 

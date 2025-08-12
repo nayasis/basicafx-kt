@@ -5,16 +5,16 @@ plugins {
 	java
 	signing
 	kotlin("jvm") version "2.2.0"
-	kotlin("plugin.noarg") version "1.9.20"
 	id("com.vanniktech.maven.publish") version "0.31.0"
 	id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
-group = "com.github.nayasis"
-version = "0.2.2"
+group = "io.github.nayasis"
+version = "0.2.3"
 
-noArg {
-	invokeInitializers = true
+repositories {
+	mavenLocal()
+	mavenCentral()
 }
 
 java {
@@ -28,18 +28,12 @@ javafx {
 	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
 }
 
-repositories {
-	mavenLocal()
-	mavenCentral()
-}
-
 dependencies {
 
 	implementation("io.github.nayasis:basica-kt:0.3.5")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
-	implementation("org.apache.httpcomponents:httpclient:4.5.14")
 	implementation("org.controlsfx:controlsfx:11.1.1")
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
@@ -52,13 +46,14 @@ dependencies {
 	// kotlin
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("io.github.microutils:kotlin-logging:3.0.5")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.7.3")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.10.2")
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 	// test
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
-	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.1")
+	testImplementation("org.testfx:testfx-junit5:4.0.18")
 
 }
 
@@ -77,15 +72,15 @@ tasks.withType<JavaCompile> {
 }
 
 // Playwright 설치 task 추가
-tasks.register("installPlaywright") {
-	group = "playwright"
-	description = "Install Playwright browsers"
-	doLast {
-		exec {
-			commandLine("npx", "playwright", "install", "chromium")
-		}
-	}
-}
+//tasks.register("installPlaywright") {
+//	group = "playwright"
+//	description = "Install Playwright browsers"
+//	doLast {
+//		exec {
+//			commandLine("npx", "playwright", "install", "chromium")
+//		}
+//	}
+//}
 
 mavenPublishing {
 	signAllPublications()

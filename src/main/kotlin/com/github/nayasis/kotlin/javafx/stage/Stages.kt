@@ -3,6 +3,7 @@ package com.github.nayasis.kotlin.javafx.stage
 import com.github.nayasis.kotlin.basica.core.extension.FieldProperty
 import com.github.nayasis.kotlin.javafx.property.InsetProperty
 import com.github.nayasis.kotlin.javafx.scene.*
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
 import javafx.scene.Node
@@ -12,7 +13,6 @@ import javafx.scene.control.Dialog
 import javafx.stage.Stage
 import javafx.stage.Window
 import javafx.stage.WindowEvent
-import mu.KotlinLogging
 import java.io.Serializable
 
 private val logger = KotlinLogging.logger {}

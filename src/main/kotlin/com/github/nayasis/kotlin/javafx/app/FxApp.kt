@@ -4,10 +4,10 @@ import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.basica.exception.rootCause
 import com.github.nayasis.kotlin.javafx.preloader.BasePreloader
 import com.github.nayasis.kotlin.javafx.stage.Dialog
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.application.Platform
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import mu.KotlinLogging
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options

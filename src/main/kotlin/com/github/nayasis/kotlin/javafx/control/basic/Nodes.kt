@@ -13,9 +13,6 @@ import javafx.scene.layout.AnchorPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Pane
 import javafx.scene.layout.VBox
-import mu.KotlinLogging
-
-private val log = KotlinLogging.logger{}
 
 fun Node.repack() =
     this.managedProperty().bind(this.visibleProperty())
@@ -42,10 +39,10 @@ val EventTarget.children: List<EventTarget>
             is MenuBar -> menus
             is Menu -> items
             is MenuItem -> emptyList()
-            is Pane -> children
-            is Group -> children
             is HBox -> children
             is VBox -> children
+            is Pane -> children
+            is Group -> children
             is Control -> {
                 try {
                     (skin as? SkinBase<*>)?.children ?: emptyList()
@@ -72,12 +69,12 @@ val Node.allParents: List<Node>
 
 val EventTarget.fxId: String
     get() = when (this) {
-        is Node -> this.id
-        is TableColumnBase<*,*> -> this.id
         is Pane -> this.id
-        is MenuItem -> this.id
         is TabPane -> this.id
+        is TableColumnBase<*,*> -> this.id
+        is MenuItem -> this.id
         is Tab -> this.id
+        is Node -> this.id
         else -> null
     } ?: ""
 

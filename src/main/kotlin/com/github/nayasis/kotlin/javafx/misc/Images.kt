@@ -4,15 +4,10 @@ package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.core.io.isFile
 import com.github.nayasis.kotlin.basica.core.io.makeDir
-import com.github.nayasis.kotlin.basica.core.string.decodeBase64
-import com.github.nayasis.kotlin.basica.core.string.encodeBase64
-import com.github.nayasis.kotlin.basica.core.string.find
-import com.github.nayasis.kotlin.basica.core.string.toFile
-import com.github.nayasis.kotlin.basica.core.string.toPath
-import com.github.nayasis.kotlin.basica.core.string.toUrl
+import com.github.nayasis.kotlin.basica.core.string.*
 import com.github.nayasis.kotlin.basica.core.url.toFile
 import com.microsoft.playwright.Page
-import com.microsoft.playwright.options.WaitUntilState
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
@@ -21,18 +16,13 @@ import javafx.scene.layout.BackgroundPosition.CENTER
 import javafx.scene.layout.BackgroundRepeat.ROUND
 import javafx.scene.layout.BackgroundSize
 import javafx.scene.layout.BackgroundSize.AUTO
-import mu.KotlinLogging
 import net.sf.image4j.codec.ico.ICODecoder
 import java.awt.AlphaComposite
 import java.awt.RenderingHints.*
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_CUSTOM
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.lang.Math.toRadians
 import java.net.URL
 import java.nio.file.Path
@@ -47,8 +37,6 @@ import kotlin.math.sin
 private val logger = KotlinLogging.logger {}
 
 private val CARRIAGE_RETURN = "[\n\r]".toRegex()
-
-private const val DEFAULT_USER_AGENT  = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
 
 private var webBrowser: WebBrowser? = null
 
@@ -80,42 +68,15 @@ fun Image.cropRight(pixel: Int): Image {
         WritableImage(pixelReader,0,0, width - pixel, height)
 }
 
-fun Image.toBufferedImage(another: BufferedImage? = null): BufferedImage {
-    return this.let { SwingFXUtils.fromFXImage(it,another) }
-}
-
-fun ByteArray.toBufferedImage(): BufferedImage {
-    return this.let {
-        if(it.isEmpty()) {
-            BufferedImage(0,0, BufferedImage.TYPE_INT_ARGB)
-        } else {
-            ByteArrayInputStream(it).use { bis ->
-                ImageIO.read(bis)
-            }
-        }
-    }
-}
-
-fun File.toBufferedImage(): BufferedImage {
-    return this.toImage().toBufferedImage()
-}
-
-fun Path.toBufferedImage(): BufferedImage {
-    return this.toImage().toBufferedImage()
-}
-
 /**
  * convert to buffered image
  *
- * @param connectionTimeout         timeout to establish a connection with a remote host
- * @param socketTimeout             timeout to wait for response data
- * @param connectionRequestTimeout  timeout pulling out of a connection pool
+ * @param timeout timeout to wait response
  * @return BufferedImage
  */
 fun URL.toBufferedImage(
-    connectionTimeout: Double = 30_000.0,
-): BufferedImage? {
-
+    timeout: Double = 30_000.0,
+): BufferedImage {
     return when {
         this.protocol == "file" -> this.toFile().toBufferedImage()
         else -> {
@@ -126,10 +87,10 @@ fun URL.toBufferedImage(
                     webBrowser = null
                 })
             }
-            webBrowser?.withPage { page ->
+            webBrowser!!.withPage { page ->
                 page.navigate(this.toString(),
                     Page.NavigateOptions().apply {
-                        timeout = connectionTimeout
+                        this.timeout = timeout
                     }
                 ).body().toBufferedImage()
             }
@@ -145,10 +106,6 @@ fun File.toImage(): Image {
     }
 }
 
-fun File.toImageOrNull(): Image? {
-    return runCatching { toImage() }.getOrNull()
-}
-
 fun Path.toImage(): Image {
     if(this.isFile()) {
         return Image("${toFile().toURI()}")
@@ -157,61 +114,39 @@ fun Path.toImage(): Image {
     }
 }
 
-fun Path.toImageOrNull(): Image? {
-    return runCatching { toImage() }.getOrNull()
-}
-
 /**
  * convert to image
  *
- * @param connectionTimeout         timeout to establish a connection with a remote host
- * @param socketTimeout             timeout to wait for response data
- * @param connectionRequestTimeout  timeout pulling out of a connection pool
+ * @param timeout timeout to wait response
  * @return Image
  */
 fun URL.toImage(
-    connectionTimeout: Int        = 1 * 1000,
-    socketTimeout: Int            = 3 * 1000,
-    connectionRequestTimeout: Int = 1 * 1000,
+    timeout: Double = 30_000.0,
 ): Image {
-    return this.toBufferedImage(connectionTimeout, socketTimeout, connectionRequestTimeout)?.toImage() ?: throw IOException("can not be converted to image. ($this)")
+    return this.toBufferedImage(timeout).toImage()
 }
 
 
 /**
  * convert to image
  *
- * @param connectionTimeout         timeout to establish a connection with a remote host
- * @param socketTimeout             timeout to wait for response data
- * @param connectionRequestTimeout  timeout pulling out of a connection pool
+ * @param timeout timeout to wait response
  * @return Image
  */
 fun String.toImage(
-    connectionTimeout: Int        = 1 * 1000,
-    socketTimeout: Int            = 3 * 1000,
-    connectionRequestTimeout: Int = 1 * 1000,
+    timeout: Double = 30_000.0,
 ): Image {
-    return this.let { url -> when {
-        url.find("^http(s?)://".toRegex()) -> url.toUrl().toImage(connectionTimeout,socketTimeout,connectionRequestTimeout)
+    return runCatching { this.let { url -> when {
+        url.find("^http(s?)://".toRegex()) -> url.toUrl().toImage(timeout)
         url.find("^data:.*?;base64,".toRegex()) -> {
             val encoded = url.replaceFirst("^data:.*?;base64,".toRegex(), "")
             encoded.decodeBase64<ByteArray>().toImage()
         }
         url.toFile().exists() -> url.toFile().toImage()
-        else -> throw IOException("can not be converted to image. ($this)")
-    }}
-}
-
-fun String.toImageOrNull(
-    connectionTimeout: Int        = 1 * 1000,
-    socketTimeout: Int            = 3 * 1000,
-    connectionRequestTimeout: Int = 1 * 1000,
-): Image? {
-    return runCatching { toImage(
-        connectionTimeout,
-        socketTimeout,
-        connectionRequestTimeout,
-    ) }.getOrNull()
+        else -> throw IOException("not a valid URL or file path.")
+    }}}.getOrElse {
+        throw IOException("can not be converted to image. ($this)", it)
+    }
 }
 
 fun ImageIcon.toBufferedImage(): BufferedImage {
@@ -237,20 +172,28 @@ fun ImageIcon.toImageOrNull(): Image? {
     return runCatching { toImage() }.getOrNull()
 }
 
-fun ByteArray.toImage(another: WritableImage? = null) {
-    return this.toBufferedImage().toImage(another)
+fun ByteArray.toBufferedImage(): BufferedImage {
+    return this.let {
+        if(it.isEmpty()) {
+            BufferedImage(0,0, BufferedImage.TYPE_INT_ARGB)
+        } else {
+            ByteArrayInputStream(it).use { bis ->
+                ImageIO.read(bis)
+            } ?: throw IOException("can not convert byte array to BufferedImage. (size=${it.size})")
+        }
+    }
 }
 
-fun ByteArray.toImageOrNull(): Image? {
-    return runCatching { this.toImage() }.getOrNull()
+fun ByteArray.toImage(): Image {
+    return this.toBufferedImage().toImage()
 }
 
 fun BufferedImage.toImage(): Image {
     return this.let { SwingFXUtils.toFXImage(it,null) }
 }
 
-fun BufferedImage.toImageOrNull(): Image? {
-    return runCatching { this.toImage() }.getOrNull()
+fun Image.toBufferedImage(): BufferedImage {
+    return this.let { SwingFXUtils.fromFXImage(it, null) }
 }
 
 fun Image.toBinary(format: String = "jpg"): ByteArray {
@@ -284,8 +227,16 @@ fun BufferedImage.toJpgBinary(): ByteArray {
     return this.removeAlpha().toBinary("jpg")
 }
 
+fun File.toBufferedImage(): BufferedImage {
+    return this.toImage().toBufferedImage()
+}
+
 fun File.toJpgBinary(): ByteArray {
     return this.toImage().toJpgBinary()
+}
+
+fun Path.toBufferedImage(): BufferedImage {
+    return this.toImage().toBufferedImage()
 }
 
 fun Path.toJpgBinary(): ByteArray {

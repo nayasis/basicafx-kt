@@ -6,12 +6,12 @@ import com.github.nayasis.kotlin.javafx.control.basic.fxId
 import com.github.nayasis.kotlin.javafx.scene.previousZoomInset
 import com.github.nayasis.kotlin.javafx.stage.MaximizedProperty
 import com.github.nayasis.kotlin.javafx.stage.previousBoundary
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.event.EventTarget
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
-import mu.KotlinLogging
 import org.controlsfx.control.CheckComboBox
 import java.io.Serializable
 import kotlin.math.max

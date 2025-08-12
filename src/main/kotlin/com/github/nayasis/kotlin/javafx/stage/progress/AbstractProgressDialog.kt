@@ -2,9 +2,9 @@
 
 package com.github.nayasis.kotlin.javafx.stage.progress
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.stage.Modality
 import javafx.stage.Window
-import mu.KotlinLogging
 import tornadofx.TaskStatus
 import tornadofx.awaitUntil
 import tornadofx.runAsync

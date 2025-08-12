@@ -1,15 +1,8 @@
 package com.github.nayasis.kotlin.javafx.control.combobox
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.event.EventHandler
-import mu.KotlinLogging
-import tornadofx.App
-import tornadofx.Stylesheet
-import tornadofx.View
-import tornadofx.action
-import tornadofx.attachTo
-import tornadofx.button
-import tornadofx.launch
-import tornadofx.vbox
+import tornadofx.*
 
 private val logger = KotlinLogging.logger {}
 

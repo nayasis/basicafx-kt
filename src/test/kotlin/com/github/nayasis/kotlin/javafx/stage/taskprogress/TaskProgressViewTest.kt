@@ -1,7 +1,7 @@
 package com.github.nayasis.kotlin.javafx.stage.taskprogress
 
 import com.github.nayasis.kotlin.javafx.geometry.Insets
-import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialogTest
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.concurrent.Service
 import javafx.concurrent.Task
 import javafx.geometry.Pos
@@ -9,16 +9,10 @@ import javafx.scene.Scene
 import javafx.stage.Modality
 import javafx.stage.Popup
 import javafx.stage.Stage
-import mu.KotlinLogging
 import org.controlsfx.control.Notifications
 import org.controlsfx.control.TaskProgressView
 import org.controlsfx.dialog.ProgressDialog
-import tornadofx.App
-import tornadofx.View
-import tornadofx.button
-import tornadofx.launch
-import tornadofx.runLater
-import tornadofx.vbox
+import tornadofx.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
