@@ -4,17 +4,8 @@ import com.github.nayasis.kotlin.basica.core.number.floor
 import javafx.scene.control.Alert.AlertType.INFORMATION
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import mu.KotlinLogging
-import tornadofx.App
-import tornadofx.View
-import tornadofx.action
-import tornadofx.button
-import tornadofx.label
-import tornadofx.launch
-import tornadofx.vbox
+import tornadofx.*
 import java.lang.Thread.sleep
-
-private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
     launch<DialogTest>(*args)

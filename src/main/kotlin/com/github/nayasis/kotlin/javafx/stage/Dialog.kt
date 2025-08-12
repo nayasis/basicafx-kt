@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.nayasis.kotlin.javafx.stage
 
 import com.github.nayasis.kotlin.basica.core.extension.ifEmpty
@@ -12,14 +14,11 @@ import com.github.nayasis.kotlin.basica.etc.Platforms
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
 import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.Node
-import javafx.scene.control.Alert
+import javafx.scene.control.*
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.control.Alert.AlertType.*
-import javafx.scene.control.Button
-import javafx.scene.control.ButtonType
-import javafx.scene.control.TextArea
-import javafx.scene.control.TextInputDialog
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.GridPane
@@ -30,7 +29,6 @@ import javafx.stage.FileChooser.ExtensionFilter
 import javafx.stage.Modality.WINDOW_MODAL
 import javafx.stage.Stage
 import javafx.stage.Window
-import mu.KotlinLogging
 import tornadofx.FileChooserMode
 import tornadofx.FileChooserMode.*
 import java.io.File

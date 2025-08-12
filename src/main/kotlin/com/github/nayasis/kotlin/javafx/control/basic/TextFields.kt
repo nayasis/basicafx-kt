@@ -1,20 +1,19 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
 import com.github.nayasis.kotlin.basica.core.string.mask
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.control.TextField
 import javafx.scene.input.KeyCode.*
-import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
 @Suppress("UNUSED_VARIABLE")
-fun TextField.addMask(pattern: String,pass: Char = '#',modifier: ((inputText:String) -> String)? = null): TextField {
-    val maskChars = pattern.toCharArray().toSet().filter { it != pass }.toSet()
+fun TextField.addMask(pattern: String, pass: Char = '#', hide: Char = '*', modifier: ((inputText:String) -> String)? = null): TextField {
     this.addKeyReleased{ e ->
         if( e.code in listOf(HOME,END,LEFT,RIGHT,SHIFT,CONTROL,CAPS,ESCAPE))
             return@addKeyReleased
         val prevCaret = this.caretPosition
-        val maskedVal = (modifier?.invoke(text) ?: text).mask(pattern)
+        val maskedVal = (modifier?.invoke(text) ?: text).mask(pattern, pass, hide)
         val currCaret = when {
             text.length < maskedVal.length -> prevCaret + (maskedVal.length - text.length) + 1
             e.code == BACK_SPACE -> prevCaret

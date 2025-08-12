@@ -4,14 +4,12 @@ package com.github.nayasis.kotlin.javafx.stage.progress
 
 import javafx.stage.Modality
 import javafx.stage.Window
-import mu.KotlinLogging
 import tornadofx.TaskStatus
 import tornadofx.awaitUntil
 import tornadofx.runAsync
 import tornadofx.runLater
 
-private val logger = KotlinLogging.logger {}
-
+@Suppress("unused")
 abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
 
     val stage = ProgressDialogStage(progressCount)

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.nayasis.kotlin.javafx.property
 
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -11,15 +13,12 @@ import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
-import mu.KotlinLogging
 import org.controlsfx.control.CheckComboBox
 import java.io.Serializable
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
-
-private val logger = KotlinLogging.logger{}
 
 private const val PREFIX_ID = "_tmp_id"
 private var seq = 0
@@ -155,7 +154,7 @@ data class StageProperty(
     }
 
     private fun setFxId(node: EventTarget): Boolean {
-        return if( node.fxId.isNullOrEmpty() ) try {
+        return if( node.fxId.isEmpty() ) try {
             when (node) {
                 is Node -> node.id = "${PREFIX_ID}_${seq++}"
                 is MenuItem -> node.id = "${PREFIX_ID}_${seq++}"

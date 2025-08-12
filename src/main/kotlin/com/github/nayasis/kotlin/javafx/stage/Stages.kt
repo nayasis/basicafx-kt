@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.github.nayasis.kotlin.javafx.stage
 
 import com.github.nayasis.kotlin.basica.core.extension.FieldProperty
@@ -12,10 +14,7 @@ import javafx.scene.control.Dialog
 import javafx.stage.Stage
 import javafx.stage.Window
 import javafx.stage.WindowEvent
-import mu.KotlinLogging
 import java.io.Serializable
-
-private val logger = KotlinLogging.logger {}
 
 class Stages { companion object {
 

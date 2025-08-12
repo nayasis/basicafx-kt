@@ -1,11 +1,13 @@
+@file:Suppress("unused")
+
 package com.github.nayasis.kotlin.javafx.misc
 
 import com.github.nayasis.kotlin.basica.core.string.find
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.image.Image
 import javafx.scene.input.Clipboard
 import javafx.scene.input.DragEvent
 import javafx.scene.input.Dragboard
-import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 

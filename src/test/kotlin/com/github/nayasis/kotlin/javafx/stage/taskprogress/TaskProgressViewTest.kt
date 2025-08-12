@@ -1,7 +1,8 @@
 package com.github.nayasis.kotlin.javafx.stage.taskprogress
 
+import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.geometry.Insets
-import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialogTest
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.concurrent.Service
 import javafx.concurrent.Task
 import javafx.geometry.Pos
@@ -9,16 +10,10 @@ import javafx.scene.Scene
 import javafx.stage.Modality
 import javafx.stage.Popup
 import javafx.stage.Stage
-import mu.KotlinLogging
 import org.controlsfx.control.Notifications
 import org.controlsfx.control.TaskProgressView
 import org.controlsfx.dialog.ProgressDialog
-import tornadofx.App
-import tornadofx.View
-import tornadofx.button
-import tornadofx.launch
-import tornadofx.runLater
-import tornadofx.vbox
+import tornadofx.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
@@ -61,7 +56,7 @@ class TaskProgressViewer: View("task progress view") {
                 try {
                     Thread.sleep(ThreadLocalRandom.current().nextInt(200, 2000).toLong())
                 } catch (e: InterruptedException) {
-                    //e.printStackTrace();
+                    logger.error(e)
                 }
                 updateMessage("Finding friends . . .")
                 updateProgress(0, 100)
@@ -121,7 +116,7 @@ class TaskProgressViewer: View("task progress view") {
     private fun multipleTasksExecutorOnStage() {
         val executorService = Executors.newCachedThreadPool()
         val tasks = ArrayList<Task<Void?>>()
-        for (i in 0..9) {
+        (0..9).forEach { i ->
             val task = task()
             executorService.submit(task)
             tasks.add(task)
@@ -160,7 +155,7 @@ class TaskProgressViewer: View("task progress view") {
     private fun multipleTasksExecutorPopup() {
         val executorService = Executors.newCachedThreadPool()
         val tasks: MutableList<Task<Void?>> = ArrayList()
-        for (i in 0..9) {
+        (0..9).forEach { i ->
             val task = task()
             executorService.submit(task)
             tasks.add(task)

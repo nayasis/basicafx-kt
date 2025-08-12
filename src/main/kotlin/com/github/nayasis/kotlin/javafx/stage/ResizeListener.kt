@@ -6,10 +6,8 @@ import javafx.scene.Cursor
 import javafx.scene.input.MouseEvent
 import javafx.scene.input.MouseEvent.*
 import javafx.stage.Stage
-import mu.KotlinLogging
 
-private val log = KotlinLogging.logger{}
-
+@Suppress("unused")
 class ResizeListener(
     private val stage: Stage?,
     private val margin: Int = 5

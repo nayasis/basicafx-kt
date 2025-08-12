@@ -2,21 +2,21 @@ package com.github.nayasis.kotlin.javafx.control.combobox
 
 import com.github.nayasis.kotlin.basica.etc.error
 import com.github.nayasis.kotlin.javafx.control.basic.addKeyPressed
+import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ListView
 import javafx.scene.control.skin.ComboBoxListViewSkin
 import javafx.scene.input.KeyCode.*
 import javafx.util.StringConverter
-import mu.KotlinLogging
 import tornadofx.runLater
 import kotlin.math.max
 import kotlin.math.min
 
 private val logger = KotlinLogging.logger {}
 
+@Suppress("unused")
 class ItemComboBox: ComboBox<ItemCombo> {
 
-    constructor()
     constructor(items: Collection<ItemCombo>? = null) {
         if( ! items.isNullOrEmpty() )
             this.items.addAll(items)
@@ -44,7 +44,7 @@ class ItemComboBox: ComboBox<ItemCombo> {
         get() {
             return try {
                 selectionModel.selectedItem
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 null
             }
         }

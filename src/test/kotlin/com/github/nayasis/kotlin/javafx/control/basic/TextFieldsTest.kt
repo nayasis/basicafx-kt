@@ -1,14 +1,7 @@
 package com.github.nayasis.kotlin.javafx.control.basic
 
-import mu.KotlinLogging
-import tornadofx.App
-import tornadofx.View
-import tornadofx.hbox
-import tornadofx.label
-import tornadofx.launch
-import tornadofx.onChange
-import tornadofx.textfield
-import tornadofx.vbox
+import io.github.oshai.kotlinlogging.KotlinLogging
+import tornadofx.*
 
 private val logger = KotlinLogging.logger {}
 
