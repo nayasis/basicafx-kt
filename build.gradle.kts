@@ -34,13 +34,11 @@ dependencies {
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
-	implementation("org.controlsfx:controlsfx:11.1.1")
+	implementation("org.controlsfx:controlsfx:11.2.2")
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
 	implementation("ch.qos.logback:logback-classic:1.5.13")
 	implementation("com.microsoft.playwright:playwright:1.54.0")
-
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 
 	// kotlin
@@ -71,24 +69,19 @@ tasks.withType<JavaCompile> {
 	options.release.set(22)
 }
 
-// Playwright 설치 task 추가
-//tasks.register("installPlaywright") {
-//	group = "playwright"
-//	description = "Install Playwright browsers"
-//	doLast {
-//		exec {
-//			commandLine("npx", "playwright", "install", "chromium")
-//		}
-//	}
-//}
+tasks.register<Exec>("installPlaywright") {
+	group = "playwright"
+	description = "Install Playwright browsers"
+	commandLine("npx", "playwright", "install", "chromium")
+}
 
 mavenPublishing {
 	signAllPublications()
 	publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 	pom {
 		name.set(rootProject.name)
-		description.set("Basic Kotlin utility library providing common functionality for Kotlin applications.")
-		url.set("https://github.com/nayasis/basica-kt")
+		description.set("Basic JavaFx library based on Kotlin")
+		url.set("https://github.com/nayasis/basicafx-kt")
 		licenses {
 			license {
 				name.set("Apache License, Version 2.0")
@@ -103,12 +96,13 @@ mavenPublishing {
 			}
 		}
 		scm {
-			connection.set("scm:git:github.com/nayasis/basica-kt.git")
-			developerConnection.set("scm:git:ssh://github.com/nayasis/basica-kt.git")
-			url.set("https://github.com/nayasis/basica-kt/tree/master")
+			connection.set("scm:git:github.com/nayasis/basicafx-kt.git")
+			developerConnection.set("scm:git:ssh://github.com/nayasis/basicafx-kt.git")
+			url.set("https://github.com/nayasis/basicafx-kt/tree/master")
 		}
 	}
 }
+
 val compileKotlin: KotlinCompile by tasks
 compileKotlin.compilerOptions {
 	freeCompilerArgs.set(listOf("-XXLanguage:+BreakContinueInInlineLambdas"))
