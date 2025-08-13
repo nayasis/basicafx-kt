@@ -76,7 +76,12 @@ tasks.register<Exec>("installPlaywright") {
 }
 
 mavenPublishing {
-	signAllPublications()
+	// Skip signing for local Maven repository deployment
+	if (!gradle.startParameter.taskNames.any { 
+		it.contains("publishToMavenLocal") || it.contains("publishMavenPublicationToMavenLocal") 
+	}) {
+		signAllPublications()
+	}
 	publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 	pom {
 		name.set(rootProject.name)
