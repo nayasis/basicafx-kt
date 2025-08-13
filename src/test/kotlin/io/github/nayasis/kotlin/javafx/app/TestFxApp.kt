@@ -1,7 +1,7 @@
 package io.github.nayasis.kotlin.javafx.app
 
-import com.github.nayasis.kotlin.javafx.preloader.BaseSplash
-import com.github.nayasis.kotlin.javafx.preloader.BasePreloader
+import io.github.nayasis.kotlin.javafx.preloader.BaseSplash
+import io.github.nayasis.kotlin.javafx.preloader.BasePreloader
 import tornadofx.*
 
 fun main() {

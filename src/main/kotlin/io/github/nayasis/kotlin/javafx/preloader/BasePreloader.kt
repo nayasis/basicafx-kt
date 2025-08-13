@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.preloader
 
-import com.github.nayasis.kotlin.javafx.stage.Dialog
+import io.github.nayasis.kotlin.javafx.stage.Dialog
 import com.sun.javafx.application.LauncherImpl
 import javafx.application.Preloader
 import javafx.stage.Stage

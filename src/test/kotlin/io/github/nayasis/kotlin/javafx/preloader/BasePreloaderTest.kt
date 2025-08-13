@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.preloader
 
-import com.github.nayasis.kotlin.javafx.misc.runSync
+import io.github.nayasis.kotlin.javafx.misc.runSync
 import javafx.beans.property.SimpleIntegerProperty
 import tornadofx.App
 import tornadofx.View

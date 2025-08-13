@@ -2,9 +2,9 @@
 
 package io.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.core.extension.FieldProperty
-import com.github.nayasis.kotlin.javafx.property.InsetProperty
-import com.github.nayasis.kotlin.javafx.scene.*
+import io.github.nayasis.kotlin.basica.core.extension.FieldProperty
+import io.github.nayasis.kotlin.javafx.property.InsetProperty
+import io.github.nayasis.kotlin.javafx.scene.*
 import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
 import javafx.scene.Node

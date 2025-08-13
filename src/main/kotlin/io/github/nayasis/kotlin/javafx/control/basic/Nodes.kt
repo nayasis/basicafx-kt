@@ -2,8 +2,8 @@
 
 package io.github.nayasis.kotlin.javafx.control.basic
 
-import com.github.nayasis.kotlin.javafx.model.Point
-import com.github.nayasis.kotlin.javafx.stage.stage
+import io.github.nayasis.kotlin.javafx.model.Point
+import io.github.nayasis.kotlin.javafx.stage.stage
 import javafx.event.EventHandler
 import javafx.event.EventTarget
 import javafx.geometry.Insets

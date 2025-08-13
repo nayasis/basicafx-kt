@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.model.Messages
+import io.github.nayasis.kotlin.basica.model.Messages
 import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.Pane

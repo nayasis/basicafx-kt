@@ -1,11 +1,11 @@
 package io.github.nayasis.kotlin.javafx.preloader
 
-import com.github.nayasis.kotlin.basica.core.string.toUri
-import com.github.nayasis.kotlin.javafx.control.basic.bottomAnchor
-import com.github.nayasis.kotlin.javafx.control.basic.leftAnchor
-import com.github.nayasis.kotlin.javafx.control.basic.rightAnchor
-import com.github.nayasis.kotlin.javafx.stage.addMoveHandler
-import com.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
+import io.github.nayasis.kotlin.basica.core.string.toUri
+import io.github.nayasis.kotlin.javafx.control.basic.bottomAnchor
+import io.github.nayasis.kotlin.javafx.control.basic.leftAnchor
+import io.github.nayasis.kotlin.javafx.control.basic.rightAnchor
+import io.github.nayasis.kotlin.javafx.stage.addMoveHandler
+import io.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
 import io.github.nayasis.kotlin.tornadofx.extension.toScene
 import javafx.geometry.Pos
 import javafx.scene.control.Label

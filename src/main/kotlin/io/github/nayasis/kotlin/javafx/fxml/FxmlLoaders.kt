@@ -2,10 +2,10 @@
 
 package io.github.nayasis.kotlin.javafx.fxml
 
-import com.github.nayasis.kotlin.basica.core.klass.isSubclassOf
-import com.github.nayasis.kotlin.basica.etc.error
-import com.github.nayasis.kotlin.javafx.control.basic.allChildrenById
-import com.github.nayasis.kotlin.javafx.stage.Localizator
+import io.github.nayasis.kotlin.basica.core.klass.isSubclassOf
+import io.github.nayasis.kotlin.basica.etc.error
+import io.github.nayasis.kotlin.javafx.control.basic.allChildrenById
+import io.github.nayasis.kotlin.javafx.stage.Localizator
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.fxml.FXMLLoader
 import javafx.scene.Node

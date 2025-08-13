@@ -1,9 +1,9 @@
 package io.github.nayasis.kotlin.javafx.app
 
-import com.github.nayasis.kotlin.basica.etc.error
-import com.github.nayasis.kotlin.basica.exception.rootCause
-import com.github.nayasis.kotlin.javafx.preloader.BasePreloader
-import com.github.nayasis.kotlin.javafx.stage.Dialog
+import io.github.nayasis.kotlin.basica.etc.error
+import io.github.nayasis.kotlin.basica.exception.rootCause
+import io.github.nayasis.kotlin.javafx.preloader.BasePreloader
+import io.github.nayasis.kotlin.javafx.stage.Dialog
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.application.Platform
 import javafx.scene.image.Image

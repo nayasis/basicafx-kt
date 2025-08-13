@@ -1,7 +1,7 @@
 package io.github.nayasis.kotlin.javafx.stage.taskprogress
 
-import com.github.nayasis.kotlin.basica.etc.error
-import com.github.nayasis.kotlin.javafx.geometry.Insets
+import io.github.nayasis.kotlin.basica.etc.error
+import io.github.nayasis.kotlin.javafx.geometry.Insets
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.concurrent.Service
 import javafx.concurrent.Task

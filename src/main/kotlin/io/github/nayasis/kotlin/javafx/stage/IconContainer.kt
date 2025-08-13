@@ -1,10 +1,10 @@
 package io.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.core.io.extension
-import com.github.nayasis.kotlin.basica.core.string.toPath
-import com.github.nayasis.kotlin.basica.core.string.toResource
-import com.github.nayasis.kotlin.basica.core.url.toInputStream
-import com.github.nayasis.kotlin.javafx.misc.toIconImage
+import io.github.nayasis.kotlin.basica.core.io.extension
+import io.github.nayasis.kotlin.basica.core.string.toPath
+import io.github.nayasis.kotlin.basica.core.string.toResource
+import io.github.nayasis.kotlin.basica.core.url.toInputStream
+import io.github.nayasis.kotlin.javafx.misc.toIconImage
 import javafx.scene.image.Image
 import java.io.File
 import java.nio.file.Path

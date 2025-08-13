@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.common
 
-import com.github.nayasis.kotlin.basica.core.io.delete
+import io.github.nayasis.kotlin.basica.core.io.delete
 import java.nio.file.Path
 
 object DeleteOnExitHook {

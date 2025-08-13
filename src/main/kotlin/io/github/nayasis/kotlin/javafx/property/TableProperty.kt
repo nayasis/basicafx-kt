@@ -1,10 +1,10 @@
 package io.github.nayasis.kotlin.javafx.property
 
-import com.github.nayasis.kotlin.basica.core.extension.ifNotNull
-import com.github.nayasis.kotlin.javafx.control.tableview.Position
-import com.github.nayasis.kotlin.javafx.control.tableview.fillFxId
-import com.github.nayasis.kotlin.javafx.control.tableview.focused
-import com.github.nayasis.kotlin.javafx.control.tableview.scroll
+import io.github.nayasis.kotlin.basica.core.extension.ifNotNull
+import io.github.nayasis.kotlin.javafx.control.tableview.Position
+import io.github.nayasis.kotlin.javafx.control.tableview.fillFxId
+import io.github.nayasis.kotlin.javafx.control.tableview.focused
+import io.github.nayasis.kotlin.javafx.control.tableview.scroll
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import tornadofx.runLater

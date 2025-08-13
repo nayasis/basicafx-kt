@@ -2,7 +2,7 @@
 
 package io.github.nayasis.kotlin.javafx.misc
 
-import com.github.nayasis.kotlin.basica.core.string.find
+import io.github.nayasis.kotlin.basica.core.string.find
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.image.Image
 import javafx.scene.input.Clipboard

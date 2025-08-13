@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.app
 
-import com.github.nayasis.kotlin.basica.core.validator.cast
+import io.github.nayasis.kotlin.basica.core.validator.cast
 import tornadofx.DIContainer
 import kotlin.reflect.KClass
 

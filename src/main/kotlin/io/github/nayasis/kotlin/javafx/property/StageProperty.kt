@@ -3,11 +3,11 @@
 package io.github.nayasis.kotlin.javafx.property
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.github.nayasis.kotlin.javafx.control.basic.allChildren
-import com.github.nayasis.kotlin.javafx.control.basic.fxId
-import com.github.nayasis.kotlin.javafx.scene.previousZoomInset
-import com.github.nayasis.kotlin.javafx.stage.MaximizedProperty
-import com.github.nayasis.kotlin.javafx.stage.previousBoundary
+import io.github.nayasis.kotlin.javafx.control.basic.allChildren
+import io.github.nayasis.kotlin.javafx.control.basic.fxId
+import io.github.nayasis.kotlin.javafx.scene.previousZoomInset
+import io.github.nayasis.kotlin.javafx.stage.MaximizedProperty
+import io.github.nayasis.kotlin.javafx.stage.previousBoundary
 import javafx.event.EventTarget
 import javafx.scene.Node
 import javafx.scene.control.*

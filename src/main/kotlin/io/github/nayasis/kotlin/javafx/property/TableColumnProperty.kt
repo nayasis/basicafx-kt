@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.property
 
-import com.github.nayasis.kotlin.basica.core.extension.ifNotNull
+import io.github.nayasis.kotlin.basica.core.extension.ifNotNull
 import javafx.scene.control.TableColumn
 import java.io.Serializable
 

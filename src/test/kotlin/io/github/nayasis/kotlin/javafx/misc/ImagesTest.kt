@@ -1,7 +1,7 @@
 package io.github.nayasis.kotlin.javafx.misc
 
-import com.github.nayasis.kotlin.basica.core.string.toResource
-import com.github.nayasis.kotlin.javafx.common.createTempFile
+import io.github.nayasis.kotlin.basica.core.string.toResource
+import io.github.nayasis.kotlin.javafx.common.createTempFile
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test

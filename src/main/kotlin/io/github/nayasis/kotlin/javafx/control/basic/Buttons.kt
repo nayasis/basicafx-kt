@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.control.basic
 
-import com.github.nayasis.kotlin.javafx.control.glyph.toGraphic
+import io.github.nayasis.kotlin.javafx.control.glyph.toGraphic
 import javafx.scene.control.Button
 import javafx.scene.control.OverrunStyle
 import org.controlsfx.glyphfont.FontAwesome

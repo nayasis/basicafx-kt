@@ -1,9 +1,9 @@
 package io.github.nayasis.kotlin.javafx.app
 
-import com.github.nayasis.kotlin.basica.core.collection.flattenKeys
-import com.github.nayasis.kotlin.basica.core.string.toResource
-import com.github.nayasis.kotlin.basica.core.url.toInputStream
-import com.github.nayasis.kotlin.basica.core.validator.cast
+import io.github.nayasis.kotlin.basica.core.collection.flattenKeys
+import io.github.nayasis.kotlin.basica.core.string.toResource
+import io.github.nayasis.kotlin.basica.core.url.toInputStream
+import io.github.nayasis.kotlin.basica.core.validator.cast
 import org.yaml.snakeyaml.Yaml
 
 class Environment(

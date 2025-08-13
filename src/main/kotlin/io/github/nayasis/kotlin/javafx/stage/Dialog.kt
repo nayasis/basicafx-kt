@@ -2,18 +2,18 @@
 
 package io.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.basica.core.extension.ifEmpty
-import com.github.nayasis.kotlin.basica.core.extension.ifNotEmpty
-import com.github.nayasis.kotlin.basica.core.extension.ifNotNull
-import com.github.nayasis.kotlin.basica.core.io.Paths
-import com.github.nayasis.kotlin.basica.core.io.div
-import com.github.nayasis.kotlin.basica.core.io.exists
-import com.github.nayasis.kotlin.basica.core.io.isReadable
-import com.github.nayasis.kotlin.basica.core.string.toPath
-import com.github.nayasis.kotlin.basica.etc.Platforms
-import com.github.nayasis.kotlin.basica.etc.error
-import com.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
-import com.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
+import io.github.nayasis.kotlin.basica.core.extension.ifEmpty
+import io.github.nayasis.kotlin.basica.core.extension.ifNotEmpty
+import io.github.nayasis.kotlin.basica.core.extension.ifNotNull
+import io.github.nayasis.kotlin.basica.core.io.Paths
+import io.github.nayasis.kotlin.basica.core.io.div
+import io.github.nayasis.kotlin.basica.core.io.exists
+import io.github.nayasis.kotlin.basica.core.io.isReadable
+import io.github.nayasis.kotlin.basica.core.string.toPath
+import io.github.nayasis.kotlin.basica.etc.Platforms
+import io.github.nayasis.kotlin.basica.etc.error
+import io.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
+import io.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.Node
 import javafx.scene.control.*

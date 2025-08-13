@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.stage
 
-import com.github.nayasis.kotlin.javafx.model.Point
+import io.github.nayasis.kotlin.javafx.model.Point
 import javafx.event.EventHandler
 import javafx.scene.Cursor
 import javafx.scene.input.MouseEvent

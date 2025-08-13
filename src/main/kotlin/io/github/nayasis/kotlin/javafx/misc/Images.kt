@@ -2,10 +2,10 @@
 
 package io.github.nayasis.kotlin.javafx.misc
 
-import com.github.nayasis.kotlin.basica.core.io.isFile
-import com.github.nayasis.kotlin.basica.core.io.makeDir
-import com.github.nayasis.kotlin.basica.core.string.*
-import com.github.nayasis.kotlin.basica.core.url.toFile
+import io.github.nayasis.kotlin.basica.core.io.isFile
+import io.github.nayasis.kotlin.basica.core.io.makeDir
+import io.github.nayasis.kotlin.basica.core.string.*
+import io.github.nayasis.kotlin.basica.core.url.toFile
 import com.microsoft.playwright.Page
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.embed.swing.SwingFXUtils

@@ -1,11 +1,11 @@
 package io.github.nayasis.kotlin.javafx.scene
 
-import com.github.nayasis.kotlin.basica.core.extension.FieldProperty
-import com.github.nayasis.kotlin.basica.core.string.message
-import com.github.nayasis.kotlin.javafx.model.Point
-import com.github.nayasis.kotlin.javafx.property.InsetProperty
-import com.github.nayasis.kotlin.javafx.stage.BoundaryChecker
-import com.github.nayasis.kotlin.javafx.stage.ResizeListener
+import io.github.nayasis.kotlin.basica.core.extension.FieldProperty
+import io.github.nayasis.kotlin.basica.core.string.message
+import io.github.nayasis.kotlin.javafx.model.Point
+import io.github.nayasis.kotlin.javafx.property.InsetProperty
+import io.github.nayasis.kotlin.javafx.stage.BoundaryChecker
+import io.github.nayasis.kotlin.javafx.stage.ResizeListener
 import javafx.beans.property.ReadOnlyBooleanWrapper
 import javafx.event.EventHandler
 import javafx.geometry.Insets

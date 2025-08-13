@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
-import com.github.nayasis.kotlin.javafx.stage.Dialog
+import io.github.nayasis.kotlin.javafx.stage.Dialog
 import javafx.stage.Stage
 import tornadofx.App
 import tornadofx.Stylesheet.Companion.button

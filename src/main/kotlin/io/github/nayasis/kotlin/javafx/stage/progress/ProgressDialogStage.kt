@@ -1,9 +1,9 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
-import com.github.nayasis.kotlin.javafx.control.basic.setMoveHandler
-import com.github.nayasis.kotlin.javafx.control.basic.vmargin
-import com.github.nayasis.kotlin.javafx.geometry.Insets
-import com.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
+import io.github.nayasis.kotlin.javafx.control.basic.setMoveHandler
+import io.github.nayasis.kotlin.javafx.control.basic.vmargin
+import io.github.nayasis.kotlin.javafx.geometry.Insets
+import io.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
 import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar

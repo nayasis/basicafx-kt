@@ -9,7 +9,7 @@ import ch.qos.logback.core.FileAppender
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
 import ch.qos.logback.core.util.FileSize
-import com.github.nayasis.kotlin.basica.core.extension.ifEmpty
+import io.github.nayasis.kotlin.basica.core.extension.ifEmpty
 import org.slf4j.LoggerFactory
 
 class LoggerConfig(

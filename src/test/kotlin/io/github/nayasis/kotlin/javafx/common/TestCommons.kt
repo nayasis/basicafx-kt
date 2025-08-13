@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.common
 
-import com.github.nayasis.kotlin.basica.core.io.invariantPath
+import io.github.nayasis.kotlin.basica.core.io.invariantPath
 import io.github.oshai.kotlinlogging.KotlinLogging
 import java.io.File
 import java.nio.file.Files

@@ -1,9 +1,9 @@
 package io.github.nayasis.kotlin.javafx.control.tableview
 
-import com.github.nayasis.kotlin.basica.exception.implements.NotFound
-import com.github.nayasis.kotlin.javafx.control.tableview.ScrollMode.*
-import com.github.nayasis.kotlin.javafx.control.tableview.column.children
-import com.github.nayasis.kotlin.javafx.control.tableview.column.findBy
+import io.github.nayasis.kotlin.basica.exception.implements.NotFound
+import io.github.nayasis.kotlin.javafx.control.tableview.ScrollMode.*
+import io.github.nayasis.kotlin.javafx.control.tableview.column.children
+import io.github.nayasis.kotlin.javafx.control.tableview.column.findBy
 import javafx.scene.control.IndexedCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView

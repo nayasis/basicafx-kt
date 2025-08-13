@@ -1,8 +1,8 @@
 package io.github.nayasis.kotlin.javafx.property
 
-import com.github.nayasis.kotlin.javafx.misc.Desktop
-import com.github.nayasis.kotlin.javafx.model.Point
-import com.github.nayasis.kotlin.javafx.stage.BoundaryChecker
+import io.github.nayasis.kotlin.javafx.misc.Desktop
+import io.github.nayasis.kotlin.javafx.model.Point
+import io.github.nayasis.kotlin.javafx.stage.BoundaryChecker
 import javafx.geometry.Rectangle2D
 import javafx.scene.control.Dialog
 import javafx.stage.Window

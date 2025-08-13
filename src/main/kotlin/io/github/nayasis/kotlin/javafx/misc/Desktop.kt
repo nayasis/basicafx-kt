@@ -1,7 +1,7 @@
 package io.github.nayasis.kotlin.javafx.misc
 
-import com.github.nayasis.kotlin.basica.etc.Platforms
-import com.github.nayasis.kotlin.basica.exec.Command
+import io.github.nayasis.kotlin.basica.etc.Platforms
+import io.github.nayasis.kotlin.basica.exec.Command
 import javafx.scene.image.Image
 import javafx.scene.input.Clipboard
 import javafx.scene.input.ClipboardContent

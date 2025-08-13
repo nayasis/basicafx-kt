@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.misc
 
-import com.github.nayasis.kotlin.javafx.common.createTempDir
+import io.github.nayasis.kotlin.javafx.common.createTempDir
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import org.junit.jupiter.api.Disabled

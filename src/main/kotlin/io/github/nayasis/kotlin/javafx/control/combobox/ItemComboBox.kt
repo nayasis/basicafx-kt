@@ -1,7 +1,7 @@
 package io.github.nayasis.kotlin.javafx.control.combobox
 
-import com.github.nayasis.kotlin.basica.etc.error
-import com.github.nayasis.kotlin.javafx.control.basic.addKeyPressed
+import io.github.nayasis.kotlin.basica.etc.error
+import io.github.nayasis.kotlin.javafx.control.basic.addKeyPressed
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.scene.control.ComboBox
 import javafx.scene.control.ListView
