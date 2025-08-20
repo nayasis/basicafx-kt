@@ -36,3 +36,4 @@ out/
 .vscode/
 /test.png
 /log/log
+/log/

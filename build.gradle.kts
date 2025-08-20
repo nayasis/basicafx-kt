@@ -53,6 +53,11 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.1")
 	testImplementation("org.testfx:testfx-junit5:4.0.18")
 
+//	testImplementation("com.techsenger.jeditermfx:jeditermfx:1.1.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-core:1.1.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-ui:1.1.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0")
+
 }
 
 kotlin {
