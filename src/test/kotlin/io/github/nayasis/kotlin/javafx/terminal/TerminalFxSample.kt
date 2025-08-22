@@ -7,7 +7,6 @@ import com.techsenger.jeditermfx.ui.DefaultHyperlinkFilter
 import com.techsenger.jeditermfx.ui.JediTermFxWidget
 import com.techsenger.jeditermfx.ui.settings.DefaultSettingsProvider
 import io.github.oshai.kotlinlogging.KotlinLogging
-import javafx.scene.control.Label
 import javafx.stage.Stage
 import tornadofx.*
 import java.nio.charset.StandardCharsets
@@ -22,31 +21,42 @@ fun main(vararg args: String) {
 class TerminalFxSample: App(TerminalFxSampleView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
-        // 화면 크기를 300x200으로 설정
+        // set window size to 300 x 200
         stage.apply {
-            width     = 300.0
-            height    = 200.0
-            minWidth  = 300.0
-            minHeight = 200.0
+            width     = 500.0
+            height    = 400.0
+            minWidth  = width
+            minHeight = height
         }
     }
 }
 
 class TerminalFxSampleView : View("TerminalFx Sample") {
 
-    private lateinit var titleLabel: Label
+    override val root = vbox(spacing = 0) {
 
-    override val root = vbox {
-        titleLabel = label("This is a sample terminal application using JavaFX.")
-        button("Click Me") {
-            action {
-                val widget = createTerminal()
-                widget.pane.attachTo(this@vbox)
+        val widget = createTerminal()
+        widget.pane.also {
+            it.prefWidthProperty().bind(widthProperty())
+            it.prefHeightProperty().bind(heightProperty())
+            it.minWidthProperty().bind(minWidthProperty())
+            it.minHeightProperty().bind(minHeightProperty())
+            it.maxWidthProperty().bind(maxWidthProperty())
+            it.maxHeightProperty().bind(maxHeightProperty())
+        }
+        widget.pane.attachTo(this)
 
+        val self = this
+
+        title
+
+        runLater {
+//            Thread.sleep(30_000)
+            runAsync{
                 widget.ttyConnector.waitFor()
-
-                // 명령어 실행 완료 후 제목에 "done" 표시
-                titleLabel.text = "This is a sample terminal application using JavaFX. - done"
+                runLater {
+                    titleProperty.set("Done ${titleProperty.get()}")
+                }
             }
         }
     }
@@ -54,7 +64,7 @@ class TerminalFxSampleView : View("TerminalFx Sample") {
 }
 
 private fun createTerminal(): JediTermFxWidget {
-    return JediTermFxWidget(80, 24, DarkThemeSettingsProvider()).apply {
+    return JediTermFxWidget(80, 200, DefaultSettingsProvider()).apply {
         ttyConnector = createTtyConnector()
         addHyperlinkFilter(DefaultHyperlinkFilter())
         start()
@@ -73,11 +83,17 @@ class DarkThemeSettingsProvider : DefaultSettingsProvider() {
 
 private fun createTtyConnector(): PtyProcessTtyConnector {
     try {
-        val command = listOf("ls", "-al")
-        val envs = HashMap<String,String>(System.getenv()).apply {
-            put("TERM", "xterm-256color")
-        }
-        val process = PtyProcessBuilder().setCommand(command.toTypedArray()).setEnvironment(envs).start()
+//        val command = listOf("ls", "-al")
+//        val command = listOf("cmd.exe", "/c", "echo", "Hello", "&&", "timeout", "/t", "30")
+//        val command = listOf("cmd.exe")
+        val command = listOf("c:/project_ref/test/test.exe", "10")
+//        val envs = System.getenv().toMutableMap().apply {
+//            put("TERM", "xterm-256color")
+//        }
+        val process = PtyProcessBuilder().setCommand(command.toTypedArray())
+//            .setEnvironment(envs)
+            .start()
+
         return PtyProcessTtyConnector(process, StandardCharsets.UTF_8)
     } catch (e: Exception) {
         throw IllegalStateException(e)
