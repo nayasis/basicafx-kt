@@ -53,10 +53,15 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.1")
 	testImplementation("org.testfx:testfx-junit5:4.0.18")
 
-//	testImplementation("com.techsenger.jeditermfx:jeditermfx:1.1.0")
+	// jeditermfx for terminal UI
 	testImplementation("com.techsenger.jeditermfx:jeditermfx-core:1.1.0")
 	testImplementation("com.techsenger.jeditermfx:jeditermfx-ui:1.1.0")
-	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0") {
+		exclude(group = "org.jetbrains.pty4j", module = "purejavacomm")
+	}
+	
+	// pty4j for terminal functionality
+	testImplementation("org.jetbrains.pty4j:pty4j:0.13.10")
 
 }
 

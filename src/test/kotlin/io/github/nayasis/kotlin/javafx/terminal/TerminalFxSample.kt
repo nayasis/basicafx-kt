@@ -10,33 +10,49 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.stage.Stage
 import tornadofx.*
 import java.nio.charset.StandardCharsets
-
+import org.slf4j.LoggerFactory
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 
 private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
+    configureLogging()
     launch<TerminalFxSample>(*args)
+}
+
+private fun configureLogging() {
+    listOf(
+        "com.techsenger.jeditermfx.core.emulator.JediEmulator",
+        "com.techsenger.jeditermfx.core",
+        "com.techsenger.jeditermfx.ui",
+        "com.techsenger.jeditermfx",
+        "com.pty4j"
+    ).forEach { packageName ->
+        (LoggerFactory.getLogger(packageName) as Logger).level = Level.WARN
+    }
 }
 
 class TerminalFxSample: App(TerminalFxSampleView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
-        // set window size to 300 x 200
+        // set window size for better terminal display with Korean text
         stage.apply {
-            width     = 500.0
-            height    = 400.0
-            minWidth  = width
-            minHeight = height
+            width     = 800.0
+            height    = 600.0
+            minWidth  = 200.0
+            minHeight =  80.0
         }
+
     }
 }
 
-class TerminalFxSampleView : View("TerminalFx Sample") {
+class TerminalFxSampleView : View("JediTermFx Sample") {
+
+    private var terminalWidget = createTerminal()
 
     override val root = vbox(spacing = 0) {
-
-        val widget = createTerminal()
-        widget.pane.also {
+        terminalWidget.pane.also {
             it.prefWidthProperty().bind(widthProperty())
             it.prefHeightProperty().bind(heightProperty())
             it.minWidthProperty().bind(minWidthProperty())
@@ -44,16 +60,10 @@ class TerminalFxSampleView : View("TerminalFx Sample") {
             it.maxWidthProperty().bind(maxWidthProperty())
             it.maxHeightProperty().bind(maxHeightProperty())
         }
-        widget.pane.attachTo(this)
-
-        val self = this
-
-        title
-
+        terminalWidget.pane.attachTo(this)
         runLater {
-//            Thread.sleep(30_000)
             runAsync{
-                widget.ttyConnector.waitFor()
+                terminalWidget.ttyConnector.waitFor()
                 runLater {
                     titleProperty.set("Done ${titleProperty.get()}")
                 }
@@ -61,41 +71,42 @@ class TerminalFxSampleView : View("TerminalFx Sample") {
         }
     }
 
+    override fun onUndock() {
+        terminalWidget.close()
+        super.onUndock()
+    }
 }
 
 private fun createTerminal(): JediTermFxWidget {
-    return JediTermFxWidget(80, 200, DefaultSettingsProvider()).apply {
+    return JediTermFxWidget(80, 200, CustomSettingsProvider()).apply {  // 더 넓은 터미널
         ttyConnector = createTtyConnector()
         addHyperlinkFilter(DefaultHyperlinkFilter())
         start()
     }
 }
 
-class DarkThemeSettingsProvider : DefaultSettingsProvider() {
-    override fun getDefaultBackground(): TerminalColor {
-        return TerminalColor(0, 0, 0)
+class CustomSettingsProvider : DefaultSettingsProvider() {
+    override fun getTerminalFontSize(): Float {
+        return 10.2f
     }
 
-    override fun getDefaultForeground(): TerminalColor {
-        return TerminalColor(255, 255, 255)
+    override fun getLineSpacing(): Float {
+        return 1.2f
     }
 }
 
 private fun createTtyConnector(): PtyProcessTtyConnector {
-    try {
-//        val command = listOf("ls", "-al")
-//        val command = listOf("cmd.exe", "/c", "echo", "Hello", "&&", "timeout", "/t", "30")
-//        val command = listOf("cmd.exe")
-        val command = listOf("c:/project_ref/test/test.exe", "10")
-//        val envs = System.getenv().toMutableMap().apply {
-//            put("TERM", "xterm-256color")
-//        }
-        val process = PtyProcessBuilder().setCommand(command.toTypedArray())
-//            .setEnvironment(envs)
-            .start()
-
-        return PtyProcessTtyConnector(process, StandardCharsets.UTF_8)
-    } catch (e: Exception) {
-        throw IllegalStateException(e)
+    // Windows command example
+//    val command = listOf("cmd.exe")
+    val command = listOf("src/test/resources/test-program/test.exe", "100")
+    val envs = System.getenv().toMutableMap().apply {
+        put("TERM", "xterm-256color")
     }
+
+    val process = PtyProcessBuilder()
+        .setCommand(command.toTypedArray())
+        .setEnvironment(envs)
+        .start()
+
+    return PtyProcessTtyConnector(process, StandardCharsets.UTF_8)
 }
