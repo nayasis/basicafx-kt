@@ -11,7 +11,6 @@ import javafx.stage.Stage
 import tornadofx.*
 import java.nio.charset.StandardCharsets
 
-
 private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
@@ -21,22 +20,23 @@ fun main(vararg args: String) {
 class TerminalFxSample: App(TerminalFxSampleView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
-        // set window size to 300 x 200
+        // set window size to 1000 x 700 for better terminal display
         stage.apply {
-            width     = 500.0
-            height    = 400.0
-            minWidth  = width
-            minHeight = height
+            width     = 800.0
+            height    = 600.0
+            minWidth  = 200.0
+            minHeight = 50.0
         }
+
     }
 }
 
-class TerminalFxSampleView : View("TerminalFx Sample") {
+class TerminalFxSampleView : View("JediTermFx Sample") {
+
+    private var terminalWidget = createTerminal()
 
     override val root = vbox(spacing = 0) {
-
-        val widget = createTerminal()
-        widget.pane.also {
+        terminalWidget.pane.also {
             it.prefWidthProperty().bind(widthProperty())
             it.prefHeightProperty().bind(heightProperty())
             it.minWidthProperty().bind(minWidthProperty())
@@ -44,16 +44,10 @@ class TerminalFxSampleView : View("TerminalFx Sample") {
             it.maxWidthProperty().bind(maxWidthProperty())
             it.maxHeightProperty().bind(maxHeightProperty())
         }
-        widget.pane.attachTo(this)
-
-        val self = this
-
-        title
-
+        terminalWidget.pane.attachTo(this)
         runLater {
-//            Thread.sleep(30_000)
             runAsync{
-                widget.ttyConnector.waitFor()
+                terminalWidget.ttyConnector.waitFor()
                 runLater {
                     titleProperty.set("Done ${titleProperty.get()}")
                 }
@@ -61,41 +55,42 @@ class TerminalFxSampleView : View("TerminalFx Sample") {
         }
     }
 
+    override fun onUndock() {
+        terminalWidget.close()
+        super.onUndock()
+    }
 }
 
 private fun createTerminal(): JediTermFxWidget {
-    return JediTermFxWidget(80, 200, DefaultSettingsProvider()).apply {
+    return JediTermFxWidget(100, 100, CustomSettingsProvider()).apply {
         ttyConnector = createTtyConnector()
         addHyperlinkFilter(DefaultHyperlinkFilter())
         start()
     }
 }
 
-class DarkThemeSettingsProvider : DefaultSettingsProvider() {
-    override fun getDefaultBackground(): TerminalColor {
-        return TerminalColor(0, 0, 0)
+class CustomSettingsProvider : DefaultSettingsProvider() {
+    override fun getTerminalFontSize(): Float {
+        return 11.0f
     }
 
-    override fun getDefaultForeground(): TerminalColor {
-        return TerminalColor(255, 255, 255)
+    override fun getLineSpacing(): Float {
+        return 1.2f  // 줄 간격을 1.0으로 설정
     }
 }
 
 private fun createTtyConnector(): PtyProcessTtyConnector {
-    try {
-//        val command = listOf("ls", "-al")
-//        val command = listOf("cmd.exe", "/c", "echo", "Hello", "&&", "timeout", "/t", "30")
-//        val command = listOf("cmd.exe")
-        val command = listOf("c:/project_ref/test/test.exe", "10")
-//        val envs = System.getenv().toMutableMap().apply {
-//            put("TERM", "xterm-256color")
-//        }
-        val process = PtyProcessBuilder().setCommand(command.toTypedArray())
-//            .setEnvironment(envs)
-            .start()
-
-        return PtyProcessTtyConnector(process, StandardCharsets.UTF_8)
-    } catch (e: Exception) {
-        throw IllegalStateException(e)
+    // Windows command example
+    val command = listOf("cmd.exe")
+//    val command = listOf("src/test/resources/test-program/test.exe", "10")
+    val envs = System.getenv().toMutableMap().apply {
+        put("TERM", "xterm-256color")
     }
+
+    val process = PtyProcessBuilder()
+        .setCommand(command.toTypedArray())
+        .setEnvironment(envs)
+        .start()
+
+    return PtyProcessTtyConnector(process, StandardCharsets.UTF_8)
 }

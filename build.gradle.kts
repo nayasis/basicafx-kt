@@ -4,7 +4,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 plugins {
 	java
 	signing
-	kotlin("jvm") version "2.2.0"
+	kotlin("jvm") version "2.1.0"
 	id("com.vanniktech.maven.publish") version "0.31.0"
 	id("org.openjfx.javafxplugin") version "0.1.0"
 }
@@ -15,6 +15,8 @@ version = "0.2.3-SNAPSHOT"
 repositories {
 	mavenLocal()
 	mavenCentral()
+	maven { url = uri("https://packages.jetbrains.team/maven") }
+	maven { url = uri("https://jitpack.io") }
 }
 
 java {
@@ -53,10 +55,13 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.1")
 	testImplementation("org.testfx:testfx-junit5:4.0.18")
 
-//	testImplementation("com.techsenger.jeditermfx:jeditermfx:1.1.0")
+	// jeditermfx for terminal UI
 	testImplementation("com.techsenger.jeditermfx:jeditermfx-core:1.1.0")
 	testImplementation("com.techsenger.jeditermfx:jeditermfx-ui:1.1.0")
-	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0") {
+		exclude(group = "org.jetbrains.pty4j", module = "purejavacomm")
+	}
+	testImplementation("org.jetbrains.pty4j:pty4j:0.13.10")
 
 }
 
