@@ -10,22 +10,38 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.stage.Stage
 import tornadofx.*
 import java.nio.charset.StandardCharsets
+import org.slf4j.LoggerFactory
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 
 private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
+    configureLogging()
     launch<TerminalFxSample>(*args)
+}
+
+private fun configureLogging() {
+    listOf(
+        "com.techsenger.jeditermfx.core.emulator.JediEmulator",
+        "com.techsenger.jeditermfx.core",
+        "com.techsenger.jeditermfx.ui",
+        "com.techsenger.jeditermfx",
+        "com.pty4j"
+    ).forEach { packageName ->
+        (LoggerFactory.getLogger(packageName) as Logger).level = Level.WARN
+    }
 }
 
 class TerminalFxSample: App(TerminalFxSampleView::class) {
     override fun start(stage: Stage) {
         super.start(stage)
-        // set window size to 1000 x 700 for better terminal display
+        // set window size for better terminal display with Korean text
         stage.apply {
             width     = 800.0
             height    = 600.0
             minWidth  = 200.0
-            minHeight = 50.0
+            minHeight =  80.0
         }
 
     }
@@ -62,7 +78,7 @@ class TerminalFxSampleView : View("JediTermFx Sample") {
 }
 
 private fun createTerminal(): JediTermFxWidget {
-    return JediTermFxWidget(100, 100, CustomSettingsProvider()).apply {
+    return JediTermFxWidget(80, 200, CustomSettingsProvider()).apply {  // 더 넓은 터미널
         ttyConnector = createTtyConnector()
         addHyperlinkFilter(DefaultHyperlinkFilter())
         start()
@@ -71,18 +87,18 @@ private fun createTerminal(): JediTermFxWidget {
 
 class CustomSettingsProvider : DefaultSettingsProvider() {
     override fun getTerminalFontSize(): Float {
-        return 11.0f
+        return 10.2f
     }
 
     override fun getLineSpacing(): Float {
-        return 1.2f  // 줄 간격을 1.0으로 설정
+        return 1.2f
     }
 }
 
 private fun createTtyConnector(): PtyProcessTtyConnector {
     // Windows command example
-    val command = listOf("cmd.exe")
-//    val command = listOf("src/test/resources/test-program/test.exe", "10")
+//    val command = listOf("cmd.exe")
+    val command = listOf("src/test/resources/test-program/test.exe", "100")
     val envs = System.getenv().toMutableMap().apply {
         put("TERM", "xterm-256color")
     }
