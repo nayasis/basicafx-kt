@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets
 import org.slf4j.LoggerFactory
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
+import javafx.scene.layout.Pane
 
 private val logger = KotlinLogging.logger {}
 
@@ -38,10 +39,10 @@ class TerminalFxSample: App(TerminalFxSampleView::class) {
         super.start(stage)
         // set window size for better terminal display with Korean text
         stage.apply {
-            width     = 800.0
-            height    = 600.0
-            minWidth  = 200.0
-            minHeight =  80.0
+            width     = 400.0
+            height    = 250.0
+            minWidth  = 100.0
+            minHeight =  40.0
         }
 
     }
@@ -53,19 +54,14 @@ class TerminalFxSampleView : View("JediTermFx Sample") {
 
     override val root = vbox(spacing = 0) {
         terminalWidget.pane.also {
-            it.prefWidthProperty().bind(widthProperty())
-            it.prefHeightProperty().bind(heightProperty())
-            it.minWidthProperty().bind(minWidthProperty())
-            it.minHeightProperty().bind(minHeightProperty())
-            it.maxWidthProperty().bind(maxWidthProperty())
-            it.maxHeightProperty().bind(maxHeightProperty())
+            it.bindSizeProperties(this@vbox)
         }
         terminalWidget.pane.attachTo(this)
         runLater {
             runAsync{
                 terminalWidget.ttyConnector.waitFor()
                 runLater {
-                    titleProperty.set("Done ${titleProperty.get()}")
+                    titleProperty.set("Done - ${titleProperty.get()}")
                 }
             }
         }
@@ -75,6 +71,16 @@ class TerminalFxSampleView : View("JediTermFx Sample") {
         terminalWidget.close()
         super.onUndock()
     }
+
+    private fun Pane.bindSizeProperties(other: Pane) {
+        prefWidthProperty().bind(other.widthProperty())
+        prefHeightProperty().bind(other.heightProperty())
+        minWidthProperty().bind(other.minWidthProperty())
+        minHeightProperty().bind(other.minHeightProperty())
+        maxWidthProperty().bind(other.maxWidthProperty())
+        maxHeightProperty().bind(other.maxHeightProperty())
+    }
+
 }
 
 private fun createTerminal(): JediTermFxWidget {
@@ -97,8 +103,8 @@ class CustomSettingsProvider : DefaultSettingsProvider() {
 
 private fun createTtyConnector(): PtyProcessTtyConnector {
     // Windows command example
-//    val command = listOf("cmd.exe")
-    val command = listOf("src/test/resources/test-program/test.exe", "100")
+    val command = listOf("cmd")
+//    val command = listOf("src/test/resources/test-program/test.exe", "100")
     val envs = System.getenv().toMutableMap().apply {
         put("TERM", "xterm-256color")
     }
