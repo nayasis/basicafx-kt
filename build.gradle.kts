@@ -25,7 +25,7 @@ java {
 
 javafx {
 	version = "24.0.2"
-	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
+	modules = listOf("javafx.controls","javafx.fxml","javafx.swing")
 }
 
 dependencies {
