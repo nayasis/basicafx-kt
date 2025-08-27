@@ -19,12 +19,12 @@ repositories {
 
 java {
 	toolchain {
-		languageVersion.set(JavaLanguageVersion.of(22))
+		languageVersion.set(JavaLanguageVersion.of(17))
 	}
 }
 
 javafx {
-	version = "24.0.2"
+	version = "21.0.2"
 	modules = listOf("javafx.controls","javafx.fxml","javafx.swing")
 }
 
@@ -76,7 +76,7 @@ tasks.withType<Test> {
 }
 
 tasks.withType<JavaCompile> {
-	options.release.set(22)
+	options.release.set(17)
 }
 
 tasks.register<Exec>("installPlaywright") {
