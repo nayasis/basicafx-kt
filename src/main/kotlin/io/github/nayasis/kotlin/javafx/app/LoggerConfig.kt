@@ -25,9 +25,9 @@ class LoggerConfig(
         }
 
         val appenderConsole = createConsoleAppender(ctx)
-        val appenderFile = createFileAppender(ctx)
+        val appenderFile    = createFileAppender(ctx)
 
-        environment.all.filter { it.key.startsWith("logging.level.") }.map {
+        environment.startsWith("logging.level.").map {
             it.key.removePrefix("logging.level.") to Level.toLevel("${it.value}", Level.OFF)
         }.toMap().forEach { key, level ->
             ctx.getLogger(key)?.let { logger ->
@@ -50,14 +50,14 @@ class LoggerConfig(
     private fun createConsoleAppender(ctx: LoggerContext): ConsoleAppender<ILoggingEvent>? {
         return environment.get<String>("logging.pattern.console")?.let { pattern ->
             ConsoleAppender<ILoggingEvent>().apply {
-                this.context = ctx
-                this.name = "console"
-                this.encoder = PatternLayoutEncoder().apply {
+                context = ctx
+                name    = "console"
+                encoder = PatternLayoutEncoder().apply {
                     this.context = ctx
                     this.pattern = pattern
                     this.start()
                 }
-                this.start()
+                start()
             }
         }
     }
@@ -65,30 +65,30 @@ class LoggerConfig(
     private fun createFileAppender(ctx: LoggerContext): FileAppender<ILoggingEvent>? {
         return environment.get<String>("logging.file.path")?.let { path ->
             val appender = RollingFileAppender<ILoggingEvent>().apply {
-                this.context = ctx
-                this.name = "file"
-                this.file = path
-                this.encoder = PatternLayoutEncoder().apply {
+                context = ctx
+                name    = "file"
+                file    = path
+                encoder = PatternLayoutEncoder().apply {
                     this.context = ctx
                     this.pattern = environment.get<String>("logging.pattern.file").ifEmpty { "%d{HH:mm:ss.SSS} %msg%n" }
                     this.start()
                 }
             }
             appender.rollingPolicy = SizeAndTimeBasedRollingPolicy<ILoggingEvent>().apply {
-                this.setParent(appender)
-                this.context = ctx
-                this.maxHistory = environment.get<String>("logging.file.max-history").ifEmpty {"30"}.toInt()
-                this.setMaxFileSize(
+                setParent(appender)
+                context    = ctx
+                maxHistory = environment.get<String>("logging.file.max-history").ifEmpty {"30"}.toInt()
+                setMaxFileSize(
                     environment.get<String>("logging.file.max-size").ifEmpty {"10mb"}.let {
                         FileSize.valueOf(it)
                     }
                 )
-                this.fileNamePattern = "${this.parentsRawFileProperty}_%d{yyyy-MM-dd}.%i.log"
-                this.start()
+                fileNamePattern = "${parentsRawFileProperty}_%d{yyyy-MM-dd}.%i.log"
+                start()
             }
             appender.apply { start() }
         }
     }
 
-    private fun hasNoConfig() = environment.all.filter { it.key.startsWith("logging.") }.isEmpty()
+    private fun hasNoConfig() = ! environment.contains("logging")
 }
