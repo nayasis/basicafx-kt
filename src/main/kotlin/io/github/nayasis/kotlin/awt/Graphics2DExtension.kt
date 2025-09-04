@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package io.github.nayasis.kotlin.awt
 
 import java.awt.Graphics2D
