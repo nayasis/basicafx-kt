@@ -42,15 +42,15 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 
 	// kotlin
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation(kotlin("reflect"))
+	implementation(kotlin("stdlib-jdk8"))
+	testImplementation(kotlin("test"))
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.10.2")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 	// test
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.1")
-	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.1")
+	testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
 	testImplementation("org.testfx:testfx-junit5:4.0.18")
 
 	// jeditermfx for terminal UI
@@ -59,8 +59,6 @@ dependencies {
 	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0") {
 		exclude(group = "org.jetbrains.pty4j", module = "purejavacomm")
 	}
-	
-	// pty4j for terminal functionality
 	testImplementation("org.jetbrains.pty4j:pty4j:0.13.10")
 
 }
