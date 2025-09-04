@@ -29,7 +29,7 @@ class LoggerConfig(
 
         environment.startsWith("logging.level.").map {
             it.key.removePrefix("logging.level.") to Level.toLevel("${it.value}", Level.OFF)
-        }.toMap().forEach { key, level ->
+        }.toMap().forEach { (key, level) ->
             ctx.getLogger(key)?.let { logger ->
                 appenderConsole?.let { appender ->
                     logger.level = level
@@ -43,8 +43,6 @@ class LoggerConfig(
                 }
             }
         }
-
-        println(">> end logger setting")
     }
 
     private fun createConsoleAppender(ctx: LoggerContext): ConsoleAppender<ILoggingEvent>? {
