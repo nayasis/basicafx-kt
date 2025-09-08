@@ -25,13 +25,20 @@ abstract class FxApp: App {
 
     companion object {
         val ctx = SimpleDiContainer()
+        lateinit var environment: Environment
+            private set
     }
 
     final override fun init() {
         try {
             setupDefaultExceptionHandler()
-            setupDiContainer()
-            LoggerConfig(ctx.get(Environment::class)).initialize()
+            // setup DI container and environment
+            environment = Environment(parameters.raw.toTypedArray(), "application.yml")
+            FX.dicontainer = ctx.apply {
+                set(environment)
+            }
+            // setup Logger
+            LoggerConfig(environment).initialize()
         } catch (e: Throwable) {
             logger.error(e)
             BasePreloader.notifyError(e.message,e)
@@ -49,12 +56,6 @@ abstract class FxApp: App {
             } else {
                 logger.error(e)
             }
-        }
-    }
-
-    private fun setupDiContainer() {
-        FX.dicontainer = ctx.apply {
-            set(Environment(parameters.raw.toTypedArray(), "application.yml"))
         }
     }
 

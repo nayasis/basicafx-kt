@@ -34,6 +34,10 @@ class SimpleDiContainer: DIContainer {
         instances[klass]!![name] = bean
     }
 
+    fun set(vararg bean: Any) {
+        bean.forEach { set(it) }
+    }
+
     fun remove(bean: Any) {
         val klass = bean::class
         val name = klass.simpleName ?: "anonymous"
