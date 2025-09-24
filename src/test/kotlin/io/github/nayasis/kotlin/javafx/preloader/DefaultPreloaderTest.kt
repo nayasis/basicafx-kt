@@ -13,12 +13,12 @@ import tornadofx.vbox
 import java.lang.Thread.sleep
 
 fun main(args: Array<String>) {
-    BasePreloader.set(TestSplash::class)
-    launch<BasePreloaderTest>(*args)
+    DefaultPreloader.set(TestSplash::class)
+    launch<DefaultPreloaderTest>(*args)
 
 }
 
-class BasePreloaderTest: App(MainView::class)
+class DefaultPreloaderTest: App(MainView::class)
 
 class MainView: View("Hello world!") {
 
@@ -39,8 +39,8 @@ class MainView: View("Hello world!") {
         runSync {
             sleep(1000)
         }
-        BasePreloader.close()
+        DefaultPreloader.close()
     }
 }
 
-class TestSplash: BaseSplash(527,297,"/splash/splash.jpg")
+class TestSplash: DefaultSplash(527,297,"/splash/splash.jpg")

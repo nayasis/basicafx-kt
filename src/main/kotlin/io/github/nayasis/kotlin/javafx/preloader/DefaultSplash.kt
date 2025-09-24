@@ -15,24 +15,24 @@ import javafx.stage.StageStyle
 import tornadofx.*
 
 /**
- * base splash view for preloader
+ * Default splash view for preloader
  *
  * ```
- * class Splash: BaseSplash(500,300,"/view/splash/splash.jpg")
+ * class Splash: DefaultSplash(500,300,"/view/splash/splash.jpg")
  *
  * fun main(args: Array<String>) {
- *   SpringFxApp.setPreloader(Splash::class)
- *   launch<Simplelauncher>(*args)
+ *   DefaultPreloader.set(Splash::class)
  * }
  * ```
  */
-open class BaseSplash(
+open class DefaultSplash(
     width: Int,
     height: Int,
-    imageUrl: String? = null,
-): BasePreloader() {
+    imagePath: String? = null,
+    val showProgressBar: Boolean = true,
+): DefaultPreloader() {
 
-    private val view = SplashView(width,height,imageUrl)
+    private val view = SplashView(width,height,imagePath)
 
     override fun onStart(stage: Stage) {
         stage.apply {
@@ -48,13 +48,16 @@ open class BaseSplash(
     override fun onProgress(notificator: ProgressNotificator) {
         with(notificator) {
             message?.let { view.label.text = it }
-            view.progressBar.progress = progress
+            if(!showProgressBar && progress != null && progress.toDouble() > 0) {
+                view.progressBar.isVisible = true
+                view.progressBar.progress = progress.toDouble()
+            }
         }
     }
 
 }
 
-class SplashView(
+private class SplashView(
     width: Int,
     height: Int,
     imagePath: String?,
@@ -72,6 +75,7 @@ class SplashView(
             progressBar = progressbar {
                 maxWidth = Double.MAX_VALUE
                 progress = 0.0
+                isVisible = false
             }
             label = label { ellipsisString = "..." }
             leftAnchor = 0.0

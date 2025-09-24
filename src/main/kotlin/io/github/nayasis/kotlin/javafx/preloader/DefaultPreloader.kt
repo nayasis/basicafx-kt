@@ -1,14 +1,14 @@
 package io.github.nayasis.kotlin.javafx.preloader
 
-import io.github.nayasis.kotlin.javafx.stage.Dialog
 import com.sun.javafx.application.LauncherImpl
+import io.github.nayasis.kotlin.javafx.stage.Dialog
 import javafx.application.Preloader
 import javafx.stage.Stage
 import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
-abstract class BasePreloader: Preloader() {
+abstract class DefaultPreloader: Preloader() {
 
     final override fun handleApplicationNotification(notificator: PreloaderNotification) {
         when(notificator) {
@@ -49,7 +49,7 @@ abstract class BasePreloader: Preloader() {
             return stage?.isShowing ?: false
         }
 
-        fun set(preloader: KClass<out BasePreloader>) {
+        fun set(preloader: KClass<out DefaultPreloader>) {
             System.setProperty("javafx.preloader", preloader.jvmName)
             System.setProperty("java.awt.headless", "false")
         }
@@ -58,8 +58,12 @@ abstract class BasePreloader: Preloader() {
             LauncherImpl.notifyPreloader(null,notificator)
         }
 
+        fun notifyMessage(message: String) {
+            notify(ProgressNotificator(null, message))
+        }
+
         fun notifyProgress(percent: Number, message: String? = null) {
-            notify(ProgressNotificator(percent.toDouble(),message))
+            notify(ProgressNotificator(percent.toDouble(), message))
         }
 
         fun notifyProgress(index: Number, max: Number, message: String? = null) {

@@ -1,15 +1,15 @@
 package io.github.nayasis.kotlin.javafx.app
 
-import io.github.nayasis.kotlin.javafx.preloader.BaseSplash
-import io.github.nayasis.kotlin.javafx.preloader.BasePreloader
+import io.github.nayasis.kotlin.javafx.preloader.DefaultSplash
+import io.github.nayasis.kotlin.javafx.preloader.DefaultPreloader
 import tornadofx.*
 
 fun main() {
-    BasePreloader.set(TestSplash::class)
+    DefaultPreloader.set(TestSplash::class)
     launch<TestFxApp>()
 }
 
-class TestSplash: BaseSplash(527,297,"/image/test.png")
+class TestSplash: DefaultSplash(527,297,"/image/test.png")
 
 class TestFxApp: FxApp(TestFxView::class)
 

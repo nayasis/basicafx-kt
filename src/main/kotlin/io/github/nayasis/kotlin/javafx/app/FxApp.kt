@@ -2,7 +2,7 @@ package io.github.nayasis.kotlin.javafx.app
 
 import io.github.nayasis.kotlin.basica.etc.error
 import io.github.nayasis.kotlin.basica.exception.rootCause
-import io.github.nayasis.kotlin.javafx.preloader.BasePreloader
+import io.github.nayasis.kotlin.javafx.preloader.DefaultPreloader
 import io.github.nayasis.kotlin.javafx.stage.Dialog
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.application.Platform
@@ -41,7 +41,7 @@ abstract class FxApp: App {
             LoggerConfig(environment).initialize()
         } catch (e: Throwable) {
             logger.error(e)
-            BasePreloader.notifyError(e.message,e)
+            DefaultPreloader.notifyError(e.message,e)
         }
     }
 
@@ -66,7 +66,7 @@ abstract class FxApp: App {
             super.start(stage)
         } catch (e: Throwable) {
             logger.error(e)
-            BasePreloader.notifyError(e.message,e)
+            DefaultPreloader.notifyError(e.message,e)
         }
     }
 
