@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.preloader
 
-import io.github.nayasis.kotlin.javafx.misc.runSync
+import io.github.nayasis.kotlin.javafx.misc.runAwait
 import javafx.beans.property.SimpleIntegerProperty
 import tornadofx.App
 import tornadofx.View
@@ -36,7 +36,7 @@ class MainView: View("Hello world!") {
     }
 
     override fun onBeforeShow() {
-        runSync {
+        runAwait {
             sleep(1000)
         }
         DefaultPreloader.close()
