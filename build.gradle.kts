@@ -38,7 +38,8 @@ dependencies {
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
 	implementation("ch.qos.logback:logback-classic:1.5.13")
-	implementation("com.microsoft.playwright:playwright:1.54.0")
+	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
+	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 
 	// kotlin
@@ -61,6 +62,8 @@ dependencies {
 	}
 	testImplementation("org.jetbrains.pty4j:pty4j:0.13.10")
 
+	testImplementation("com.microsoft.playwright:playwright:1.54.0")
+
 }
 
 kotlin {
@@ -71,17 +74,16 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	// 테스트 실행 시 메모리 설정 추가
+	minHeapSize = "512m"
+	maxHeapSize = "2g"
+	jvmArgs = listOf("-Xmx2g", "-Xms512m")
 }
 
 tasks.withType<JavaCompile> {
 	options.release.set(17)
 }
 
-tasks.register<Exec>("installPlaywright") {
-	group = "playwright"
-	description = "Install Playwright browsers"
-	commandLine("npx", "playwright", "install", "chromium")
-}
 
 mavenPublishing {
 	// Skip signing for local Maven repository deployment

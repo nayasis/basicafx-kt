@@ -1,12 +1,17 @@
 package io.github.nayasis.kotlin.javafx.misc
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import io.github.nayasis.kotlin.basica.core.string.toResource
 import io.github.nayasis.kotlin.javafx.common.createTempFile
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.slf4j.LoggerFactory
 import org.testfx.framework.junit5.ApplicationExtension
 import java.awt.AlphaComposite
 import java.io.IOException
@@ -14,8 +19,18 @@ import java.nio.file.Files
 import javax.imageio.ImageIO
 import kotlin.io.path.exists
 
+private val logger = KotlinLogging.logger {}
+
 @ExtendWith(ApplicationExtension::class)
 class ImagesTest {
+
+    companion object {
+        @JvmStatic
+        @BeforeAll
+        fun setupLogging() {
+            (LoggerFactory.getLogger("org.apache.hc.client5.http") as Logger).level = Level.ERROR
+        }
+    }
 
     @Test
     fun basic() {
@@ -24,11 +39,15 @@ class ImagesTest {
             "https://ac-p2.namu.la/20230429sac/de5cef79e0b5e5c3f1d0fad7ea7f57b1ef615fa3620091d4fd39a1e82e132c90.jpg?expires=1683836424&key=AKiVXiYnEvwkfCK18G9nHA&type=orig".toImage()
         }
 
-        assertNotNull("https://www.suruga-ya.jp/database/pics_light/game/186017828.jpg".toImage())
+        val imageUrl = "https://upload.wikimedia.org/wikipedia/commons/3/3a/Cat03.jpg"
+        assertNotNull(imageUrl.toImage())
 
-        val file = Files.createTempFile("basicafx-imagetest-", ".png").toFile().apply { deleteOnExit() }
+        val file = Files.createTempFile("basicafx-imagetest-", ".png").toFile()
+//            .apply { deleteOnExit() }
 
-        "https://www.suruga-ya.jp/database/pics_light/game/186017828.jpg".toImage().write(file)
+        imageUrl.toImage().write(file)
+
+        logger.debug { ">>> temp file created: ${file}" }
 
         assertTrue(file.exists())
 

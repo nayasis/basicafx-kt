@@ -1,44 +1,65 @@
 package io.github.nayasis.kotlin.javafx.misc
 
-import com.microsoft.playwright.BrowserType
-import com.microsoft.playwright.Page
-import com.microsoft.playwright.Playwright
+import org.apache.hc.client5.http.classic.methods.HttpGet
+import org.apache.hc.client5.http.config.RequestConfig
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.core5.http.Header
+import org.apache.hc.core5.http.io.entity.EntityUtils
+import org.apache.hc.core5.http.message.BasicHeader
+import org.apache.hc.core5.util.Timeout
 import java.io.Closeable
+import java.io.IOException
+import java.net.URL
 
 class WebBrowser(
-    options: List<String> = listOf(
-        "--ignore-ssl-errors",
-        "--ignore-certificate-errors",
-        "--disable-web-security",
-        "--disable-features=VizDisplayCompositor",
-        "--no-sandbox",
-        "--disable-dev-shm-usage",
-    ),
+    timeout: Int = 30000,
+    userAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 ): Closeable {
 
-    private val playwright = Playwright.create()
-    private val browser    = playwright.chromium().launch(
-        BrowserType.LaunchOptions()
-            .setArgs(options)
-            .setHeadless(true)
-    )
+    private val httpClient = HttpClients.custom()
+        .setUserAgent(userAgent)
+        .setDefaultHeaders(listOf(
+            BasicHeader("Accept"         , "image/webp,image/apng,image/*,*/*;q=0.8"),
+            BasicHeader("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8"),
+            BasicHeader("Accept-Encoding", "gzip, deflate, br"),
+            BasicHeader("Cache-Control"  , "no-cache"),
+            BasicHeader("Pragma"         , "no-cache"),
+            BasicHeader("Sec-Fetch-Dest" , "image"),
+            BasicHeader("Sec-Fetch-Mode" , "no-cors"),
+            BasicHeader("Sec-Fetch-Site" , "cross-site"),
+        ))
+        .setDefaultRequestConfig(
+            RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(timeout.toLong()))
+                .setResponseTimeout(Timeout.ofMilliseconds(timeout.toLong()))
+                .setConnectTimeout(Timeout.ofMilliseconds(timeout.toLong()))
+                .build()
+        )
+        .build()
 
     /**
-     * Creates a new page and uses it with a lambda function, then automatically cleans up.
+     * Downloads content from a URI with custom headers.
      *
-     * @param action lambda function that defines the work to be done with the page
-     * @return result of the lambda function
+     * @param url the URI to download from
+     * @param headers additional headers to include
+     * @return byte array of the downloaded content
+     * @throws IOException if the download fails
      */
-    fun <T> withPage(action: (Page) -> T): T {
-        return browser.newPage().use { page ->
-            action(page)
+    fun downloadContent(url: URL, headers: List<Header>? = null): ByteArray {
+        val httpGet = HttpGet(url.toURI())
+        headers?.forEach { httpGet.addHeader(it) }
+        
+        return httpClient.execute(httpGet) { response ->
+            if (response.code >= 200 && response.code < 300) {
+                EntityUtils.toByteArray(response.entity)
+            } else {
+                throw IOException("HTTP error: ${response.code} ${response.reasonPhrase}")
+            }
         }
     }
 
     override fun close() {
-        runCatching { browser?.close() }
-        runCatching { playwright?.close() }
+        runCatching { httpClient.close() }
     }
-
 }
 

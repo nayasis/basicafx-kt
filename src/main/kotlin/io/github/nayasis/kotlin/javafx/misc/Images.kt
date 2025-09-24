@@ -6,7 +6,6 @@ import io.github.nayasis.kotlin.basica.core.io.isFile
 import io.github.nayasis.kotlin.basica.core.io.makeDir
 import io.github.nayasis.kotlin.basica.core.string.*
 import io.github.nayasis.kotlin.basica.core.url.toFile
-import com.microsoft.playwright.Page
 import io.github.oshai.kotlinlogging.KotlinLogging
 import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
@@ -81,19 +80,13 @@ fun URL.toBufferedImage(
         this.protocol == "file" -> this.toFile().toBufferedImage()
         else -> {
             if (webBrowser == null) {
-                webBrowser = WebBrowser()
+                webBrowser = WebBrowser(timeout = timeout.toInt())
                 Runtime.getRuntime().addShutdownHook(Thread {
                     webBrowser?.close()
                     webBrowser = null
                 })
             }
-            webBrowser!!.withPage { page ->
-                page.navigate(this.toString(),
-                    Page.NavigateOptions().apply {
-                        this.timeout = timeout
-                    }
-                ).body().toBufferedImage()
-            }
+            webBrowser!!.downloadContent(this).toBufferedImage()
         }
     }
 }
