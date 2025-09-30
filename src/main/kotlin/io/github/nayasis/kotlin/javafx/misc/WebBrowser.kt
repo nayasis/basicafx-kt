@@ -12,7 +12,7 @@ import java.io.IOException
 import java.net.URL
 
 class WebBrowser(
-    timeout: Int = 30000,
+    timeout: Int = 30_000,
     userAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 ): Closeable {
 
@@ -48,7 +48,6 @@ class WebBrowser(
     fun downloadContent(url: URL, headers: List<Header>? = null): ByteArray {
         val httpGet = HttpGet(url.toURI())
         headers?.forEach { httpGet.addHeader(it) }
-        
         return httpClient.execute(httpGet) { response ->
             if (response.code >= 200 && response.code < 300) {
                 EntityUtils.toByteArray(response.entity)
