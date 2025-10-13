@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.nayasis"
-version = "0.2.3"
+version = "0.2.4"
 
 repositories {
 	mavenLocal()
@@ -19,39 +19,50 @@ repositories {
 
 java {
 	toolchain {
-		languageVersion.set(JavaLanguageVersion.of(22))
+		languageVersion.set(JavaLanguageVersion.of(17))
 	}
 }
 
 javafx {
-	version = "24.0.2"
-	modules = listOf("javafx.controls","javafx.web","javafx.fxml","javafx.swing")
+	version = "21.0.2"
+	modules = listOf("javafx.controls","javafx.fxml","javafx.swing")
 }
 
 dependencies {
 
-	implementation("io.github.nayasis:basica-kt:0.3.5")
+	implementation("io.github.nayasis:basica-kt:0.3.7")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.controlsfx:controlsfx:11.2.2")
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
-	implementation("ch.qos.logback:logback-classic:1.5.13")
-	implementation("com.microsoft.playwright:playwright:1.54.0")
+	implementation("ch.qos.logback:logback-classic:1.5.19")
+	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
+	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 
 	// kotlin
-	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation(kotlin("reflect"))
+	implementation(kotlin("stdlib-jdk8"))
+	testImplementation(kotlin("test"))
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.10.2")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 	// test
-	testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.1")
-	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.1")
+	testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
 	testImplementation("org.testfx:testfx-junit5:4.0.18")
+
+	// jeditermfx for terminal UI
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-core:1.1.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-ui:1.1.0")
+	testImplementation("com.techsenger.jeditermfx:jeditermfx-app:1.0.0") {
+		exclude(group = "org.jetbrains.pty4j", module = "purejavacomm")
+	}
+	testImplementation("org.jetbrains.pty4j:pty4j:0.13.10")
+
+	testImplementation("com.microsoft.playwright:playwright:1.54.0")
 
 }
 
@@ -63,20 +74,24 @@ kotlin {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	// 테스트 실행 시 메모리 설정 추가
+	minHeapSize = "512m"
+	maxHeapSize = "2g"
+	jvmArgs = listOf("-Xmx2g", "-Xms512m")
 }
 
 tasks.withType<JavaCompile> {
-	options.release.set(22)
+	options.release.set(17)
 }
 
-tasks.register<Exec>("installPlaywright") {
-	group = "playwright"
-	description = "Install Playwright browsers"
-	commandLine("npx", "playwright", "install", "chromium")
-}
 
 mavenPublishing {
-	signAllPublications()
+	// Skip signing for local Maven repository deployment
+	if (!gradle.startParameter.taskNames.any { 
+		it.contains("publishToMavenLocal") || it.contains("publishMavenPublicationToMavenLocal") 
+	}) {
+		signAllPublications()
+	}
 	publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
 	pom {
 		name.set(rootProject.name)
