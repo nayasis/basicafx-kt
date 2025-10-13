@@ -37,7 +37,7 @@ dependencies {
 	implementation("org.controlsfx:controlsfx:11.2.2")
 	implementation("org.sejda.imageio:webp-imageio:0.1.2")
 	implementation("org.yaml:snakeyaml:2.2")
-	implementation("ch.qos.logback:logback-classic:1.5.13")
+	implementation("ch.qos.logback:logback-classic:1.5.19")
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
