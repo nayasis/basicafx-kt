@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "io.github.nayasis"
-version = "0.2.3-SNAPSHOT"
+version = "0.2.4-SNAPSHOT"
 
 repositories {
 	mavenLocal()
