@@ -13,14 +13,14 @@ import java.net.URL
 
 class WebBrowser(
     timeout: Int = 30_000,
-    userAgent: String = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    userAgent: String? = null,
 ): Closeable {
 
     private val httpClient = HttpClients.custom()
-        .setUserAgent(userAgent)
+        .setUserAgent(userAgent ?: UserAgents.pick())
         .setDefaultHeaders(listOf(
             BasicHeader("Accept"         , "image/webp,image/apng,image/*,*/*;q=0.8"),
-            BasicHeader("Accept-Language", "ko-KR,ko;q=0.9,en;q=0.8"),
+            BasicHeader("Accept-Language", "ko-KR,ko;q=0.9,ja-JP,ja;q=0.8,en-US;q=0.7,en;q=0.6"),
             BasicHeader("Accept-Encoding", "gzip, deflate, br"),
             BasicHeader("Cache-Control"  , "no-cache"),
             BasicHeader("Pragma"         , "no-cache"),
@@ -32,7 +32,6 @@ class WebBrowser(
             RequestConfig.custom()
                 .setConnectionRequestTimeout(Timeout.ofMilliseconds(timeout.toLong()))
                 .setResponseTimeout(Timeout.ofMilliseconds(timeout.toLong()))
-                .setConnectTimeout(Timeout.ofMilliseconds(timeout.toLong()))
                 .build()
         )
         .build()
@@ -49,7 +48,7 @@ class WebBrowser(
         val httpGet = HttpGet(url.toURI())
         headers?.forEach { httpGet.addHeader(it) }
         return httpClient.execute(httpGet) { response ->
-            if (response.code >= 200 && response.code < 300) {
+            if (response.code in 200..<300) {
                 EntityUtils.toByteArray(response.entity)
             } else {
                 throw IOException("HTTP error: ${response.code} ${response.reasonPhrase}")

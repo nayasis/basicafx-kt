@@ -122,7 +122,7 @@ class Localizator (
 
     private fun convert(text: String): String {
         if ( text.isEmpty() || ! text.startsWith("%") ) return text
-        return Messages[locale, text.substring(1)]
+        return Messages[text.substring(1), locale]
     }
 
 }
