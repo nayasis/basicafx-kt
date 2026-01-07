@@ -1,7 +1,9 @@
 package io.github.nayasis.kotlin.javafx.app
 
+import io.github.nayasis.kotlin.basica.core.extension.ifNotNull
 import io.github.nayasis.kotlin.basica.etc.error
 import io.github.nayasis.kotlin.basica.exception.rootCause
+import io.github.nayasis.kotlin.javafx.app.di.SimpleDiContainer
 import io.github.nayasis.kotlin.javafx.preloader.DefaultPreloader
 import io.github.nayasis.kotlin.javafx.stage.Dialog
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -19,9 +21,17 @@ private val logger = KotlinLogging.logger {}
 @Suppress("unused")
 abstract class FxApp: App {
 
-    constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(primaryView, *stylesheet)
-    constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, stylesheet: KClass<out Stylesheet>, scope: Scope = FX.defaultScope) : super(primaryView, stylesheet, scope)
-    constructor(icon: Image, primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(icon, primaryView, *stylesheet)
+    constructor(
+        icon: Image? = null,
+        primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class,
+        vararg stylesheet: KClass<out Stylesheet>,
+        scope: Scope = FX.defaultScope,
+        configPath: String = "application.yml",
+    ) : super(primaryView, *stylesheet) {
+
+        icon?.let { addStageIcon(icon, scope) }
+
+    }
 
     companion object {
         val ctx = SimpleDiContainer()

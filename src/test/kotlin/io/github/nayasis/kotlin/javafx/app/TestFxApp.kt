@@ -11,7 +11,7 @@ fun main() {
 
 class TestSplash: DefaultSplash(527,297,"/image/test.png")
 
-class TestFxApp: FxApp(TestFxView::class)
+class TestFxApp: FxApp(icon = null, primaryView = TestFxView::class)
 
 class TestFxView: View("test view") {
     override val root = vbox {
