@@ -46,8 +46,6 @@ dependencies {
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
-	@Suppress("VulnerableLibrariesLocal")
-	implementation("com.google.inject:guice:7.0.0")
 
 	// kotlin
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
