@@ -53,12 +53,9 @@ class SimpleDiContainerTest {
     }
 
     @Test
-    fun `getInstance throws when not found`() {
+    fun `'get' returns null when not found`() {
         val container = SimpleDiContainer()
-        
-        shouldThrow<AssertionError> {
-            container.getInstance(TestService::class)
-        }
+        container.get(TestService::class) shouldBe null
     }
 
     @Test
@@ -164,13 +161,13 @@ class SimpleDiContainerTest {
         container.scanPackages("io.github.nayasis.kotlin.javafx")
         
         // After scanning, @Inject annotated classes should be available
-        val service = container.getInstance(InjectTestService::class)
+        val service = container.get(InjectTestService::class)
         service shouldNotBe null
-        service.name shouldBe "default"
+        service?.name shouldBe "default"
         
-        val withNameService = container.getInstance(InjectWithNameService::class)
+        val withNameService = container.get(InjectWithNameService::class)
         withNameService shouldNotBe null
-        withNameService.name shouldBe "custom"
+        withNameService?.name shouldBe "custom"
     }
 
     @Test
@@ -181,13 +178,13 @@ class SimpleDiContainerTest {
         container.scanPackages("io.github.nayasis.kotlin.javafx.app.di")
 
         // After scanning, @Inject annotated classes should be available
-        val service = container.getInstance(InjectTestService::class)
+        val service = container.get(InjectTestService::class)
         service shouldNotBe null
-        service.name shouldBe "default"
+        service?.name shouldBe "default"
 
-        val withNameService = container.getInstance(InjectWithNameService::class)
+        val withNameService = container.get(InjectWithNameService::class)
         withNameService shouldNotBe null
-        withNameService.name shouldBe "custom"
+        withNameService?.name shouldBe "custom"
     }
 
     @Test
@@ -201,7 +198,7 @@ class SimpleDiContainerTest {
         )
         
         // Should be able to get instances
-        val service = container.getInstance(InjectTestService::class)
+        val service = container.get(InjectTestService::class)
         service shouldNotBe null
     }
 }

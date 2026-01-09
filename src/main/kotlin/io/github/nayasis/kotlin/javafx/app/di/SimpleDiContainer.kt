@@ -1,28 +1,17 @@
 package io.github.nayasis.kotlin.javafx.app.di
 
 import io.github.nayasis.kotlin.basica.core.klass.Classes
-import tornadofx.DIContainer
+import java.io.Closeable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
-@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE")
-class SimpleDiContainer: DIContainer {
+open class SimpleDiContainer: Closeable {
 
     private val instances = HashMap<KClass<*>,LinkedHashMap<String,Any>>()
     private val creatingInstances = mutableSetOf<KClass<*>>()
-
-    override fun <T: Any> getInstance(klass: KClass<T>): T {
-        return get(klass, null) ?:
-            throw AssertionError("No bean ($klass) found in container")
-    }
-
-    override fun <T: Any> getInstance(klass: KClass<T>, beamName: String): T {
-        return get(klass, beamName) ?:
-            throw AssertionError("No bean ($klass[$beamName]) found in container")
-    }
 
     fun <T: Any> get(klass: KClass<T>, beanName: String? = null): T? {
         @Suppress("UNCHECKED_CAST")
@@ -34,11 +23,15 @@ class SimpleDiContainer: DIContainer {
     }
 
     fun set(bean: Any, beanName: String? = null) {
-        if (bean is KClass<*>) create(bean) else {
+        if (bean is KClass<*>) create(bean, beanName) else {
             if(get(bean::class, beanName) == null) {
                 bean.remember(beanName)
             }
         }
+    }
+
+    fun set(vararg bean: Any) {
+        bean.forEach { set(it) }
     }
 
     fun <T: Any> create(klass: KClass<T>, name: String? = null): T {
@@ -76,11 +69,7 @@ class SimpleDiContainer: DIContainer {
     fun <T: Any> create(klassName: String): T {
         @Suppress("UNCHECKED_CAST")
         val klass = Class.forName(klassName).kotlin as KClass<T>
-        return create(klass, null)
-    }
-
-    fun set(vararg bean: Any) {
-        bean.forEach { set(it) }
+        return create(klass)
     }
 
     fun remove(bean: Any) {
@@ -133,6 +122,12 @@ class SimpleDiContainer: DIContainer {
 
     private fun KClass<*>.isCreatable(): Boolean {
         return this.findAnnotation<Inject>() != null
+    }
+
+    override fun close() {
+        creatingInstances.clear()
+        instances.values.forEach { it.clear() }
+        instances.clear()
     }
 
 }

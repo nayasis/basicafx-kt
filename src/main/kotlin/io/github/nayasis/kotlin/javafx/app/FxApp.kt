@@ -1,6 +1,5 @@
 package io.github.nayasis.kotlin.javafx.app
 
-import io.github.nayasis.kotlin.basica.core.extension.ifNotNull
 import io.github.nayasis.kotlin.basica.etc.error
 import io.github.nayasis.kotlin.basica.exception.rootCause
 import io.github.nayasis.kotlin.javafx.app.di.SimpleDiContainer
@@ -13,25 +12,25 @@ import javafx.stage.Stage
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
-import tornadofx.*
+import tornadofx.App
+import tornadofx.DIContainer
+import tornadofx.FX
+import tornadofx.NoPrimaryViewSpecified
+import tornadofx.Scope
+import tornadofx.Stylesheet
+import tornadofx.UIComponent
+import tornadofx.runLater
 import kotlin.reflect.KClass
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
 @Suppress("unused")
 abstract class FxApp: App {
 
-    constructor(
-        icon: Image? = null,
-        primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class,
-        vararg stylesheet: KClass<out Stylesheet>,
-        scope: Scope = FX.defaultScope,
-        configPath: String = "application.yml",
-    ) : super(primaryView, *stylesheet) {
-
-        icon?.let { addStageIcon(icon, scope) }
-
-    }
+    constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(primaryView, *stylesheet)
+    constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, stylesheet: KClass<out Stylesheet>, scope: Scope = FX.defaultScope) : super(primaryView, stylesheet, scope)
+    constructor(icon: Image, primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(icon, primaryView, *stylesheet)
 
     companion object {
         val ctx = SimpleDiContainer()
@@ -39,13 +38,21 @@ abstract class FxApp: App {
             private set
     }
 
-    final override fun init() {
+    override fun init() {
         try {
             setupDefaultExceptionHandler()
             // setup DI container and environment
             environment = Environment(parameters.raw.toTypedArray(), "application.yml")
-            FX.dicontainer = ctx.apply {
-                set(environment)
+            ctx.set(environment)
+            FX.dicontainer = object: DIContainer {
+                override fun <T: Any> getInstance(type: KClass<T>): T {
+                    return ctx.get(type, null) ?:
+                        throw AssertionError("No bean ($type) found in container")
+                }
+                override fun <T: Any> getInstance(type: KClass<T>, beamName: String): T {
+                    return ctx.get(type, beamName) ?:
+                        throw AssertionError("No bean ($type[$beamName]) found in container")
+                }
             }
             // setup Logger
             LoggerConfig(environment).initialize()
@@ -69,7 +76,7 @@ abstract class FxApp: App {
         }
     }
 
-    final override fun start(stage: Stage) {
+    override fun start(stage: Stage) {
         try {
             onStart(DefaultParser().parse(setOptions() ?: Options(), parameters.raw.toTypedArray()))
             onStart(stage)
@@ -80,8 +87,17 @@ abstract class FxApp: App {
         }
     }
 
+    override fun stop() {
+        runCatching { onStop() }.onFailure { logger.error(it) }
+        runCatching { ctx.close() }.onFailure { logger.error(it) }
+        runCatching { super.stop() }.onFailure { logger.error(it) }
+        exitProcess(0)
+    }
+
     open fun onStart(command: CommandLine) {}
     open fun onStart(stage: Stage) {}
     open fun setOptions(): Options? { return null }
+    open fun onStop() {}
+
 
 }
