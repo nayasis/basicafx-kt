@@ -56,6 +56,7 @@ abstract class FxApp: App {
             }
             // setup Logger
             LoggerConfig(environment).initialize()
+            ctx.scanPackages(this::class.java.packageName)
         } catch (e: Throwable) {
             logger.error(e)
             DefaultPreloader.notifyError(e.message,e)
