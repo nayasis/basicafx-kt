@@ -56,7 +56,10 @@ abstract class FxApp: App {
             }
             // setup Logger
             LoggerConfig(environment).initialize()
+            // init bean
+            beforeInitialization(ctx,environment)
             ctx.scanPackages(this::class.java.packageName)
+            afterInitialization(ctx,environment)
         } catch (e: Throwable) {
             logger.error(e)
             DefaultPreloader.notifyError(e.message,e)
@@ -95,10 +98,12 @@ abstract class FxApp: App {
         exitProcess(0)
     }
 
+    open fun beforeInitialization(context: SimpleDiContainer, environment: Environment) {}
+    open fun afterInitialization(context: SimpleDiContainer, environment: Environment) {}
+
     open fun onStart(command: CommandLine) {}
     open fun onStart(stage: Stage) {}
     open fun setOptions(): Options? { return null }
     open fun onStop() {}
-
 
 }
