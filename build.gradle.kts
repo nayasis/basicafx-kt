@@ -48,14 +48,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 
 	// kotlin
-//	implementation(kotlin("reflect"))
-//	implementation(kotlin("stdlib-jdk8"))
-	testImplementation(kotlin("test"))
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.10.2")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 	// test
+	testImplementation(kotlin("test"))
 	testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
 	testImplementation("org.testfx:testfx-junit5:4.0.18")
 

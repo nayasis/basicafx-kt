@@ -2,6 +2,7 @@ package io.github.nayasis.kotlin.javafx.app
 
 import io.github.nayasis.kotlin.basica.etc.error
 import io.github.nayasis.kotlin.basica.exception.rootCause
+import io.github.nayasis.kotlin.javafx.app.di.SimpleDiContainer
 import io.github.nayasis.kotlin.javafx.preloader.DefaultPreloader
 import io.github.nayasis.kotlin.javafx.stage.Dialog
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -11,8 +12,16 @@ import javafx.stage.Stage
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
-import tornadofx.*
+import tornadofx.App
+import tornadofx.DIContainer
+import tornadofx.FX
+import tornadofx.NoPrimaryViewSpecified
+import tornadofx.Scope
+import tornadofx.Stylesheet
+import tornadofx.UIComponent
+import tornadofx.runLater
 import kotlin.reflect.KClass
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
@@ -29,16 +38,28 @@ abstract class FxApp: App {
             private set
     }
 
-    final override fun init() {
+    override fun init() {
         try {
             setupDefaultExceptionHandler()
             // setup DI container and environment
             environment = Environment(parameters.raw.toTypedArray(), "application.yml")
-            FX.dicontainer = ctx.apply {
-                set(environment)
+            ctx.set(environment)
+            FX.dicontainer = object: DIContainer {
+                override fun <T: Any> getInstance(type: KClass<T>): T {
+                    return ctx.get(type, null) ?:
+                        throw AssertionError("No bean ($type) found in container")
+                }
+                override fun <T: Any> getInstance(type: KClass<T>, beamName: String): T {
+                    return ctx.get(type, beamName) ?:
+                        throw AssertionError("No bean ($type[$beamName]) found in container")
+                }
             }
             // setup Logger
             LoggerConfig(environment).initialize()
+            // init bean
+            beforeInitialization(ctx,environment)
+            ctx.scanPackages(this::class.java.packageName)
+            afterInitialization(ctx,environment)
         } catch (e: Throwable) {
             logger.error(e)
             DefaultPreloader.notifyError(e.message,e)
@@ -59,7 +80,7 @@ abstract class FxApp: App {
         }
     }
 
-    final override fun start(stage: Stage) {
+    override fun start(stage: Stage) {
         try {
             onStart(DefaultParser().parse(setOptions() ?: Options(), parameters.raw.toTypedArray()))
             onStart(stage)
@@ -70,8 +91,19 @@ abstract class FxApp: App {
         }
     }
 
+    override fun stop() {
+        runCatching { onStop() }.onFailure { logger.error(it) }
+        runCatching { ctx.close() }.onFailure { logger.error(it) }
+        runCatching { super.stop() }.onFailure { logger.error(it) }
+        exitProcess(0)
+    }
+
+    open fun beforeInitialization(context: SimpleDiContainer, environment: Environment) {}
+    open fun afterInitialization(context: SimpleDiContainer, environment: Environment) {}
+
     open fun onStart(command: CommandLine) {}
     open fun onStart(stage: Stage) {}
     open fun setOptions(): Options? { return null }
+    open fun onStop() {}
 
 }
