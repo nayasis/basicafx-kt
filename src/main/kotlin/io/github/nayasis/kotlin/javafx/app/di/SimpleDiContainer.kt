@@ -36,11 +36,11 @@ open class SimpleDiContainer: Closeable {
 
     fun <T: Any> create(klass: KClass<T>, name: String? = null): T {
 
-        if(! klass.isCreatable())
-            throw IllegalArgumentException("Class (${klass}) should have '${Inject::class}' annotation for creating bean")
-
         // Return existing instance if available (directly from instances map)
         get(klass, name)?.let { return it }
+
+        if(! klass.isCreatable())
+            throw IllegalArgumentException("Class (${klass}) should have '${Inject::class}' annotation for creating bean")
 
         // Check for circular dependency
         if (klass in creatingInstances) {
