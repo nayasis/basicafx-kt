@@ -107,8 +107,19 @@ open class SimpleDiContainer: Closeable {
             val start     = path.indexOf(packagePath).takeIf { it >= 0 } ?: return@forEach
             val classPath = path.substring(start).takeIf { it.endsWith(".class") } ?: return@forEach
             val className = classPath.removeSuffix(".class").replace('/', '.')
+            val simpleName = className.substringAfterLast('.')
 
-            val klass = Class.forName(className, false, classLoader).kotlin
+            // Skip Kotlin file facades (e.g., MainKt) and local/anonymous/synthetic classes.
+            if(simpleName.endsWith("Kt") || '$' in simpleName) {
+                return@forEach
+            }
+
+            val klass = runCatching {
+                Class.forName(className, false, classLoader).kotlin
+            }.getOrElse {
+                return@forEach
+            }
+
             if(klass.hasAnnotation<Inject>()) {
                 runCatching {
                     create(klass)
