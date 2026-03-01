@@ -48,7 +48,7 @@ open class DefaultSplash(
     override fun onProgress(notificator: ProgressNotificator) {
         with(notificator) {
             message?.let { view.label.text = it }
-            if(!showProgressBar && progress != null && progress.toDouble() > 0) {
+            if(showProgressBar && progress != null && progress.toDouble() > 0) {
                 view.progressBar.isVisible = true
                 view.progressBar.progress = progress.toDouble()
             }
