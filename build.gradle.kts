@@ -35,8 +35,9 @@ javafx {
 
 dependencies {
 
-//	implementation("io.github.nayasis:basica-kt:0.3.11")
-	implementation("io.github.nayasis:basica-kt:0.1.0-SNAPSHOT")
+	implementation(platform("com.fasterxml.jackson:jackson-bom:2.20.0"))
+
+	implementation("io.github.nayasis:basica-kt:0.3.12")
 	implementation("commons-cli:commons-cli:1.4")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
@@ -46,7 +47,7 @@ dependencies {
 	implementation("ch.qos.logback:logback-classic:1.5.31")
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
-	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
+	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
 	// kotlin
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
