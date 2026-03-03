@@ -2,12 +2,14 @@ package io.github.nayasis.kotlin.javafx.misc
 
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.Logger
+import io.github.nayasis.kotlin.basica.core.string.toPath
 import io.github.nayasis.kotlin.basica.core.string.toResource
 import io.github.nayasis.kotlin.javafx.common.createTempFile
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
@@ -94,6 +96,16 @@ class ImagesTest {
         image?.write(file)
 
         assertTrue { file.exists() }
+    }
+
+    @Test
+    @Disabled
+    fun downloadTest() {
+        val image = "https://gamefaqs.gamespot.com/a/box/8/9/9/295899_front.jpg".toImage()
+        val file = createTempFile("basicafx-image-download-", ".jpg")
+//        val file = "e:/download/test.jpg".toPath()
+        image.write(file)
+        assertTrue(file.exists())
     }
 
 }

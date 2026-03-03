@@ -392,11 +392,13 @@ fun BufferedImage.write(path: Path) {
 
 fun BufferedImage.write(file: File) {
     this.let { image ->
-        val extension = file.extension
-        if(extension.equals("jpg",true))
-            image.removeAlpha()
-        file.toPath().toAbsolutePath().parent.makeDir()
-        ImageIO.write(image,extension,file)
+        val extension   = file.extension
+        val outputImage = if(extension in setOf("jpg", "jpeg")) image.removeAlpha() else image
+        file.toPath().toAbsolutePath().parent?.makeDir()
+        val written = ImageIO.write(outputImage, extension, file)
+        if(!written) {
+            throw IOException("can not write image. unsupported format or writer not found. (file=$file, format=$extension)")
+        }
     }
 }
 

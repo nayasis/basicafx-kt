@@ -5,6 +5,7 @@ import java.io.Closeable
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.hasAnnotation
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.full.valueParameters
 
@@ -36,11 +37,11 @@ open class SimpleDiContainer: Closeable {
 
     fun <T: Any> create(klass: KClass<T>, name: String? = null): T {
 
-        if(! klass.isCreatable())
-            throw IllegalArgumentException("Class (${klass}) should have '${Inject::class}' annotation for creating bean")
-
         // Return existing instance if available (directly from instances map)
         get(klass, name)?.let { return it }
+
+        if(! klass.isCreatable())
+            throw IllegalArgumentException("Class (${klass}) should have '${Inject::class}' annotation for creating bean")
 
         // Check for circular dependency
         if (klass in creatingInstances) {
@@ -66,9 +67,13 @@ open class SimpleDiContainer: Closeable {
         }
     }
 
-    fun <T: Any> create(klassName: String): T {
+    fun <T: Any> create(klassName: String, classLoader: ClassLoader? = null): T {
         @Suppress("UNCHECKED_CAST")
-        val klass = Class.forName(klassName).kotlin as KClass<T>
+        val klass = Class.forName(
+            klassName,
+            false,
+            classLoader ?: Thread.currentThread().contextClassLoader ?: this::class.java.classLoader
+        ).kotlin as KClass<T>
         return create(klass)
     }
 
@@ -93,15 +98,32 @@ open class SimpleDiContainer: Closeable {
         }
     }
 
+    @OptIn(ExperimentalStdlibApi::class)
     private fun scanPackage(packageName: String) {
         val packagePath = packageName.replace('.', '/')
+        val classLoader = Thread.currentThread().contextClassLoader ?: this::class.java.classLoader
         Classes.findResources("$packagePath/*.class", "$packagePath/**/*.class").forEach { url ->
             val path      = url.path.replace('\\', '/')
             val start     = path.indexOf(packagePath).takeIf { it >= 0 } ?: return@forEach
             val classPath = path.substring(start).takeIf { it.endsWith(".class") } ?: return@forEach
             val className = classPath.removeSuffix(".class").replace('/', '.')
-            runCatching {
-                create<Any>(className)
+            val simpleName = className.substringAfterLast('.')
+
+            // Skip Kotlin file facades (e.g., MainKt) and local/anonymous/synthetic classes.
+            if(simpleName.endsWith("Kt") || '$' in simpleName) {
+                return@forEach
+            }
+
+            val klass = runCatching {
+                Class.forName(className, false, classLoader).kotlin
+            }.getOrElse {
+                return@forEach
+            }
+
+            if(klass.hasAnnotation<Inject>()) {
+                runCatching {
+                    create(klass)
+                }.onFailure{ e -> throw IllegalStateException("Failed to create bean while scanning package: $className", e) }
             }
         }
     }

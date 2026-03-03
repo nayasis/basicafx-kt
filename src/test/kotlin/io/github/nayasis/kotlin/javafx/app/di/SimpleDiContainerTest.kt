@@ -1,5 +1,7 @@
 package io.github.nayasis.kotlin.javafx.app.di
 
+import io.github.nayasis.kotlin.javafx.app.di.scan.ScanInjectService
+import io.github.nayasis.kotlin.javafx.app.di.scan.ScanNamedInjectService
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -158,14 +160,14 @@ class SimpleDiContainerTest {
         val container = SimpleDiContainer()
         
         // Scan the test package
-        container.scanPackages("io.github.nayasis.kotlin.javafx")
+        container.scanPackages("io.github.nayasis.kotlin.javafx.app.di.scan")
         
         // After scanning, @Inject annotated classes should be available
-        val service = container.get(InjectTestService::class)
+        val service = container.get(ScanInjectService::class)
         service shouldNotBe null
         service?.name shouldBe "default"
         
-        val withNameService = container.get(InjectWithNameService::class)
+        val withNameService = container.get(ScanNamedInjectService::class)
         withNameService shouldNotBe null
         withNameService?.name shouldBe "custom"
     }
@@ -175,14 +177,14 @@ class SimpleDiContainerTest {
         val container = SimpleDiContainer()
 
         // Scan the test package
-        container.scanPackages("io.github.nayasis.kotlin.javafx.app.di")
+        container.scanPackages("io.github.nayasis.kotlin.javafx.app.di.scan")
 
         // After scanning, @Inject annotated classes should be available
-        val service = container.get(InjectTestService::class)
+        val service = container.get(ScanInjectService::class)
         service shouldNotBe null
         service?.name shouldBe "default"
 
-        val withNameService = container.get(InjectWithNameService::class)
+        val withNameService = container.get(ScanNamedInjectService::class)
         withNameService shouldNotBe null
         withNameService?.name shouldBe "custom"
     }
@@ -193,13 +195,22 @@ class SimpleDiContainerTest {
         
         // Scan multiple packages
         container.scanPackages(
-            "io.github.nayasis.kotlin.javafx.app.di",
-            "io.github.nayasis.kotlin.javafx.app"
+            "io.github.nayasis.kotlin.javafx.app.di.scan",
+            "io.github.nayasis.kotlin.javafx.app.di.scan"
         )
         
         // Should be able to get instances
-        val service = container.get(InjectTestService::class)
+        val service = container.get(ScanInjectService::class)
         service shouldNotBe null
+    }
+
+    @Test
+    fun `scan packages throws when bean creation fails`() {
+        val container = SimpleDiContainer()
+
+        shouldThrow<IllegalStateException> {
+            container.scanPackages("io.github.nayasis.kotlin.javafx.app.di")
+        }
     }
 }
 
