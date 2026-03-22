@@ -6,6 +6,7 @@ import io.github.nayasis.kotlin.basica.core.string.toPath
 import io.github.nayasis.kotlin.basica.core.string.toResource
 import io.github.nayasis.kotlin.javafx.common.createTempFile
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeAll
@@ -19,6 +20,7 @@ import java.awt.AlphaComposite
 import java.io.IOException
 import java.nio.file.Files
 import javax.imageio.ImageIO
+import javax.swing.ImageIcon
 import kotlin.io.path.exists
 
 private val logger = KotlinLogging.logger {}
@@ -99,11 +101,25 @@ class ImagesTest {
     }
 
     @Test
-    @Disabled
+    fun emptyByteArrayShouldBeEmpty() {
+        byteArrayOf().toBufferedImage().isEmpty() shouldBe true
+    }
+
+    @Test
+    fun zeroSizedImageIconShouldFail() {
+        ImageIcon().toBufferedImage().isEmpty() shouldBe true
+    }
+
+    @Test
+    @Disabled("Manual verification only: Cloudflare human check blocks automated download.")
     fun downloadTest() {
-        val image = "https://gamefaqs.gamespot.com/a/box/8/9/9/295899_front.jpg".toImage()
-        val file = createTempFile("basicafx-image-download-", ".jpg")
-//        val file = "e:/download/test.jpg".toPath()
+//        testDownload("https://gamefaqs.gamespot.com/a/box/8/9/9/295899_front.jpg")
+        testDownload("https://www.lemon64.com/assets/images/games/screens/tank/tank_01.png")
+    }
+
+    private fun testDownload(url: String, filepath: String? = null) {
+        val image = url.toImage()
+        val file = filepath?.toPath() ?: createTempFile("basicafx-image-download-", ".jpg")
         image.write(file)
         assertTrue(file.exists())
     }
