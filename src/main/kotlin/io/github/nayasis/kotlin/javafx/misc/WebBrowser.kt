@@ -17,7 +17,7 @@ class WebBrowser(
 ): Closeable {
 
     private val httpClient = HttpClients.custom()
-        .setUserAgent(userAgent ?: UserAgents.pick())
+        .setUserAgent(userAgent ?: DEFAULT_USER_AGENTS.pick())
         .setDefaultHeaders(listOf(
             BasicHeader("Accept"         , "image/webp,image/apng,image/*,*/*;q=0.8"),
             BasicHeader("Accept-Language", "ko-KR,ko;q=0.9,ja-JP,ja;q=0.8,en-US;q=0.7,en;q=0.6"),
@@ -61,3 +61,4 @@ class WebBrowser(
     }
 }
 
+private val DEFAULT_USER_AGENTS = UserAgents()
