@@ -3,8 +3,10 @@
 package io.github.nayasis.kotlin.javafx.stage
 
 import io.github.nayasis.kotlin.basica.core.extension.FieldProperty
+import io.github.nayasis.kotlin.javafx.animation.toFxDuration
 import io.github.nayasis.kotlin.javafx.property.InsetProperty
 import io.github.nayasis.kotlin.javafx.scene.*
+import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
 import javafx.scene.Node
@@ -14,7 +16,9 @@ import javafx.scene.control.Dialog
 import javafx.stage.Stage
 import javafx.stage.Window
 import javafx.stage.WindowEvent
+import tornadofx.runLater
 import java.io.Serializable
+import kotlin.time.Duration
 
 class Stages { companion object {
 
@@ -69,6 +73,30 @@ fun Stage.addIconified(button: Button) {
 
 fun Stage.addZoomed(button: Button) {
     scene?.addZoomed(button)
+}
+
+fun <T> Stage.hideWhile(
+    delay: Duration = Duration.ZERO,
+    block: () -> T,
+): T {
+
+    val prevImplicit = Platform.isImplicitExit()
+
+    Platform.setImplicitExit(false)
+    hide()
+
+    return try {
+        block()
+    } finally {
+        runLater(delay.toFxDuration()) {
+            try {
+                show()
+                requestFocus()
+            } finally {
+                Platform.setImplicitExit(prevImplicit)
+            }
+        }
+    }
 }
 
 val Stage.isZoomed: Boolean
@@ -144,3 +172,4 @@ class MaximizedProperty: Serializable {
         }
     }
 }
+
