@@ -131,6 +131,7 @@ val Scene?.stage: Stage?
  * It is activated by [Stage.watchMaximized]
  */
 var Stage.previousBoundary: MaximizedProperty by FieldProperty{MaximizedProperty()}
+private var Stage.maximizedWatcherInstalled: Boolean by FieldProperty{false}
 
 /**
  * Manage previous window inset (x,y,width,height) when maximized property is changed.
@@ -138,27 +139,68 @@ var Stage.previousBoundary: MaximizedProperty by FieldProperty{MaximizedProperty
  * Previous inset property is [Stage.previousBoundary]
  */
 fun Stage.watchMaximized() {
+    if(maximizedWatcherInstalled) return
+    maximizedWatcherInstalled = true
+
+    capturePreviousBoundary()
+    var captureSequence = 0L
+    val scheduleCapture = {
+        captureSequence += 1
+        val expected = captureSequence
+        Platform.runLater {
+            if(expected != captureSequence) return@runLater
+            if(!isMaximized && isNormalBoundsCandidate()) {
+                capturePreviousBoundary()
+            }
+        }
+    }
     maximizedProperty().addListener { _, _, maximized ->
-        if(maximized) {
-            previousBoundary.boundary.width = this.width.toInt()
-            previousBoundary.boundary.height = this.height.toInt()
-            previousBoundary.maximized = true
-        } else {
-            previousBoundary.boundary.width = 0
-            previousBoundary.boundary.height = 0
-            previousBoundary.maximized = false
-        }
+        previousBoundary.maximized = maximized
     }
-    xProperty().addListener { _, x, _ ->
+    xProperty().addListener { _, _, _ ->
         if(!isMaximized) {
-            previousBoundary.boundary.x = x.toInt()
+            scheduleCapture()
         }
     }
-    yProperty().addListener { _, y, _ ->
+    yProperty().addListener { _, _, _ ->
         if(!isMaximized) {
-            previousBoundary.boundary.y = y.toInt()
+            scheduleCapture()
         }
     }
+    widthProperty().addListener { _, _, _ ->
+        if(!isMaximized) {
+            scheduleCapture()
+        }
+    }
+    heightProperty().addListener { _, _, _ ->
+        if(!isMaximized) {
+            scheduleCapture()
+        }
+    }
+}
+
+private fun Stage.capturePreviousBoundary() {
+    previousBoundary.boundary.x = x.toInt()
+    previousBoundary.boundary.y = y.toInt()
+    if(width > 0.0) {
+        previousBoundary.boundary.width = width.toInt()
+    }
+    if(height > 0.0) {
+        previousBoundary.boundary.height = height.toInt()
+    }
+}
+
+private fun Stage.isNormalBoundsCandidate(): Boolean {
+    val screen = BoundaryChecker().getMajorScreen(this).visualBounds
+    val tolerance = 16.0
+
+    val fillsScreen =
+        width >= screen.width - tolerance &&
+        height >= screen.height - tolerance &&
+        x <= screen.minX + tolerance &&
+        y <= screen.minY + tolerance
+
+    return !fillsScreen
 }
 
 class MaximizedProperty: Serializable {

@@ -6,22 +6,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import io.github.nayasis.kotlin.javafx.control.basic.allChildren
 import io.github.nayasis.kotlin.javafx.control.basic.fxId
 import io.github.nayasis.kotlin.javafx.scene.previousZoomInset
+import io.github.nayasis.kotlin.javafx.stage.BoundaryChecker
 import io.github.nayasis.kotlin.javafx.stage.MaximizedProperty
 import io.github.nayasis.kotlin.javafx.stage.previousBoundary
+import javafx.application.Platform
+import javafx.event.EventHandler
 import javafx.event.EventTarget
-import javafx.scene.Node
-import javafx.scene.control.*
+import javafx.scene.control.CheckBox
+import javafx.scene.control.CheckMenuItem
+import javafx.scene.control.ChoiceBox
+import javafx.scene.control.ComboBox
+import javafx.scene.control.Control
+import javafx.scene.control.TableView
+import javafx.scene.control.TextArea
+import javafx.scene.control.TextField
+import javafx.scene.control.TextInputControl
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
+import javafx.stage.WindowEvent
 import org.controlsfx.control.CheckComboBox
 import java.io.Serializable
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
-
-private const val PREFIX_ID = "_tmp_id"
-private var seq = 0
 
 data class StageProperty(
     var inset: InsetProperty?                  = null,
@@ -66,10 +74,25 @@ data class StageProperty(
         disables  = hashMapOf()
         indices   = hashMapOf()
 
-        inset = InsetProperty(stage)
-        maximized = stage.isMaximized
+        val currentInset = InsetProperty(stage)
+        val previousNormalBoundary = stage.previousBoundary.boundary.copy()
+        val hasPreviousNormalBoundary = previousNormalBoundary.width > 0 && previousNormalBoundary.height > 0
+        val likelyMaximized =
+            stage.isMaximized ||
+            stage.previousBoundary.maximized ||
+            (hasPreviousNormalBoundary && isLikelyFullscreenBounds(stage, currentInset))
+        val restoredBoundary = when {
+            hasPreviousNormalBoundary -> previousNormalBoundary
+            else -> currentInset.copy()
+        }
+
+        inset = currentInset
+        maximized = likelyMaximized
         previousZoomInset = stage.scene.previousZoomInset
-        previousBoundary = stage.previousBoundary
+        previousBoundary = MaximizedProperty().apply {
+            maximized = likelyMaximized && hasPreviousNormalBoundary
+            boundary = restoredBoundary
+        }
 
         if(!includeChildren) return
 
@@ -104,10 +127,35 @@ data class StageProperty(
 
         if( stage?.scene == null ) return
 
-        if(previousBoundary?.maximized == true) {
-            previousBoundary!!.bind(stage)
+        if(maximized) {
+            val boundary = previousBoundary?.boundary
+                ?.takeIf { it.width > 0 && it.height > 0 }
+                ?: inset
+
+            boundary?.copy()?.let { normalBoundary ->
+                stage.previousBoundary = MaximizedProperty().apply {
+                    maximized = true
+                    this.boundary = normalBoundary.copy()
+                }
+
+                if(stage.isShowing) {
+                    Platform.runLater {
+                        restoreMaximized(stage, normalBoundary)
+                    }
+                } else {
+                    lateinit var handler: EventHandler<WindowEvent>
+                    handler = EventHandler {
+                        stage.removeEventHandler(WindowEvent.WINDOW_SHOWN, handler)
+                        Platform.runLater {
+                            restoreMaximized(stage, normalBoundary)
+                        }
+                    }
+                    stage.addEventHandler(WindowEvent.WINDOW_SHOWN, handler)
+                }
+            }
         } else {
             inset?.bind(stage)
+            stage.isMaximized = false
         }
         previousZoomInset?.let { stage.scene.previousZoomInset = it }
 
@@ -150,21 +198,51 @@ data class StageProperty(
     }
 
     private fun getAllChildren(stage: Stage): List<EventTarget> {
-        return stage.scene.root?.allChildren?.filter { setFxId(it) } ?: emptyList()
+        return stage.scene.root
+            ?.allChildren
+            ?.filter { it.fxId.isNotEmpty() }
+            ?: emptyList()
     }
 
-    private fun setFxId(node: EventTarget): Boolean {
-        return if( node.fxId.isEmpty() ) try {
-            when (node) {
-                is Node -> node.id = "${PREFIX_ID}_${seq++}"
-                is MenuItem -> node.id = "${PREFIX_ID}_${seq++}"
-                else -> return false
+    private fun isLikelyFullscreenBounds(stage: Stage, inset: InsetProperty): Boolean {
+        val screen = BoundaryChecker().getMajorScreen(stage).visualBounds
+        val tolerance = 16
+        return inset.width >= screen.width - tolerance &&
+            inset.height >= screen.height - tolerance &&
+            inset.x <= screen.minX + tolerance &&
+            inset.y <= screen.minY + tolerance
+    }
+
+    private fun restoreMaximized(stage: Stage, normalBoundary: InsetProperty, attempts: Int = 5, prime: Boolean = true) {
+        if(prime) {
+            stage.isMaximized = false
+            normalBoundary.bind(stage)
+            Platform.runLater {
+                restoreMaximized(stage, normalBoundary, attempts, false)
             }
-            true
-        } catch (e: Exception) {
-            seq--
-            false
-        } else true
+            return
+        }
+
+        stage.previousBoundary = MaximizedProperty().apply {
+            maximized = true
+            boundary = normalBoundary.copy()
+        }
+        stage.isMaximized = true
+
+        Platform.runLater {
+            if(isLikelyFullscreenBounds(stage, InsetProperty(stage))) {
+                return@runLater
+            }
+            if(attempts <= 0) {
+                return@runLater
+            }
+
+            stage.isMaximized = false
+            normalBoundary.bind(stage)
+            Platform.runLater {
+                restoreMaximized(stage, normalBoundary, attempts - 1, false)
+            }
+        }
     }
 
     private fun skippable(node: EventTarget): Boolean {
