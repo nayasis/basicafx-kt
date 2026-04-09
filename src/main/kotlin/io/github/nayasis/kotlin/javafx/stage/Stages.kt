@@ -25,22 +25,17 @@ class Stages { companion object {
     val defaultIcons = IconContainer()
 
     val focusedWindow: Window?
-        get() {
-            for( window in windows)
-                if( window.isFocused ) return window
-            return null
-        }
+        get() = windows.firstOrNull { it.isFocused }
 
     val windows: List<Window>
         get() = Window.getWindows()
 
 }}
 
-fun Stage.loadDefaultIcon(): Stage {
+fun Stage.loadDefaultIcon(): Stage = apply {
     if( ! Stages.defaultIcons.isEmpty() ) {
-        this.icons.addAll(Stages.defaultIcons.icons)
+        icons.addAll(Stages.defaultIcons.icons)
     }
-    return this
 }
 
 val Stage.isBorderless: Boolean
@@ -48,32 +43,21 @@ val Stage.isBorderless: Boolean
 
 fun Stage.setBorderless(option: Stage.() -> Unit = {}, defaultCss: Boolean = true) {
     scene?.setBorderless(defaultCss = defaultCss)
-    this.apply(option)
+    apply(option)
 }
 
-fun Stage.addConstraintRetainer() {
-    scene?.addConstraintRetainer()
-}
+fun Stage.addConstraintRetainer() = scene?.addConstraintRetainer()
 
-fun Stage.addResizeHandler() {
-    scene?.addResizeHandler()
-}
+fun Stage.addResizeHandler() = scene?.addResizeHandler()
 
-fun Stage.addMoveHandler(node: Node, buttonClose: Boolean = false, buttonHide: Boolean = false, buttonZoom: Boolean = false, buttonAll: Boolean = false) {
+fun Stage.addMoveHandler(node: Node, buttonClose: Boolean = false, buttonHide: Boolean = false, buttonZoom: Boolean = false, buttonAll: Boolean = false) =
     scene?.addMoveHandler(node = node, buttonClose = buttonClose, buttonHide = buttonHide, buttonZoom = buttonZoom, buttonAll = buttonAll)
-}
 
-fun Stage.addClose(button: Button) {
-    scene?.addClose(button)
-}
+fun Stage.addClose(button: Button) = scene?.addClose(button)
 
-fun Stage.addIconified(button: Button) {
-    scene?.addIconified(button)
-}
+fun Stage.addIconified(button: Button) = scene?.addIconified(button)
 
-fun Stage.addZoomed(button: Button) {
-    scene?.addZoomed(button)
-}
+fun Stage.addZoomed(button: Button) = scene?.addZoomed(button)
 
 fun <T> Stage.hideWhile(
     delay: Duration = Duration.ZERO,
@@ -102,9 +86,7 @@ fun <T> Stage.hideWhile(
 val Stage.isZoomed: Boolean
     get() = scene?.isZoomed() ?: false
 
-fun Stage.setZoom(enable: Boolean) {
-    scene?.setZoom(enable)
-}
+fun Stage.setZoom(enable: Boolean) = scene?.setZoom(enable)
 
 fun Stage.addCloseRequest(event: EventHandler<WindowEvent>) =
     this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,event)
@@ -143,65 +125,48 @@ fun Stage.watchMaximized() {
     maximizedWatcherInstalled = true
 
     capturePreviousBoundary()
-    var captureSequence = 0L
+    var captureToken = 0L
     val scheduleCapture = {
-        captureSequence += 1
-        val expected = captureSequence
+        val expected = ++captureToken
         Platform.runLater {
-            if(expected != captureSequence) return@runLater
-            if(!isMaximized && isNormalBoundsCandidate()) {
+            if(expected == captureToken && !isMaximized && isNormalBoundsCandidate()) {
                 capturePreviousBoundary()
             }
         }
     }
+
     maximizedProperty().addListener { _, _, maximized ->
         previousBoundary.maximized = maximized
     }
-    xProperty().addListener { _, _, _ ->
-        if(!isMaximized) {
-            scheduleCapture()
-        }
-    }
-    yProperty().addListener { _, _, _ ->
-        if(!isMaximized) {
-            scheduleCapture()
-        }
-    }
-    widthProperty().addListener { _, _, _ ->
-        if(!isMaximized) {
-            scheduleCapture()
-        }
-    }
-    heightProperty().addListener { _, _, _ ->
-        if(!isMaximized) {
-            scheduleCapture()
+    listOf(xProperty(), yProperty(), widthProperty(), heightProperty()).forEach { property ->
+        property.addListener { _, _, _ ->
+            if(!isMaximized) scheduleCapture()
         }
     }
 }
 
 private fun Stage.capturePreviousBoundary() {
-    previousBoundary.boundary.x = x.toInt()
-    previousBoundary.boundary.y = y.toInt()
-    if(width > 0.0) {
-        previousBoundary.boundary.width = width.toInt()
-    }
-    if(height > 0.0) {
-        previousBoundary.boundary.height = height.toInt()
+    previousBoundary.boundary.apply {
+        x = this@capturePreviousBoundary.x.toInt()
+        y = this@capturePreviousBoundary.y.toInt()
+        if(this@capturePreviousBoundary.width > 0.0) {
+            width = this@capturePreviousBoundary.width.toInt()
+        }
+        if(this@capturePreviousBoundary.height > 0.0) {
+            height = this@capturePreviousBoundary.height.toInt()
+        }
     }
 }
 
-private fun Stage.isNormalBoundsCandidate(): Boolean {
+internal fun Stage.fillsCurrentScreen(inset: InsetProperty = InsetProperty(this), tolerance: Double = 16.0): Boolean {
     val screen = BoundaryChecker().getMajorScreen(this).visualBounds
-    val tolerance = 16.0
-
-    val fillsScreen =
-        width >= screen.width - tolerance &&
-        height >= screen.height - tolerance &&
-        x <= screen.minX + tolerance &&
-        y <= screen.minY + tolerance
-
-    return !fillsScreen
+    return inset.width >= screen.width - tolerance &&
+        inset.height >= screen.height - tolerance &&
+        inset.x <= screen.minX + tolerance &&
+        inset.y <= screen.minY + tolerance
 }
+
+private fun Stage.isNormalBoundsCandidate(): Boolean = !fillsCurrentScreen()
 
 class MaximizedProperty: Serializable {
     var maximized = false
