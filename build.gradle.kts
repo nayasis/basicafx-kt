@@ -35,10 +35,10 @@ javafx {
 
 dependencies {
 
-	implementation(platform("com.fasterxml.jackson:jackson-bom:2.20.0"))
+	implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.1"))
 
-	implementation("io.github.nayasis:basica-kt:0.3.12")
-	implementation("commons-cli:commons-cli:1.4")
+	implementation("io.github.nayasis:basica-kt:0.3.13")
+	implementation("commons-cli:commons-cli:1.11.0")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.controlsfx:controlsfx:11.2.3")
@@ -48,7 +48,6 @@ dependencies {
 	implementation("org.apache.httpcomponents.client5:httpclient5:5.3.1")
 	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
-
 	// kotlin
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.10.2")

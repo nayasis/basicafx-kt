@@ -1,15 +1,39 @@
 ﻿package io.github.nayasis.kotlin.javafx.misc
 
-object UserAgents {
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
-    private var previous = ""
+class UserAgents(
+    private val cacheDuration: Duration = 5.minutes,
+) {
 
+    private var current = ""
+    private var expiresAt = 0L
+
+    @Synchronized
     fun pick(): String {
-        var current = ""
-        while(USER_AGENTS.random().also{current = it} == previous) {
-            // repeat until get a different agent from the previous one
+        val now = System.currentTimeMillis()
+        if (current.isNotEmpty() && now < expiresAt) {
+            return current
         }
-        return current.also { previous = it }
+        current = nextAgent(current)
+        expiresAt = now + cacheDuration.coerceAtLeast(Duration.ZERO).inWholeMilliseconds
+        return current
+    }
+
+    private fun nextAgent(previous: String): String {
+        return when {
+            USER_AGENTS.size <= 1 -> USER_AGENTS.first()
+            previous.isEmpty()    -> USER_AGENTS.random()
+            else -> {
+                val currentIndex = USER_AGENTS.indexOf(previous)
+                if (currentIndex < 0) {
+                    USER_AGENTS.random()
+                } else {
+                    USER_AGENTS[(currentIndex + 1) % USER_AGENTS.size]
+                }
+            }
+        }
     }
 
 }

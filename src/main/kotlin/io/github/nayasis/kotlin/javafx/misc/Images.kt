@@ -143,16 +143,18 @@ fun String.toImage(
 }
 
 fun ImageIcon.toBufferedImage(): BufferedImage {
-    return BufferedImage(iconWidth, iconHeight, TYPE_INT_ARGB).also {
-        it.createGraphics().apply {
-            setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC)
-            setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY)
-            setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
-            setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY)
-            setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_GASP)
-        }.let { graphics ->
-            paintIcon(null, graphics,0,0)
-            graphics.dispose()
+    return if(this.isEmpty()) BufferedImage(1,1,BufferedImage.TYPE_INT_ARGB) else {
+        BufferedImage(iconWidth, iconHeight, TYPE_INT_ARGB).also {
+            it.createGraphics().apply {
+                setRenderingHint(KEY_INTERPOLATION, VALUE_INTERPOLATION_BICUBIC)
+                setRenderingHint(KEY_ALPHA_INTERPOLATION, VALUE_ALPHA_INTERPOLATION_QUALITY)
+                setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
+                setRenderingHint(KEY_RENDERING, VALUE_RENDER_QUALITY)
+                setRenderingHint(KEY_TEXT_ANTIALIASING, VALUE_TEXT_ANTIALIAS_GASP)
+            }.let { graphics ->
+                paintIcon(null, graphics,0,0)
+                graphics.dispose()
+            }
         }
     }
 }
@@ -168,7 +170,7 @@ fun ImageIcon.toImageOrNull(): Image? {
 fun ByteArray.toBufferedImage(): BufferedImage {
     return this.let {
         if(it.isEmpty()) {
-            BufferedImage(0,0, TYPE_INT_ARGB)
+            BufferedImage(1,1, TYPE_INT_ARGB)
         } else {
             ByteArrayInputStream(it).use { bis ->
                 ImageIO.read(bis)
@@ -210,6 +212,18 @@ fun BufferedImage.removeAlpha(): BufferedImage {
             }
         }
     }
+}
+
+fun BufferedImage?.isEmpty(): Boolean {
+    return this == null || (this.width <= 1 && this.height <= 1)
+}
+
+fun Image?.isEmpty(): Boolean {
+    return this == null || (this.width <= 1 && this.height <= 1)
+}
+
+fun ImageIcon?.isEmpty(): Boolean {
+    return this == null || (this.iconHeight <= 1 && this.iconHeight <= 1)
 }
 
 fun Image.toJpgBinary(): ByteArray {

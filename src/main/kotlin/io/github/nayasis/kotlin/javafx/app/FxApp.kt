@@ -49,9 +49,9 @@ abstract class FxApp: App {
                     return ctx.get(type, null) ?:
                         throw AssertionError("No bean ($type) found in container")
                 }
-                override fun <T: Any> getInstance(type: KClass<T>, beamName: String): T {
-                    return ctx.get(type, beamName) ?:
-                        throw AssertionError("No bean ($type[$beamName]) found in container")
+                override fun <T: Any> getInstance(type: KClass<T>, name: String): T {
+                    return ctx.get(type, name) ?:
+                        throw AssertionError("No bean ($type[$name]) found in container")
                 }
             }
             // setup Logger

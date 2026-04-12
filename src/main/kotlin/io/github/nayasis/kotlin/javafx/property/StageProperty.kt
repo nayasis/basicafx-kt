@@ -6,22 +6,30 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import io.github.nayasis.kotlin.javafx.control.basic.allChildren
 import io.github.nayasis.kotlin.javafx.control.basic.fxId
 import io.github.nayasis.kotlin.javafx.scene.previousZoomInset
+import io.github.nayasis.kotlin.javafx.stage.fillsCurrentScreen
 import io.github.nayasis.kotlin.javafx.stage.MaximizedProperty
 import io.github.nayasis.kotlin.javafx.stage.previousBoundary
+import javafx.application.Platform
+import javafx.event.EventHandler
 import javafx.event.EventTarget
-import javafx.scene.Node
-import javafx.scene.control.*
+import javafx.scene.control.CheckBox
+import javafx.scene.control.CheckMenuItem
+import javafx.scene.control.ChoiceBox
+import javafx.scene.control.ComboBox
+import javafx.scene.control.Control
+import javafx.scene.control.TableView
+import javafx.scene.control.TextArea
+import javafx.scene.control.TextField
+import javafx.scene.control.TextInputControl
 import javafx.scene.layout.Pane
 import javafx.stage.Stage
+import javafx.stage.WindowEvent
 import org.controlsfx.control.CheckComboBox
 import java.io.Serializable
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSuperclassOf
-
-private const val PREFIX_ID = "_tmp_id"
-private var seq = 0
 
 data class StageProperty(
     var inset: InsetProperty?                  = null,
@@ -37,6 +45,12 @@ data class StageProperty(
     var disables: HashMap<String,Boolean>?     = null,
     var indices: HashMap<String,Int>?          = null,
 ): Serializable{
+
+    private data class WindowStateSnapshot(
+        val maximized: Boolean,
+        val hasNormalBoundary: Boolean,
+        val normalBoundary: InsetProperty,
+    )
 
     @JsonIgnore
     var includeKlass = ArrayList<KClass<out EventTarget>>()
@@ -66,32 +80,38 @@ data class StageProperty(
         disables  = hashMapOf()
         indices   = hashMapOf()
 
-        inset = InsetProperty(stage)
-        maximized = stage.isMaximized
+        val currentInset = InsetProperty(stage)
+        val snapshot = readWindowState(stage, currentInset)
+
+        inset = currentInset
+        maximized = snapshot.maximized
         previousZoomInset = stage.scene.previousZoomInset
-        previousBoundary = stage.previousBoundary
+        previousBoundary = MaximizedProperty().apply {
+            maximized = snapshot.maximized && snapshot.hasNormalBoundary
+            boundary = snapshot.normalBoundary
+        }
 
         if(!includeChildren) return
 
         getAllChildren(stage).forEach {
             if( skippable(it) ) return@forEach
             when(it) {
-                is TableView<*> -> tables!![it.id] = TableProperty(it)
-                is CheckMenuItem -> checks!![it.id] = it.isSelected
-                is CheckBox -> checks!![it.id] = it.isSelected
-                is TextField -> values!![it.id] = it.text ?: ""
-                is TextArea -> values!![it.id] = it.text ?: ""
-                is ComboBox<*> -> indices!![it.id] = it.selectionModel.selectedIndex
-                is ChoiceBox<*> -> indices!![it.id] = it.selectionModel.selectedIndex
-                is CheckComboBox<*> -> lists!![it.id] = it.checkModel.checkedIndices.toList()
+                is TableView<*>     -> tables?.set(it.id, TableProperty(it))
+                is CheckMenuItem    -> checks?.set(it.id, it.isSelected)
+                is CheckBox         -> checks?.set(it.id, it.isSelected)
+                is TextField        -> values?.set(it.id, it.text ?: "")
+                is TextArea         -> values?.set(it.id, it.text ?: "")
+                is ComboBox<*>      -> indices?.set(it.id, it.selectionModel.selectedIndex)
+                is ChoiceBox<*>     -> indices?.set(it.id, it.selectionModel.selectedIndex)
+                is CheckComboBox<*> -> lists?.set(it.id, it.checkModel.checkedIndices.toList())
             }
             when(it) {
-                is Pane -> visibles!![it.id] = it.isVisible
+                is Pane -> visibles?.set(it.id, it.isVisible)
                 is Control -> {
-                    visibles!![it.id] = it.isVisible
-                    disables!![it.id] = it.isDisable
+                    visibles?.set(it.id, it.isVisible)
+                    disables?.set(it.id, it.isDisable)
                     if (it is TextInputControl) {
-                        editables!![it.id] = it.isEditable
+                        editables?.set(it.id, it.isEditable)
                     }
                 }
             }
@@ -104,11 +124,7 @@ data class StageProperty(
 
         if( stage?.scene == null ) return
 
-        if(previousBoundary?.maximized == true) {
-            previousBoundary!!.bind(stage)
-        } else {
-            inset?.bind(stage)
-        }
+        bindWindowState(stage)
         previousZoomInset?.let { stage.scene.previousZoomInset = it }
 
         if(!includeChildren) return
@@ -116,13 +132,13 @@ data class StageProperty(
         getAllChildren(stage).forEach {
             if( skippable(it) ) return@forEach
             when(it) {
-                is TableView<*> -> tables?.get(it.id)?.bind(it as TableView<Any>)
-                is CheckMenuItem -> checks?.get(it.id)?.let{ value -> it.isSelected = value }
-                is CheckBox -> checks?.get(it.id)?.let{ value -> it.isSelected = value }
-                is TextField -> values?.get(it.id)?.let{ value -> it.text = value }
-                is TextArea -> values?.get(it.id)?.let{ value -> it.text = value }
-                is ComboBox<*> -> indices?.get(it.id)?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
-                is ChoiceBox<*> -> indices?.get(it.id)?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
+                is TableView<*>     -> tables?.get(it.id)?.bind(it as TableView<Any>)
+                is CheckMenuItem    -> checks?.get(it.id)?.let{ value -> it.isSelected = value }
+                is CheckBox         -> checks?.get(it.id)?.let{ value -> it.isSelected = value }
+                is TextField        -> values?.get(it.id)?.let{ value -> it.text = value }
+                is TextArea         -> values?.get(it.id)?.let{ value -> it.text = value }
+                is ComboBox<*>      -> indices?.get(it.id)?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
+                is ChoiceBox<*>     -> indices?.get(it.id)?.let{ value -> it.selectionModel.select(min(max(value,0),it.items.size-1)) }
                 is CheckComboBox<*> -> lists?.get(it.id)?.let{ value ->
                     it.checkModel.clearChecks()
                     it.checkModel.checkedIndices.addAll(value)
@@ -150,21 +166,96 @@ data class StageProperty(
     }
 
     private fun getAllChildren(stage: Stage): List<EventTarget> {
-        return stage.scene.root?.allChildren?.filter { setFxId(it) } ?: emptyList()
+        return stage.scene.root
+            ?.allChildren
+            ?.filter { it.fxId.isNotEmpty() }
+            ?: emptyList()
     }
 
-    private fun setFxId(node: EventTarget): Boolean {
-        return if( node.fxId.isEmpty() ) try {
-            when (node) {
-                is Node -> node.id = "${PREFIX_ID}_${seq++}"
-                is MenuItem -> node.id = "${PREFIX_ID}_${seq++}"
-                else -> return false
+    private fun readWindowState(stage: Stage, currentInset: InsetProperty): WindowStateSnapshot {
+        val previousNormalBoundary = stage.previousBoundary.boundary.copy()
+        val hasPreviousNormalBoundary = previousNormalBoundary.width > 0 && previousNormalBoundary.height > 0
+        val likelyMaximized =
+            stage.isMaximized ||
+            stage.previousBoundary.maximized ||
+            (hasPreviousNormalBoundary && stage.fillsCurrentScreen(currentInset))
+        return WindowStateSnapshot(
+            maximized = likelyMaximized,
+            hasNormalBoundary = hasPreviousNormalBoundary,
+            normalBoundary = if(hasPreviousNormalBoundary) previousNormalBoundary else currentInset.copy(),
+        )
+    }
+
+    private fun bindWindowState(stage: Stage) {
+        if(!maximized) {
+            inset?.bind(stage)
+            stage.isMaximized = false
+            return
+        }
+
+        resolveNormalBoundary()?.let { normalBoundary ->
+            stage.previousBoundary = normalBoundary.toMaximizedProperty()
+            stage.runWhenShown {
+                restoreMaximized(stage, normalBoundary)
             }
-            true
-        } catch (e: Exception) {
-            seq--
-            false
-        } else true
+        }
+    }
+
+    private fun resolveNormalBoundary(): InsetProperty? {
+        return previousBoundary?.boundary
+            ?.takeIf { it.width > 0 && it.height > 0 }
+            ?.copy()
+            ?: inset?.copy()
+    }
+
+    private fun Stage.runWhenShown(block: () -> Unit) {
+        if(isShowing) {
+            Platform.runLater(block)
+            return
+        }
+
+        lateinit var handler: EventHandler<WindowEvent>
+        handler = EventHandler {
+            removeEventHandler(WindowEvent.WINDOW_SHOWN, handler)
+            Platform.runLater(block)
+        }
+        addEventHandler(WindowEvent.WINDOW_SHOWN, handler)
+    }
+
+    private fun InsetProperty.toMaximizedProperty(): MaximizedProperty {
+        return MaximizedProperty().apply {
+            maximized = true
+            boundary = copy()
+        }
+    }
+
+    private fun restoreMaximized(stage: Stage, normalBoundary: InsetProperty, attempts: Int = 5, prime: Boolean = true) {
+        if(prime) {
+            stage.isMaximized = false
+            normalBoundary.bind(stage)
+            Platform.runLater {
+                restoreMaximized(stage, normalBoundary, attempts, false)
+            }
+            return
+        }
+
+        stage.previousBoundary = normalBoundary.toMaximizedProperty()
+        stage.isMaximized = true
+
+        Platform.runLater {
+            if(stage.fillsCurrentScreen()) {
+                return@runLater
+            }
+            if(attempts <= 0) {
+                return@runLater
+            }
+
+            stage.isMaximized = false
+            normalBoundary.bind(stage)
+            Platform.runLater {
+                restoreMaximized(stage, normalBoundary, attempts - 1, false)
+            }
+        }
     }
 
     private fun skippable(node: EventTarget): Boolean {

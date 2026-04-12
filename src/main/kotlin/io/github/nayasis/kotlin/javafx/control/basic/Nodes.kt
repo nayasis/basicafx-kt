@@ -9,6 +9,7 @@ import javafx.event.EventTarget
 import javafx.geometry.Insets
 import javafx.scene.Group
 import javafx.scene.Node
+import javafx.scene.Parent
 import javafx.scene.control.*
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.AnchorPane
@@ -52,6 +53,7 @@ val EventTarget.children: List<EventTarget>
                     emptyList()
                 }
             }
+            is Parent -> childrenUnmodifiable
             else -> emptyList()
         }
     }
