@@ -5,7 +5,16 @@ package io.github.nayasis.kotlin.javafx.stage
 import io.github.nayasis.kotlin.basica.core.extension.FieldProperty
 import io.github.nayasis.kotlin.javafx.animation.toFxDuration
 import io.github.nayasis.kotlin.javafx.property.InsetProperty
-import io.github.nayasis.kotlin.javafx.scene.*
+import io.github.nayasis.kotlin.javafx.scene.addClose
+import io.github.nayasis.kotlin.javafx.scene.addConstraintRetainer
+import io.github.nayasis.kotlin.javafx.scene.addIconified
+import io.github.nayasis.kotlin.javafx.scene.addMoveHandler
+import io.github.nayasis.kotlin.javafx.scene.addResizeHandler
+import io.github.nayasis.kotlin.javafx.scene.addZoomed
+import io.github.nayasis.kotlin.javafx.scene.isBorderless
+import io.github.nayasis.kotlin.javafx.scene.isZoomed
+import io.github.nayasis.kotlin.javafx.scene.setBorderless
+import io.github.nayasis.kotlin.javafx.scene.setZoom
 import javafx.application.Platform
 import javafx.event.EventHandler
 import javafx.geometry.Rectangle2D
@@ -124,13 +133,13 @@ fun Stage.watchMaximized() {
     if(maximizedWatcherInstalled) return
     maximizedWatcherInstalled = true
 
-    capturePreviousBoundary()
+    previousBoundary.capture(this)
     var captureToken = 0L
     val scheduleCapture = {
         val expected = ++captureToken
         Platform.runLater {
             if(expected == captureToken && !isMaximized && isNormalBoundsCandidate()) {
-                capturePreviousBoundary()
+                previousBoundary.capture(this)
             }
         }
     }
@@ -139,21 +148,8 @@ fun Stage.watchMaximized() {
         previousBoundary.maximized = maximized
     }
     listOf(xProperty(), yProperty(), widthProperty(), heightProperty()).forEach { property ->
-        property.addListener { _, _, _ ->
+        property.addListener {
             if(!isMaximized) scheduleCapture()
-        }
-    }
-}
-
-private fun Stage.capturePreviousBoundary() {
-    previousBoundary.boundary.apply {
-        x = this@capturePreviousBoundary.x.toInt()
-        y = this@capturePreviousBoundary.y.toInt()
-        if(this@capturePreviousBoundary.width > 0.0) {
-            width = this@capturePreviousBoundary.width.toInt()
-        }
-        if(this@capturePreviousBoundary.height > 0.0) {
-            height = this@capturePreviousBoundary.height.toInt()
         }
     }
 }
@@ -171,11 +167,12 @@ private fun Stage.isNormalBoundsCandidate(): Boolean = !fillsCurrentScreen()
 class MaximizedProperty: Serializable {
     var maximized = false
     var boundary = InsetProperty()
-    fun bind(stage: Stage?) {
-        if(stage == null) return
-        if(maximized) {
-            boundary.bind(stage)
-            stage.isMaximized = maximized
+    fun capture(stage: Stage) {
+        boundary.apply {
+            x = stage.x.toInt()
+            y = stage.y.toInt()
+            stage.width. toInt().takeIf { it > 0 }?.let { width  = it }
+            stage.height.toInt().takeIf { it > 0 }?.let { height = it }
         }
     }
 }
