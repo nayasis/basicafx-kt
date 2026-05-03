@@ -1,5 +1,6 @@
 package io.github.nayasis.kotlin.javafx.stage
 
+import io.github.nayasis.kotlin.javafx.control.basic.keepPrefHeight
 import javafx.collections.ListChangeListener
 import javafx.css.PseudoClass
 import javafx.geometry.Insets
@@ -8,12 +9,15 @@ import javafx.scene.Node
 import javafx.scene.Parent
 import javafx.scene.control.Label
 import javafx.scene.control.MenuBar
+import javafx.scene.control.OverrunStyle
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Pane
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region
+import javafx.scene.shape.Rectangle
 import javafx.stage.Screen
 import javafx.stage.Stage
 import javafx.stage.Window
@@ -41,13 +45,8 @@ class WindowHeaderHelper(
         if (STYLESHEET !in titleBar.stylesheets) {
             titleBar.stylesheets.add(STYLESHEET)
         }
-        findMenuBar()?.apply {
-            minWidth = Region.USE_COMPUTED_SIZE
-            prefWidth = Region.USE_COMPUTED_SIZE
-            maxWidth = Region.USE_PREF_SIZE
-            styleClass.add("window-menu-bar")
-            headerMenuBar = this
-        }
+        titleBar.keepPrefHeight()
+        findMenuBar()?.let { installMenuBar(it) }
 
         val titleNode = HBox(
             6.0,
@@ -60,16 +59,22 @@ class WindowHeaderHelper(
             }.also { headerIcon = it },
             Label().apply {
                 styleClass.add("window-header-title")
+                isWrapText = false
+                textOverrun = OverrunStyle.CLIP
+                minWidth = Region.USE_PREF_SIZE
             }.also { headerTitle = it }
         ).apply {
             alignment = Pos.CENTER_LEFT
             padding = Insets(0.0, 0.0, 0.0, 0.0)
             HBox.setMargin(this, Insets(0.0, 8.0, 0.0, 0.0))
+            minWidth = Region.USE_PREF_SIZE
+            keepPrefHeight()
             registerWindowDrag(this)
         }
 
         val centerSpacer = Region().apply {
-            minWidth = 120.0
+            minWidth = 0.0
+            prefWidth = 120.0
             registerWindowDrag(this)
         }
 
@@ -91,6 +96,30 @@ class WindowHeaderHelper(
             }
         }
         return null
+    }
+
+    private fun installMenuBar(menuBar: MenuBar) {
+        menuBar.apply {
+            minWidth = Region.USE_PREF_SIZE
+            prefWidth = Region.USE_COMPUTED_SIZE
+            keepPrefHeight()
+            styleClass.add("window-menu-bar")
+        }
+        headerMenuBar = menuBar
+
+        val index = titleBar.children.indexOf(menuBar)
+        if (index < 0) {
+            return
+        }
+
+        titleBar.children.removeAt(index)
+        titleBar.children.add(index, Pane(menuBar).apply {
+            minWidth = 0.0
+            prefWidth = Region.USE_COMPUTED_SIZE
+            keepPrefHeight()
+            clipToBounds(this)
+            HBox.setHgrow(this, Priority.SOMETIMES)
+        })
     }
 
     private fun bindToStageWhenReady() {
@@ -126,6 +155,13 @@ class WindowHeaderHelper(
         stage.icons.addListener(ListChangeListener<Image> {
             syncStageIcon(stage)
         })
+    }
+
+    private fun clipToBounds(region: Region) {
+        region.clip = Rectangle().apply {
+            widthProperty().bind(region.widthProperty())
+            heightProperty().bind(region.heightProperty())
+        }
     }
 
     private fun syncStageIcon(stage: Stage) {
