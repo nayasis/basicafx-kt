@@ -114,9 +114,25 @@ class Dialog { companion object {
         }
     }
 
+    fun progress(title: String? = null, async: Boolean = true, headerButton: Button, task: ((dialog: ProgressDialog) -> Unit)? = null): ProgressDialog {
+        return ProgressDialog(title).apply{
+            initOwner(Stages.focusedWindow)
+            addHeaderRight(headerButton)
+            if(async) runAsync(task) else runSync(task)
+        }
+    }
+
     fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
         return MultiProgressDialog(progressCount,title).apply{
             initOwner(Stages.focusedWindow)
+            if(async) runAsync(task) else runSync(task)
+        }
+    }
+
+    fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, headerButton: Button, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
+        return MultiProgressDialog(progressCount,title).apply{
+            initOwner(Stages.focusedWindow)
+            addHeaderRight(headerButton)
             if(async) runAsync(task) else runSync(task)
         }
     }
