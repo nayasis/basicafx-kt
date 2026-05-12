@@ -9,8 +9,44 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.skin.TableViewSkin
 import javafx.scene.control.skin.VirtualFlow
+import javafx.util.Callback
 import java.lang.Integer.min
+import kotlin.math.abs
 import kotlin.math.max
+
+@JvmField
+val CONSTRAINED_RESIZE_POLICY_TRAILING_COLUMNS = Callback<TableView.ResizeFeatures<*>, Boolean> {
+    @Suppress("UNCHECKED_CAST")
+    resizeFromTrailingColumn(it as TableView.ResizeFeatures<Any>)
+}
+
+private fun resizeFromTrailingColumn(features: TableView.ResizeFeatures<Any>): Boolean {
+    if( features.column != null ) {
+        return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN.call(features)
+    }
+
+    val columns = features.table.visibleLeafColumns.filter { column -> column.isResizable }
+    var remaining = features.contentWidth - columns.sumOf { column -> column.width }
+    if( abs(remaining) < 0.5 ) return true
+
+    columns.asReversed().forEach { column ->
+        if( abs(remaining) < 0.5 ) return true
+
+        val width = column.width
+        val adjustment = if( remaining > 0 ) {
+            minOf(remaining, (column.maxWidth - width).coerceAtLeast(0.0))
+        } else {
+            maxOf(remaining, (column.minWidth - width).coerceAtMost(0.0))
+        }
+
+        if( abs(adjustment) >= 0.5 ) {
+            features.setColumnWidth(column, width + adjustment)
+            remaining -= adjustment
+        }
+    }
+
+    return true
+}
 
 @Suppress("UNCHECKED_CAST")
 fun <S,T:Any> TableView<S>.findColumnBy(fxId: String): TableColumn<S,T> {
