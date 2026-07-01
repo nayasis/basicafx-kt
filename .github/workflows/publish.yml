@@ -1,6 +1,9 @@
 name: Publish to Maven Central
 
 on:
+  push:
+    branches:
+      - 'release/**'
   workflow_dispatch:
 
 jobs:
