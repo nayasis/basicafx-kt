@@ -146,10 +146,11 @@ fun Stage.watchMaximized() {
 
     maximizedProperty().addListener { _, _, maximized ->
         previousBoundary.maximized = maximized
+        if(!maximized) scheduleCapture()
     }
     listOf(xProperty(), yProperty(), widthProperty(), heightProperty()).forEach { property ->
         property.addListener {
-            if(!isMaximized) scheduleCapture()
+            scheduleCapture()
         }
     }
 }

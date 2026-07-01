@@ -1,0 +1,17 @@
+.window-menu-bar,
+.window-menu-bar > .container {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
+
+.window-header-title {
+  -fx-text-fill: #303030;
+}
+
+.window-header-title:inactive {
+  -fx-text-fill: #8c8c8c;
+}
+
+.window-menu-bar:inactive > .container > .menu-button > .label {
+  -fx-text-fill: #8c8c8c;
+}

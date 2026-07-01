@@ -4,9 +4,12 @@ import io.github.nayasis.kotlin.javafx.control.basic.setMoveHandler
 import io.github.nayasis.kotlin.javafx.control.basic.vmargin
 import io.github.nayasis.kotlin.javafx.geometry.Insets
 import io.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
+import javafx.geometry.Pos
+import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
+import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.layout.Region.USE_PREF_SIZE
 import javafx.scene.paint.Color
@@ -26,6 +29,10 @@ class ProgressDialogStage: Stage {
     val progressBars = ArrayList<ProgressBar>()
     val messages     = ArrayList<Label>()
     val subMessages  = ArrayList<Label>()
+    val headerRight  = HBox().apply {
+        alignment = Pos.CENTER_RIGHT
+        padding   = Insets(0.0, 4.0, 0.0, 0.0)
+    }
 
     constructor(progressCount: Int) {
 
@@ -46,7 +53,10 @@ class ProgressDialogStage: Stage {
         val root = vbox {
             hbox {
                 styleClass.add("header")
+                alignment = Pos.CENTER_LEFT
                 titleHeader.attachTo(this)
+                region { hgrow = Priority.ALWAYS }
+                headerRight.attachTo(this)
                 // margin is not supported by CSS
                 vmargin = Insets(0,0,7,0)
             }
@@ -111,6 +121,10 @@ class ProgressDialogStage: Stage {
 
     fun updateTitle(title: String?) {
         runLater { titleHeader.text = title ?: "" }
+    }
+
+    fun addHeaderRight(node: Node) {
+        headerRight.children.add(node)
     }
 
 }

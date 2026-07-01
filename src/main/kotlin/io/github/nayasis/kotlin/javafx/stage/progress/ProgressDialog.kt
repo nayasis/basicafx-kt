@@ -1,5 +1,7 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
+import javafx.scene.Node
+
 class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
 
     fun updateProgress(done: Number, max: Number) = stage.updateProgress(0,done,max)
@@ -8,6 +10,10 @@ class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
     fun updateSubMessage(message: String?) = stage.updateSubMessage(0,message)
     fun updateSubMessageAsProgress(format: String = "%.1f%%") = stage.updateSubMessageAsProgress(0,format)
     fun getProgress(): Double = stage.progressBars[0].progress
+    fun addHeaderRight(node: Node): ProgressDialog {
+        stage.addHeaderRight(node)
+        return this
+    }
 
     fun runSync(task: ((dialog: ProgressDialog) -> Unit)?) {
         super.internalRunSync(task)
