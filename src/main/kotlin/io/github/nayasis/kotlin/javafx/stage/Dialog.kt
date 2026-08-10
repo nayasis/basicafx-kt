@@ -12,6 +12,7 @@ import io.github.nayasis.kotlin.basica.core.io.isReadable
 import io.github.nayasis.kotlin.basica.core.string.toPath
 import io.github.nayasis.kotlin.basica.etc.Platforms
 import io.github.nayasis.kotlin.basica.etc.error
+import io.github.nayasis.kotlin.javafx.property.InsetProperty
 import io.github.nayasis.kotlin.javafx.stage.progress.MultiProgressDialog
 import io.github.nayasis.kotlin.javafx.stage.progress.ProgressDialog
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -45,7 +46,7 @@ class Dialog { companion object {
     @Suppress("MemberVisibilityCanBePrivate")
     var defaultTitle: String? = null
 
-    fun dialog(type: AlertType, message: String? = null): Alert {
+    fun dialog(type: AlertType, message: String? = null, bounds: InsetProperty? = null): Alert {
         return Alert(type).apply {
             headerText = null
             contentText = message
@@ -54,6 +55,7 @@ class Dialog { companion object {
             with(dialogPane.scene.window as Stage) {
                 isAlwaysOnTop = true
                 loadDefaultIcon()
+                bounds?.bind(this)
             }
             defaultTitle.ifNotNull { title = it }
             defaultCss.ifEmpty{ owner?.scene?.stylesheets }.ifEmpty{ owner?.scene?.root?.stylesheets }.ifNotEmpty {
@@ -62,12 +64,12 @@ class Dialog { companion object {
         }
     }
 
-    fun alert(message: String?, content: String? = null, expanded: Boolean = true) {
-        dialog(INFORMATION, message).expand(content,expanded).showAndWait()
+    fun alert(message: String?, content: String? = null, expanded: Boolean = true, bounds: InsetProperty? = null) {
+        dialog(INFORMATION, message, bounds).expand(content,expanded).showAndWait()
     }
 
-    fun confirm(message: String?, content: String? = null, expanded: Boolean = true): Boolean {
-        return dialog(CONFIRMATION, message).apply {
+    fun confirm(message: String?, content: String? = null, expanded: Boolean = true, bounds: InsetProperty? = null): Boolean {
+        return dialog(CONFIRMATION, message, bounds).apply {
             buttonTypes.map { dialogPane.lookupButton(it) }.forEach {
                 it.addEventHandler(KeyEvent.KEY_PRESSED) { e ->
                     if (e.code == KeyCode.ENTER && e.target is Button)
@@ -77,8 +79,8 @@ class Dialog { companion object {
         }.expand(content,expanded).showAndWait().get() == ButtonType.OK
     }
 
-    fun error(message: String?, exception: Throwable? = null, expanded: Boolean = false) {
-        dialog(ERROR, message ?: exception?.message).apply {
+    fun error(message: String?, exception: Throwable? = null, expanded: Boolean = false, bounds: InsetProperty? = null) {
+        dialog(ERROR, message ?: exception?.message, bounds).apply {
             if( exception != null ) {
                 logger.error(exception)
                 expand(exception.stackTraceToString(),expanded)
@@ -86,11 +88,11 @@ class Dialog { companion object {
         }.showAndWait()
     }
 
-    fun error(exception: Throwable?, expanded: Boolean = false) {
-        error(exception?.message, exception,expanded)
+    fun error(exception: Throwable?, expanded: Boolean = false, bounds: InsetProperty? = null) {
+        error(exception?.message, exception, expanded, bounds)
     }
 
-    fun prompt(message: String?, defaultValue: String? = null): String? {
+    fun prompt(message: String?, defaultValue: String? = null, bounds: InsetProperty? = null): String? {
         val res = TextInputDialog(defaultValue).apply {
             headerText = message
             initModality(WINDOW_MODAL)
@@ -98,6 +100,7 @@ class Dialog { companion object {
             with( dialogPane.scene.window as Stage ) {
                 isAlwaysOnTop = true
                 loadDefaultIcon()
+                bounds?.bind(this)
             }
             defaultTitle.ifNotNull { title = it }
             defaultCss.ifEmpty{ owner?.scene?.stylesheets }.ifEmpty{ owner?.scene?.root?.stylesheets }.ifNotEmpty {
@@ -107,33 +110,33 @@ class Dialog { companion object {
         return if(res.isEmpty) null else res.get()
     }
 
-    fun progress(title: String? = null, async: Boolean = true, task: ((dialog: ProgressDialog) -> Unit)? = null): ProgressDialog {
+    fun progress(title: String? = null, async: Boolean = true, bounds: InsetProperty? = null, task: ((dialog: ProgressDialog) -> Unit)? = null): ProgressDialog {
         return ProgressDialog(title).apply{
             initOwner(Stages.focusedWindow)
-            if(async) runAsync(task) else runSync(task)
+            if(async) runAsync(bounds, task) else runSync(bounds, task)
         }
     }
 
-    fun progress(title: String? = null, async: Boolean = true, headerButton: Button, task: ((dialog: ProgressDialog) -> Unit)? = null): ProgressDialog {
+    fun progress(title: String? = null, async: Boolean = true, headerButton: Button, bounds: InsetProperty? = null, task: ((dialog: ProgressDialog) -> Unit)? = null): ProgressDialog {
         return ProgressDialog(title).apply{
             initOwner(Stages.focusedWindow)
             addHeaderRight(headerButton)
-            if(async) runAsync(task) else runSync(task)
+            if(async) runAsync(bounds, task) else runSync(bounds, task)
         }
     }
 
-    fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
+    fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, bounds: InsetProperty? = null, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
         return MultiProgressDialog(progressCount,title).apply{
             initOwner(Stages.focusedWindow)
-            if(async) runAsync(task) else runSync(task)
+            if(async) runAsync(bounds, task) else runSync(bounds, task)
         }
     }
 
-    fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, headerButton: Button, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
+    fun progressMulti(progressCount: Int, title: String? = null, async: Boolean = true, headerButton: Button, bounds: InsetProperty? = null, task: ((dialog: MultiProgressDialog) -> Unit)? = null): MultiProgressDialog {
         return MultiProgressDialog(progressCount,title).apply{
             initOwner(Stages.focusedWindow)
             addHeaderRight(headerButton)
-            if(async) runAsync(task) else runSync(task)
+            if(async) runAsync(bounds, task) else runSync(bounds, task)
         }
     }
 
