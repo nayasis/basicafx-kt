@@ -1,5 +1,6 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
+import io.github.nayasis.kotlin.javafx.property.InsetProperty
 import javafx.scene.Node
 
 class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
@@ -16,19 +17,36 @@ class ProgressDialog(title: String? = null): AbstractProgressDialog(1,title) {
     }
 
     fun runSync(task: ((dialog: ProgressDialog) -> Unit)?) {
-        super.internalRunSync(task)
+        super.internalRunSync(null, task)
+    }
+
+    fun runSync(bounds: InsetProperty?, task: ((dialog: ProgressDialog) -> Unit)?) {
+        super.internalRunSync(bounds, task)
     }
 
     fun runAsync(task: ((dialog: ProgressDialog) -> Unit)?): ProgressDialog {
-        super.internalRunAsync(task)
+        super.internalRunAsync(null, task)
+        return this
+    }
+
+    fun runAsync(bounds: InsetProperty?, task: ((dialog: ProgressDialog) -> Unit)?): ProgressDialog {
+        super.internalRunAsync(bounds, task)
         return this
     }
 
     fun run(async: Boolean, task: ((dialog: ProgressDialog) -> Unit)?) {
         if(async) {
-            super.internalRunAsync(task)
+            super.internalRunAsync(null, task)
         } else {
-            super.internalRunSync(task)
+            super.internalRunSync(null, task)
+        }
+    }
+
+    fun run(async: Boolean, bounds: InsetProperty?, task: ((dialog: ProgressDialog) -> Unit)?) {
+        if(async) {
+            super.internalRunAsync(bounds, task)
+        } else {
+            super.internalRunSync(bounds, task)
         }
     }
 

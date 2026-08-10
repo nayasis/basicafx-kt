@@ -97,6 +97,16 @@ val Stage.isZoomed: Boolean
 
 fun Stage.setZoom(enable: Boolean) = scene?.setZoom(enable)
 
+/**
+ * Show stage at specified bounds.
+ *
+ * @param bounds position and size to apply before showing. If null, shows at default position.
+ */
+fun Stage.showAt(bounds: InsetProperty? = null) {
+    bounds?.bind(this)
+    show()
+}
+
 fun Stage.addCloseRequest(event: EventHandler<WindowEvent>) =
     this.addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,event)
 

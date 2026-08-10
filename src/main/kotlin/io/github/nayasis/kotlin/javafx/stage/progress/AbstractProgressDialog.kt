@@ -2,6 +2,7 @@
 
 package io.github.nayasis.kotlin.javafx.stage.progress
 
+import io.github.nayasis.kotlin.javafx.property.InsetProperty
 import javafx.stage.Modality
 import javafx.stage.Window
 import tornadofx.TaskStatus
@@ -29,12 +30,24 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     fun updateTitle(title: String?) = stage.updateTitle(title)
 
     fun show() = stage.show()
+
+    /**
+     * Show dialog at specified bounds.
+     *
+     * @param bounds position and size to apply before showing. If null, shows at default position.
+     */
+    fun showAt(bounds: InsetProperty? = null) {
+        bounds?.bind(stage)
+        stage.show()
+    }
+
     fun close() = runLater {
         stage.close()
     }
 
     @Suppress("UNCHECKED_CAST")
-    protected fun <T: AbstractProgressDialog> internalRunSync(task: ((dialog: T) -> Unit)?) {
+    protected fun <T: AbstractProgressDialog> internalRunSync(bounds: InsetProperty? = null, task: ((dialog: T) -> Unit)?) {
+        bounds?.bind(stage)
         stage.show()
         if(task == null) return
         val self = this as T
@@ -46,7 +59,8 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
     }
 
     @Suppress("UNCHECKED_CAST")
-    protected fun <T: AbstractProgressDialog> internalRunAsync(task: ((dialog: T) -> Unit)?) {
+    protected fun <T: AbstractProgressDialog> internalRunAsync(bounds: InsetProperty? = null, task: ((dialog: T) -> Unit)?) {
+        bounds?.bind(stage)
         stage.show()
         if(task == null) return
         val self = this as T

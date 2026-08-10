@@ -38,3 +38,6 @@ out/
 /log/log
 /log/
 /.history/
+/.bkit/audit/2026-08-10.jsonl
+/.bkit/
+/.claude/
