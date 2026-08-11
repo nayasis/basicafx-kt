@@ -58,29 +58,32 @@ data class InsetProperty(
     }
 
     fun read(window: Window?) {
-        if(window == null) return
-        x      = window.x.toInt()
-        y      = window.y.toInt()
-        width  = window.width.toInt()
-        height = window.height.toInt()
+        window?.also {
+            x      = it.x.toInt()
+            y      = it.y.toInt()
+            width  = it.width.toInt()
+            height = it.height.toInt()
+        }
     }
 
     fun bind(window: Window?) {
-        if(window == null) return
-        window.x = x.toDouble()
-        window.y = y.toDouble()
-        window.width = width.toDouble()
-        window.height = height.toDouble()
-        BoundaryChecker().reset(window)
+        window?.also {
+            it.x      = x.toDouble()
+            it.y      = y.toDouble()
+            it.width  = width.toDouble()
+            it.height = height.toDouble()
+            BoundaryChecker().reset(it)
+        }
     }
 
     fun bind(dialog: Dialog<*>?) {
-        if(dialog == null) return
-        dialog.x = x.toDouble()
-        dialog.y = y.toDouble()
-        dialog.width = width.toDouble()
-        dialog.height = height.toDouble()
-        BoundaryChecker().reset(dialog)
+        dialog?.also {
+            it.x      = x.toDouble()
+            it.y      = y.toDouble()
+            it.width  = width.toDouble()
+            it.height = height.toDouble()
+            BoundaryChecker().reset(it)
+        }
     }
 
     operator fun contains(p: Point?): Boolean {

@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
-import io.github.nayasis.kotlin.javafx.property.InsetProperty
+import io.github.nayasis.kotlin.javafx.property.PositionProperty
 import javafx.scene.Node
 
 class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractProgressDialog(progressCount,title) {
@@ -20,8 +20,8 @@ class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractPro
         super.internalRunSync(null, task)
     }
 
-    fun runSync(bounds: InsetProperty?, task: ((dialog: MultiProgressDialog) -> Unit)?) {
-        super.internalRunSync(bounds, task)
+    fun runSync(point: PositionProperty?, task: ((dialog: MultiProgressDialog) -> Unit)?) {
+        super.internalRunSync(point, task)
     }
 
     fun runAsync(task: ((dialog: MultiProgressDialog) -> Unit)?): MultiProgressDialog {
@@ -29,8 +29,8 @@ class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractPro
         return this
     }
 
-    fun runAsync(bounds: InsetProperty?, task: ((dialog: MultiProgressDialog) -> Unit)?): MultiProgressDialog {
-        super.internalRunAsync(bounds, task)
+    fun runAsync(point: PositionProperty?, task: ((dialog: MultiProgressDialog) -> Unit)?): MultiProgressDialog {
+        super.internalRunAsync(point, task)
         return this
     }
 
@@ -42,11 +42,11 @@ class MultiProgressDialog(progressCount: Int,title: String? = null): AbstractPro
         }
     }
 
-    fun run(async: Boolean, bounds: InsetProperty?, task: ((dialog: MultiProgressDialog) -> Unit)?) {
+    fun run(async: Boolean, point: PositionProperty?, task: ((dialog: MultiProgressDialog) -> Unit)?) {
         if(async) {
-            super.internalRunAsync(bounds, task)
+            super.internalRunAsync(point, task)
         } else {
-            super.internalRunSync(bounds, task)
+            super.internalRunSync(point, task)
         }
     }
 

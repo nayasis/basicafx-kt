@@ -1,6 +1,6 @@
 package io.github.nayasis.kotlin.javafx.property
 
-import javafx.stage.Stage
+import javafx.stage.Window
 import java.io.Serializable
 
 data class PositionProperty(
@@ -8,16 +8,16 @@ data class PositionProperty(
     var y: Int = 0,
 ): Serializable {
 
-    constructor(stage: Stage?): this() { stage?.let { read(it) } }
+    constructor(window: Window?): this() { window?.let { read(it) } }
 
-    fun read(stage: Stage?) {
-        stage?.let {
+    fun read(window: Window?) {
+        window?.let {
             x = it.x.toInt()
             y = it.y.toInt()
         }
     }
 
-    fun bind(stage: Stage?) {
+    fun bind(stage: Window?) {
         stage?.let {
             it.x = x.toDouble()
             it.y = y.toDouble()
