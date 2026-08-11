@@ -140,11 +140,22 @@ class Dialog { companion object {
         }
     }
 
-    fun filePicker(title: String = "", extension: String = "", description: String = "", initialDirectory: Path? = null, mode: FileChooserMode = Single, owner: Window? = null, option: FileChooser.() -> Unit = {}): List<Path> {
+    fun filePicker(
+        title: String? = null,
+        extension: String? = null,
+        description: String? = null,
+        initialDirectory: Path? = null,
+        initialFileName: String? = null,
+        mode: FileChooserMode = Single,
+        owner: Window? = null,
+        option: FileChooser.() -> Unit = {}
+    ): List<Path> {
         val chooser = FileChooser().apply {
-            this.title = title
-            this.extensionFilters.add( ExtensionFilter(description.ifEmpty{extension}, extension.split(",;")) )
-            this.initialDirectory = if( initialDirectory.exists() && initialDirectory != "".toPath() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
+            title?.let { this.title = it }
+            extension?.let { this.extensionFilters.add( ExtensionFilter(description ?: "", extension.split(",;")) ) }
+            description?.let { this.initialDirectory = if( initialDirectory.exists() && initialDirectory != "".toPath() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop() }
+            initialDirectory?.takeIf { it.exists() && it.isReadable() }?.let { this.initialDirectory = it.toFile() }
+            initialFileName?.let { this.initialFileName = it }
         }
         option(chooser)
         return when(mode) {
@@ -161,10 +172,15 @@ class Dialog { companion object {
         }.map { it.toPath() }
     }
 
-    fun dirPicker(title: String = "", initialDirectory: Path? = null, owner: Window? = null, option: DirectoryChooser.() -> Unit = {}): Path? {
+    fun dirPicker(
+        title: String? = null,
+        initialDirectory: Path? = null,
+        owner: Window? = null,
+        option: DirectoryChooser.() -> Unit = {}
+    ): Path? {
         val chooser = DirectoryChooser().apply {
-            this.title = title
-            this.initialDirectory = if( initialDirectory.exists() && initialDirectory != "".toPath() && initialDirectory.isReadable() ) initialDirectory!!.toFile() else dirDesktop()
+            title?.let { this.title = it }
+            initialDirectory?.takeIf { it.exists() && it.isReadable() }?.let { this.initialDirectory = it.toFile() }
         }
         option(chooser)
         return chooser.showDialog(owner)?.toPath()
