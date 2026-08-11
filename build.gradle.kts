@@ -1,6 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.io.ByteArrayOutputStream
 
 plugins {
 	kotlin("jvm") version "2.2.0"
@@ -17,17 +15,14 @@ fun Project.findReleaseVersionProperty(): String? =
 
 fun Project.findReleaseVersionFromBranch(): String? {
 	val branchName = providers.environmentVariable("GITHUB_REF_NAME").orNull?.trim().takeUnless { it.isNullOrBlank() } ?: run {
-		val output = ByteArrayOutputStream()
 		try {
-			exec {
+			providers.exec {
 				commandLine("git", "rev-parse", "--abbrev-ref", "HEAD")
-				standardOutput = output
 				isIgnoreExitValue = true
-			}
+			}.standardOutput.asText.get().trim().takeUnless { it.isBlank() || it == "HEAD" }
 		} catch (_: Exception) {
 			return null
 		}
-		output.toString().trim().takeUnless { it.isBlank() || it == "HEAD" }
 	}
 
 	return branchName
@@ -137,7 +132,3 @@ mavenPublishing {
 	}
 }
 
-val compileKotlin: KotlinCompile by tasks
-compileKotlin.compilerOptions {
-	freeCompilerArgs.set(listOf("-XXLanguage:+BreakContinueInInlineLambdas"))
-}
