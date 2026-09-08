@@ -56,7 +56,7 @@ dependencies {
 
 	implementation(platform("com.fasterxml.jackson:jackson-bom:2.21.1"))
 
-	implementation("io.github.nayasis:basica-kt:0.3.13")
+	implementation("io.github.nayasis:basica-kt:0.3.14")
 	implementation("commons-cli:commons-cli:1.11.0")
 	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
