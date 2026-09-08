@@ -9,18 +9,15 @@ import javafx.scene.Node
 import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
+import io.github.nayasis.kotlin.javafx.misc.runLater
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
+import javafx.scene.layout.Region
 import javafx.scene.layout.Region.USE_PREF_SIZE
+import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import tornadofx.attachTo
-import tornadofx.hbox
-import tornadofx.hgrow
-import tornadofx.region
-import tornadofx.runLater
-import tornadofx.vbox
 
 @Suppress("MemberVisibilityCanBePrivate")
 class ProgressDialogStage: Stage {
@@ -50,24 +47,24 @@ class ProgressDialogStage: Stage {
             })
         }
 
-        val root = vbox {
-            hbox {
+        val root = VBox().apply {
+            children.add(HBox().apply {
                 styleClass.add("header")
                 alignment = Pos.CENTER_LEFT
-                titleHeader.attachTo(this)
-                region { hgrow = Priority.ALWAYS }
-                headerRight.attachTo(this)
+                children.add(titleHeader)
+                children.add(Region().apply { HBox.setHgrow(this, Priority.ALWAYS) })
+                children.add(headerRight)
                 // margin is not supported by CSS
                 vmargin = Insets(0,0,7,0)
-            }
+            })
             for( i in 0 until progressCount) {
-                hbox {
+                children.add(HBox().apply {
                     styleClass.add("description")
-                    messages[i].attachTo(this)
-                    region { hgrow = Priority.ALWAYS }
-                    subMessages[i].attachTo(this)
-                }
-                progressBars[i].attachTo(this)
+                    children.add(messages[i])
+                    children.add(Region().apply { HBox.setHgrow(this, Priority.ALWAYS) })
+                    children.add(subMessages[i])
+                })
+                children.add(progressBars[i])
             }
             stylesheets.run {
                 add("basicafx/css/progress-bar.css")

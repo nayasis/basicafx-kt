@@ -2,13 +2,12 @@
 
 package io.github.nayasis.kotlin.javafx.stage.progress
 
+import io.github.nayasis.kotlin.javafx.misc.runAsync
+import io.github.nayasis.kotlin.javafx.misc.runAwait
+import io.github.nayasis.kotlin.javafx.misc.runLater
 import io.github.nayasis.kotlin.javafx.property.PositionProperty
 import javafx.stage.Modality
 import javafx.stage.Window
-import tornadofx.TaskStatus
-import tornadofx.awaitUntil
-import tornadofx.runAsync
-import tornadofx.runLater
 
 @Suppress("unused")
 abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
@@ -51,11 +50,7 @@ abstract class AbstractProgressDialog(progressCount: Int, title: String?) {
         stage.show()
         if(task == null) return
         val self = this as T
-        val status = TaskStatus()
-        runAsync(status) {
-            runTask(task,self)
-        }
-        status.completed.awaitUntil()
+        runAwait { runTask(task,self) }
     }
 
     @Suppress("UNCHECKED_CAST")
