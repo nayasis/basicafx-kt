@@ -7,7 +7,7 @@ import io.github.nayasis.kotlin.javafx.control.tableview.focused
 import io.github.nayasis.kotlin.javafx.control.tableview.scroll
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
-import tornadofx.runLater
+import io.github.nayasis.kotlin.javafx.misc.runLater
 import java.io.Serializable
 
 private var tableIndex = 0

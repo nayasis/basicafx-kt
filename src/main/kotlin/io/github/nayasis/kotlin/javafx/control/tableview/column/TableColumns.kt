@@ -6,12 +6,14 @@ import javafx.geometry.Pos
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableColumnBase
 import javafx.util.Callback
-import tornadofx.observable
 import kotlin.collections.set
 import kotlin.reflect.KProperty1
 
+@Suppress("UNCHECKED_CAST")
 inline fun <reified S,T> TableColumn<S,T>.cellValue(prop: KProperty1<S,T?>): TableColumn<S,T> {
-    this.cellValueFactory = Callback { observable(it.value, prop) }
+    // read the property directly. building a reflective observable per call
+    // is repeated for every visible cell while scrolling.
+    this.cellValueFactory = Callback { SimpleObjectProperty(prop.get(it.value) as T) }
     return this
 }
 

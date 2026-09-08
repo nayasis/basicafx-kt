@@ -30,8 +30,9 @@ import javafx.stage.FileChooser.ExtensionFilter
 import javafx.stage.Modality.WINDOW_MODAL
 import javafx.stage.Stage
 import javafx.stage.Window
-import tornadofx.FileChooserMode
-import tornadofx.FileChooserMode.*
+import io.github.nayasis.kotlin.javafx.stage.FilePickerMode.Multi
+import io.github.nayasis.kotlin.javafx.stage.FilePickerMode.Save
+import io.github.nayasis.kotlin.javafx.stage.FilePickerMode.Single
 import java.io.File
 import java.nio.file.Path
 import kotlin.Double.Companion.MAX_VALUE
@@ -146,7 +147,7 @@ class Dialog { companion object {
         description: String? = null,
         initialDirectory: Path? = null,
         initialFileName: String? = null,
-        mode: FileChooserMode = Single,
+        mode: FilePickerMode = Single,
         owner: Window? = null,
         option: FileChooser.() -> Unit = {}
     ): List<Path> {
@@ -168,7 +169,6 @@ class Dialog { companion object {
                 val result = chooser.showSaveDialog(owner)
                 if (result == null) emptyList() else listOf(result)
             }
-            else -> emptyList()
         }.map { it.toPath() }
     }
 

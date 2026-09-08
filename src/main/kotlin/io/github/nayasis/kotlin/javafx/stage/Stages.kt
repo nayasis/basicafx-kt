@@ -3,7 +3,6 @@
 package io.github.nayasis.kotlin.javafx.stage
 
 import io.github.nayasis.kotlin.basica.core.extension.FieldProperty
-import io.github.nayasis.kotlin.javafx.animation.toFxDuration
 import io.github.nayasis.kotlin.javafx.property.InsetProperty
 import io.github.nayasis.kotlin.javafx.scene.addClose
 import io.github.nayasis.kotlin.javafx.scene.addConstraintRetainer
@@ -25,7 +24,7 @@ import javafx.scene.control.Dialog
 import javafx.stage.Stage
 import javafx.stage.Window
 import javafx.stage.WindowEvent
-import tornadofx.runLater
+import io.github.nayasis.kotlin.javafx.misc.runLater
 import java.io.Serializable
 import kotlin.time.Duration
 
@@ -81,7 +80,7 @@ fun <T> Stage.hideWhile(
     return try {
         block()
     } finally {
-        runLater(delay.toFxDuration()) {
+        runLater(delay) {
             try {
                 show()
                 requestFocus()

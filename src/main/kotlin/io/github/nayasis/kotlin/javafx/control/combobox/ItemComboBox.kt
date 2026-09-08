@@ -8,7 +8,7 @@ import javafx.scene.control.ListView
 import javafx.scene.control.skin.ComboBoxListViewSkin
 import javafx.scene.input.KeyCode.*
 import javafx.util.StringConverter
-import tornadofx.runLater
+import io.github.nayasis.kotlin.javafx.misc.runLater
 import kotlin.math.max
 import kotlin.math.min
 

@@ -23,10 +23,6 @@ import javafx.scene.layout.Region
 import javafx.scene.paint.Color
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
-import tornadofx.add
-import tornadofx.addClass
-import tornadofx.getChildList
-import tornadofx.removeClass
 import kotlin.math.abs
 
 private const val KEY_BORDERLESS = "_KEY_BORDERLESS"
@@ -40,8 +36,8 @@ fun Scene.setBorderless(defaultCss: Boolean = true) {
         window.focusedProperty().addListener { _, _, focused ->
             "root-unfocused".let{
                 when {
-                    focused -> root.removeClass(it)
-                    else    -> root.addClass(it)
+                    focused -> root.styleClass.remove(it)
+                    else    -> if(it !in root.styleClass) root.styleClass.add(it)
                 }
             }
         }
@@ -82,7 +78,7 @@ private fun button(type: String): Button {
         tooltip = Tooltip(type.message())
         stylesheets.add("basicafx/css/borderless/button.css")
         isFocusTraversable = false
-        addClass("btn-window", "btn-window-$type")
+        styleClass.addAll("btn-window", "btn-window-$type")
 
         // set size
         prefWidth = 13.0
@@ -98,23 +94,23 @@ fun Scene.addMoveHandler(node: Node, buttonClose: Boolean = false, buttonHide: B
 
     val stage = this
     val handler = if(drawButton) {
-        val children = node.parent.getChildList()
-        if( children != null ) {
-            val idx = children.indexOf(node)
+        val siblings = (node.parent as? Pane)?.children
+        if( siblings != null ) {
+            val idx = siblings.indexOf(node)
             val hbox = HBox().apply {
                 styleClass.add("menu-bar")
-                add(node)
-                add(Region().apply { HBox.setHgrow(this, Priority.ALWAYS) })
-                add(HBox().apply {
-                    if( buttonAll || buttonClose ) add(button("close").also { stage.addClose(it) })
-                    if( buttonAll || buttonHide  ) add(button("hide").also { stage.addIconified(it) })
-                    if( buttonAll || buttonZoom  ) add(button("zoom").also { stage.addZoomed(it) })
+                this.children.add(node)
+                this.children.add(Region().apply { HBox.setHgrow(this, Priority.ALWAYS) })
+                this.children.add(HBox().apply {
+                    if( buttonAll || buttonClose ) this.children.add(button("close").also { stage.addClose(it) })
+                    if( buttonAll || buttonHide  ) this.children.add(button("hide").also { stage.addIconified(it) })
+                    if( buttonAll || buttonZoom  ) this.children.add(button("zoom").also { stage.addZoomed(it) })
                     spacing = 3.0
                     padding = Insets(0.0, 5.0, 0.0, 0.0)
                 })
             }
-            children.remove(hbox)
-            children.add(idx, hbox)
+            siblings.remove(hbox)
+            siblings.add(idx, hbox)
             hbox
         } else node
     } else node
