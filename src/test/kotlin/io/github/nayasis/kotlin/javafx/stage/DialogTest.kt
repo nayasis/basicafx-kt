@@ -1,26 +1,47 @@
 package io.github.nayasis.kotlin.javafx.stage
 
 import io.github.nayasis.kotlin.basica.core.number.floor
+import io.github.nayasis.kotlin.javafx.app.FxView
+import io.github.nayasis.kotlin.javafx.common.DemoApp
+import io.github.nayasis.kotlin.javafx.misc.runAsync
+import javafx.application.Application
 import javafx.scene.control.Alert.AlertType.INFORMATION
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.layout.VBox
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import tornadofx.*
 import java.lang.Thread.sleep
 
 fun main(vararg args: String) {
-    launch<DialogTest>(*args)
+    Application.launch(DialogTest::class.java, *args)
 }
 
-class DialogTest: App(DialogTestView::class)
+class DialogTest: DemoApp(DialogTestView())
 
-class DialogTestView: View("dialog test") {
+private fun button(text: String, action: () -> Unit) = Button(text).apply { setOnAction { action() } }
 
-    override val root = vbox {
-        label("Test Label (1234567890)")
-        button("alert") {action {
+private fun blueText(text: String, underline: Boolean = false) = Text(text).apply {
+    style = "-fx-font-size: 16px; -fx-fill: blue;" + if(underline) " -fx-underline: true;" else ""
+}
+
+private fun decoratedText() = TextFlow(
+    blueText("This is "),
+    blueText("underlined ", underline = true),
+    blueText("text"),
+)
+
+class DialogTestView: FxView("dialog test") {
+
+    override val root = VBox().apply {
+
+        children.add(Label("Test Label (1234567890)"))
+
+        children.add(button("alert") {
             Dialog.alert("test alert (1234567890)")
-        }}
-        button("alert (having contents)") {action {
+        })
+
+        children.add(button("alert (having contents)") {
             Dialog.alert("test alert (1234567890)", """
                 Pellentesque 1234567890 habitant morbi tristique senectus et netus et malesuada fames ac
                 turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit
@@ -34,58 +55,41 @@ class DialogTestView: View("dialog test") {
                 Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis
                 luctus, metus
             """.trimIndent())
-        }}
-        button("alert decorated") { action {
-            Dialog.dialog(INFORMATION).content(
-                TextFlow(
-                    Text("This is ").apply {
-                        style = "-fx-font-size: 16px; -fx-fill: blue;"
-                    },
-                    Text("underlined ").apply {
-                        style = "-fx-font-size: 16px; -fx-fill: blue; -fx-underline: true;"
-                    },
-                    Text("text").apply {
-                        style = "-fx-font-size: 16px; -fx-fill: blue;"
-                    },
-                )
-            ).showAndWait()
-        }}
-        button("alert expanded decorated") { action {
-            Dialog.dialog(INFORMATION).expand(
-                TextFlow(
-                    Text("This is ").apply {
-                        style = "-fx-font-size: 16px; -fx-fill: blue;"
-                    },
-                    Text("underlined ").apply {
-                        style = "-fx-font-size: 16px; -fx-fill: blue; -fx-underline: true;"
-                    },
-                    Text("text").apply {
-                        style = "-fx-font-size: 16px; -fx-fill: blue;"
-                    },
-                )
-            ).showAndWait()
-        }}
-        button("error") {action {
+        })
+
+        children.add(button("alert decorated") {
+            Dialog.dialog(INFORMATION).content(decoratedText()).showAndWait()
+        })
+
+        children.add(button("alert expanded decorated") {
+            Dialog.dialog(INFORMATION).expand(decoratedText()).showAndWait()
+        })
+
+        children.add(button("error") {
             Dialog.error("test error (1234567890)", RuntimeException("test"))
-        }}
-        button("confirm") {action {
+        })
+
+        children.add(button("confirm") {
             if( Dialog.confirm("is it ok (1234567890) ??") ) {
                 Dialog.alert("it is ok !!")
             }
-        }}
-        button("prompt") {action {
+        })
+
+        children.add(button("prompt") {
             // if 'esc' pressed, no error raised !
             val text = Dialog.prompt("input your parameter","merong 1234567890")
-            Dialog.alert("[${text}]")
-        }}
-        button("alert various") {action {
+            Dialog.alert("[$text]")
+        })
+
+        children.add(button("alert various") {
             Dialog.dialog(INFORMATION).apply {
                 title = "Title"
                 headerText = "Header"
                 contentText = "Content Text"
             }.showAndWait()
-        }}
-        button("progress") {action {
+        })
+
+        children.add(button("progress") {
             Dialog.progress("header") {
                 val max = 40
                 for (i in 1..max) {
@@ -96,8 +100,9 @@ class DialogTestView: View("dialog test") {
                     sleep(100)
                 }
             }
-        }}
-        button("progress-multi") {action {
+        })
+
+        children.add(button("progress-multi") {
             Dialog.progressMulti(2,"header") {
                 val max = 40
                 for( idx in 0..1) {
@@ -109,8 +114,9 @@ class DialogTestView: View("dialog test") {
                     }
                 }
             }
-        }}
-        button("progress manually") { action {
+        })
+
+        children.add(button("progress manually") {
             val progress = Dialog.progress("Terminal test")
             runAsync {
                 val max = 40
@@ -122,10 +128,12 @@ class DialogTestView: View("dialog test") {
                 }
                 progress.close()
             }
-        }}
+        })
+
         prefWidth = 300.0
         prefHeight = 200.0
         stylesheets.add("/css/common.css")
+
     }
 
 }

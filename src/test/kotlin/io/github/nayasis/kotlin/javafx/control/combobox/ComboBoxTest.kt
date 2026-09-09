@@ -1,20 +1,24 @@
 package io.github.nayasis.kotlin.javafx.control.combobox
 
+import io.github.nayasis.kotlin.javafx.app.FxView
+import io.github.nayasis.kotlin.javafx.common.DemoApp
 import io.github.oshai.kotlinlogging.KotlinLogging
+import javafx.application.Application
 import javafx.event.EventHandler
-import tornadofx.*
+import javafx.scene.control.Button
+import javafx.scene.layout.VBox
 
 private val logger = KotlinLogging.logger {}
 
 fun main(args: Array<String>) {
-    launch<ComboBoxTest>(args)
+    Application.launch(ComboBoxTest::class.java, *args)
 }
 
-class ComboBoxTest: App(ComboBoxTestView::class,MyStylesheet::class)
+class ComboBoxTest: DemoApp(ComboBoxTestView(), "/basicafx/css/demo-font.css")
 
 private val list = ('A'..'Z').mapIndexed{ _,ch -> ItemCombo("$ch") }
 
-class ComboBoxTestView: View("ComboBox test") {
+class ComboBoxTestView: FxView("ComboBox test") {
 
     private val combo = ItemComboBox(list).apply {
         select = 0
@@ -23,40 +27,31 @@ class ComboBoxTestView: View("ComboBox test") {
         }
     }
 
-    override val root = vbox(spacing = 5) {
+    override val root = VBox(5.0).apply {
 
-        combo.attachTo(this)
+        children.add(combo)
 
-        button("select 'J'") { action {
+        children.add(Button("select 'J'").apply { setOnAction {
             combo.value = "J"
-        }}
+        }})
 
-        button("remove C") { action {
+        children.add(Button("remove C").apply { setOnAction {
             val rs = combo.removeItem("C")
-            logger.debug { ">> remove 'C' : ${rs}" }
-        }}
+            logger.debug { ">> remove 'C' : $rs" }
+        }})
 
-        button("add C") { action {
+        children.add(Button("add C").apply { setOnAction {
             combo.addItem("C",index=2)
-        }}
+        }})
 
-        button("remove first") { action {
+        children.add(Button("remove first").apply { setOnAction {
             combo.removeItem( combo.items.first() )
             combo.selectFirst()
-        }}
+        }})
 
         prefWidth = 300.0
         prefHeight = 200.0
 
     }
 
-}
-
-// set default font
-class MyStylesheet : Stylesheet() {
-    init {
-        root {
-            fontFamily = "Arial"
-        }
-    }
 }

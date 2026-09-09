@@ -1,18 +1,16 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
 import io.github.nayasis.kotlin.javafx.stage.Dialog
+import javafx.application.Application
 import javafx.stage.Stage
-import tornadofx.App
-import tornadofx.launch
 import java.lang.Thread.sleep
-import kotlin.math.floor
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    launch<MultiProgressDialogTest>(args)
+    Application.launch(MultiProgressDialogTest::class.java, *args)
 }
 
-class MultiProgressDialogTest: App() {
+class MultiProgressDialogTest: Application() {
     override fun start(stage: Stage) {
 
         val task: (dialog: MultiProgressDialog) -> Unit = { dialog ->

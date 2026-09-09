@@ -1,39 +1,34 @@
 package io.github.nayasis.kotlin.javafx.preloader
 
+import io.github.nayasis.kotlin.javafx.app.FxApp
+import io.github.nayasis.kotlin.javafx.app.FxView
 import io.github.nayasis.kotlin.javafx.misc.runAwait
+import javafx.application.Application
 import javafx.beans.property.SimpleIntegerProperty
-import tornadofx.App
-import tornadofx.View
-import tornadofx.action
-import tornadofx.bind
-import tornadofx.button
-import tornadofx.label
-import tornadofx.launch
-import tornadofx.vbox
+import javafx.scene.control.Button
+import javafx.scene.control.Label
+import javafx.scene.layout.VBox
 import java.lang.Thread.sleep
 
 fun main(args: Array<String>) {
     DefaultPreloader.set(TestSplash::class)
-    launch<DefaultPreloaderTest>(*args)
-
+    Application.launch(DefaultPreloaderTest::class.java, *args)
 }
 
-class DefaultPreloaderTest: App(MainView::class)
+class DefaultPreloaderTest: FxApp(MainView::class)
 
-class MainView: View("Hello world!") {
+class MainView: FxView("Hello world!") {
 
     var count = SimpleIntegerProperty(0)
 
-    override val root = vbox() {
-        button( "click" ) {
-            action {
-                count.set( count.get() + 1 )
-            }
-        }
-        label( "Hello world" ) {
-            bind( count )
-        }
-    }
+    override val root = VBox(
+        Button("click").apply {
+            setOnAction { count.set(count.get() + 1) }
+        },
+        Label().apply {
+            textProperty().bind(count.asString())
+        },
+    )
 
     override fun onBeforeShow() {
         runAwait {
@@ -41,6 +36,7 @@ class MainView: View("Hello world!") {
         }
         DefaultPreloader.close()
     }
+
 }
 
 class TestSplash: DefaultSplash(527,297,"/splash/splash.jpg")

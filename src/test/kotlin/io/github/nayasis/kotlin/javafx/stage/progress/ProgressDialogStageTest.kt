@@ -1,14 +1,13 @@
 package io.github.nayasis.kotlin.javafx.stage.progress
 
+import javafx.application.Application
 import javafx.stage.Stage
-import tornadofx.App
-import tornadofx.launch
 
 fun main(args: Array<String>) {
-    launch<ProgressDialogStageTest>(args)
+    Application.launch(ProgressDialogStageTest::class.java, *args)
 }
 
-class ProgressDialogStageTest: App() {
+class ProgressDialogStageTest: Application() {
     override fun start(stage: Stage) {
         ProgressDialogStage(2).apply {
             updateTitle("Title12312312312312312312312312123123123123123123123123123123123123123123132")

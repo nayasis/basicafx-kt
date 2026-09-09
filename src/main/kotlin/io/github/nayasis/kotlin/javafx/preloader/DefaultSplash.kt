@@ -6,13 +6,14 @@ import io.github.nayasis.kotlin.javafx.control.basic.leftAnchor
 import io.github.nayasis.kotlin.javafx.control.basic.rightAnchor
 import io.github.nayasis.kotlin.javafx.stage.addMoveHandler
 import io.github.nayasis.kotlin.javafx.stage.loadDefaultIcon
-import io.github.nayasis.kotlin.tornadofx.extension.toScene
 import javafx.geometry.Pos
+import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
+import javafx.scene.layout.AnchorPane
+import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import javafx.stage.StageStyle
-import tornadofx.*
 
 /**
  * Default splash view for preloader
@@ -32,59 +33,44 @@ open class DefaultSplash(
     val showProgressBar: Boolean = true,
 ): DefaultPreloader() {
 
-    private val view = SplashView(width,height,imagePath)
+    private val progressBar = ProgressBar().apply {
+        maxWidth  = Double.MAX_VALUE
+        progress  = 0.0
+        isVisible = false
+    }
+
+    private val label = Label().apply { ellipsisString = "..." }
+
+    private val root = AnchorPane().apply {
+        id = "splash"
+        prefWidth  = width.toDouble()
+        prefHeight = height.toDouble()
+        children.add(VBox(progressBar, label).apply {
+            alignment    = Pos.CENTER_RIGHT
+            leftAnchor   = 0.0
+            rightAnchor  = 0.0
+            bottomAnchor = 0.0
+        })
+        imagePath?.toUri()?.let { style = "-fx-background-image: url('$it')" }
+    }
 
     override fun onStart(stage: Stage) {
         stage.apply {
             initStyle(StageStyle.TRANSPARENT)
-            scene = view.toScene("/basicafx/css/splash.css")
+            scene = Scene(root).apply { stylesheets.add("/basicafx/css/splash.css") }
             isAlwaysOnTop = true
             loadDefaultIcon()
-            addMoveHandler(view.root)
+            addMoveHandler(root)
             show()
         }
     }
 
     override fun onProgress(notificator: ProgressNotificator) {
         with(notificator) {
-            message?.let { view.label.text = it }
+            message?.let { label.text = it }
             if(showProgressBar && progress != null && progress.toDouble() > 0) {
-                view.progressBar.isVisible = true
-                view.progressBar.progress = progress.toDouble()
-            }
-        }
-    }
-
-}
-
-private class SplashView(
-    width: Int,
-    height: Int,
-    imagePath: String?,
-): View() {
-
-    lateinit var progressBar: ProgressBar
-    lateinit var label: Label
-
-    override val root = anchorpane {
-        id = "splash"
-        prefWidth  = width.toDouble()
-        prefHeight = height.toDouble()
-        vbox {
-            alignment = Pos.CENTER_RIGHT
-            progressBar = progressbar {
-                maxWidth = Double.MAX_VALUE
-                progress = 0.0
-                isVisible = false
-            }
-            label = label { ellipsisString = "..." }
-            leftAnchor = 0.0
-            rightAnchor = 0.0
-            bottomAnchor = 0.0
-        }
-        imagePath?.toUri()?.let { uri ->
-            style(true) {
-                backgroundImage.add(uri)
+                progressBar.isVisible = true
+                progressBar.progress = progress.toDouble()
             }
         }
     }

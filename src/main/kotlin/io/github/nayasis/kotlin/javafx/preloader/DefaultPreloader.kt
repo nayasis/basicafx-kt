@@ -4,7 +4,6 @@ import com.sun.javafx.application.LauncherImpl
 import io.github.nayasis.kotlin.javafx.stage.Dialog
 import javafx.application.Preloader
 import javafx.stage.Stage
-import kotlinx.coroutines.runBlocking
 import kotlin.reflect.KClass
 import kotlin.reflect.jvm.jvmName
 
@@ -74,9 +73,7 @@ abstract class DefaultPreloader: Preloader() {
             notify(ErrorNotificator(message,throwable))
         }
 
-        fun close() = runBlocking {
-            notify(CloseNotificator())
-        }
+        fun close() = notify(CloseNotificator())
 
     }
 

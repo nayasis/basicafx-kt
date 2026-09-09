@@ -1,0 +1,4 @@
+/* default font for the manual demos, replacing the tornadofx Stylesheet class */
+.root {
+    -fx-font-family: "Arial";
+}

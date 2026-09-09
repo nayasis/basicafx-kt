@@ -3,39 +3,52 @@ package io.github.nayasis.kotlin.javafx.app
 import io.github.nayasis.kotlin.basica.etc.error
 import io.github.nayasis.kotlin.basica.exception.rootCause
 import io.github.nayasis.kotlin.javafx.app.di.SimpleDiContainer
+import io.github.nayasis.kotlin.javafx.misc.runLater
+import io.github.nayasis.kotlin.javafx.misc.shutdownAsyncPools
 import io.github.nayasis.kotlin.javafx.preloader.DefaultPreloader
 import io.github.nayasis.kotlin.javafx.stage.Dialog
 import io.github.oshai.kotlinlogging.KotlinLogging
+import javafx.application.Application
 import javafx.application.Platform
-import javafx.scene.image.Image
+import javafx.scene.Scene
 import javafx.stage.Stage
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
-import tornadofx.App
-import tornadofx.DIContainer
-import tornadofx.FX
-import tornadofx.NoPrimaryViewSpecified
-import tornadofx.Scope
-import tornadofx.Stylesheet
-import tornadofx.UIComponent
-import tornadofx.runLater
 import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * application base: sets up the DI container, environment and logging,
+ * then puts [primaryView] on the primary stage.
+ *
+ * ```
+ * class MyApp: FxApp(Main::class)
+ *
+ * fun main(args: Array<String>) = Application.launch(MyApp::class.java, *args)
+ * ```
+ */
 @Suppress("unused")
-abstract class FxApp: App {
-
-    constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(primaryView, *stylesheet)
-    constructor(primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, stylesheet: KClass<out Stylesheet>, scope: Scope = FX.defaultScope) : super(primaryView, stylesheet, scope)
-    constructor(icon: Image, primaryView: KClass<out UIComponent> = NoPrimaryViewSpecified::class, vararg stylesheet: KClass<out Stylesheet>) : super(icon, primaryView, *stylesheet)
+abstract class FxApp(
+    private val primaryView: KClass<out FxView>? = null,
+    private val stylesheets: List<String> = emptyList(),
+): Application() {
 
     companion object {
+
         val ctx = SimpleDiContainer()
+
         lateinit var environment: Environment
             private set
+
+        lateinit var primaryStage: Stage
+            private set
+
+        /** get a view, creating and caching it on first use. */
+        fun <T: FxView> find(type: KClass<T>): T = ctx.get(type) ?: ctx.create(type)
+
     }
 
     override fun init() {
@@ -44,16 +57,6 @@ abstract class FxApp: App {
             // setup DI container and environment
             environment = Environment(parameters.raw.toTypedArray(), "application.yml")
             ctx.set(environment)
-            FX.dicontainer = object: DIContainer {
-                override fun <T: Any> getInstance(type: KClass<T>): T {
-                    return ctx.get(type, null) ?:
-                        throw AssertionError("No bean ($type) found in container")
-                }
-                override fun <T: Any> getInstance(type: KClass<T>, name: String): T {
-                    return ctx.get(type, name) ?:
-                        throw AssertionError("No bean ($type[$name]) found in container")
-                }
-            }
             // setup Logger
             LoggerConfig(environment).initialize()
             // init bean
@@ -82,9 +85,17 @@ abstract class FxApp: App {
 
     override fun start(stage: Stage) {
         try {
+            primaryStage = stage
             onStart(DefaultParser().parse(setOptions() ?: Options(), parameters.raw.toTypedArray()))
             onStart(stage)
-            super.start(stage)
+            primaryView?.let { type ->
+                val view = find(type)
+                stage.scene = Scene(view.root).apply { stylesheets.addAll(this@FxApp.stylesheets) }
+                view.title?.let { stage.title = it }
+                stage.setOnHidden { view.onUndock() }
+                view.onBeforeShow()
+            }
+            stage.show()
         } catch (e: Throwable) {
             logger.error(e)
             DefaultPreloader.notifyError(e.message,e)
@@ -93,6 +104,7 @@ abstract class FxApp: App {
 
     override fun stop() {
         runCatching { onStop() }.onFailure { logger.error(it) }
+        runCatching { shutdownAsyncPools() }.onFailure { logger.error(it) }
         runCatching { ctx.close() }.onFailure { logger.error(it) }
         runCatching { super.stop() }.onFailure { logger.error(it) }
         exitProcess(0)
