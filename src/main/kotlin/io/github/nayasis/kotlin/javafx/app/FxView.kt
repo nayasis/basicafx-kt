@@ -65,12 +65,15 @@ fun <T: Parent> fxml(path: String): ReadOnlyProperty<FxView, T> = object: ReadOn
 }
 
 /**
- * bind a node declared with `fx:id`. defaults to the property's own name.
+ * bind an element declared with `fx:id`. defaults to the property's own name.
+ *
+ * not restricted to [Node]: `TableColumn` and `MenuItem` are declared in FXML
+ * but are not nodes.
  *
  * @param propName fx:id to look up. defaults to the property name.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T: Node> fxid(propName: String? = null): ReadOnlyProperty<FxView, T> = object: ReadOnlyProperty<FxView, T> {
+fun <T: Any> fxid(propName: String? = null): ReadOnlyProperty<FxView, T> = object: ReadOnlyProperty<FxView, T> {
     private var value: T? = null
     override fun getValue(thisRef: FxView, property: KProperty<*>): T {
         value?.let { return it }

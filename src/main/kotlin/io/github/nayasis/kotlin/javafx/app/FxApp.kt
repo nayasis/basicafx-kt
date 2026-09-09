@@ -15,6 +15,7 @@ import javafx.stage.Stage
 import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 import kotlin.system.exitProcess
 
@@ -46,8 +47,18 @@ abstract class FxApp(
         lateinit var primaryStage: Stage
             private set
 
-        /** get a view, creating and caching it on first use. */
-        fun <T: FxView> find(type: KClass<T>): T = ctx.get(type) ?: ctx.create(type)
+        private val views = ConcurrentHashMap<KClass<out FxView>, FxView>()
+
+        /**
+         * get a view, creating and caching it on first use.
+         *
+         * views are not DI beans: they are instantiated through their no-arg
+         * constructor and held as singletons, so they need no annotation.
+         */
+        @Suppress("UNCHECKED_CAST")
+        fun <T: FxView> find(type: KClass<T>): T = views.getOrPut(type) {
+            type.java.getDeclaredConstructor().newInstance()
+        } as T
 
     }
 
