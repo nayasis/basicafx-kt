@@ -58,7 +58,6 @@ dependencies {
 
 	implementation("io.github.nayasis:basica-kt:0.3.14")
 	implementation("commons-cli:commons-cli:1.11.0")
-	implementation("no.tornado:tornadofx:1.7.20")
 	implementation("org.jclarion:image4j:0.7")
 	implementation("org.controlsfx:controlsfx:11.2.3")
 	implementation("org.sejda.imageio:webp-imageio:0.1.6")
@@ -68,9 +67,10 @@ dependencies {
 	implementation("org.apache.httpcomponents.core5:httpcore5:5.2.4")
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	// kotlin
+	// reflection is used by SimpleDiContainer, FxmlLoaders and TableColumns.
+	// it used to arrive transitively through tornadofx.
+	implementation(kotlin("reflect"))
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.10.2")
-	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
 	// test
 	testImplementation(kotlin("test"))
