@@ -26,7 +26,7 @@ import javafx.stage.StageStyle
  * }
  * ```
  */
-open class DefaultSplash(
+abstract class DefaultSplash(
     width: Int,
     height: Int,
     imagePath: String? = null,
