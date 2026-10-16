@@ -68,7 +68,6 @@ dependencies {
 	implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	// kotlin
 	// reflection is used by SimpleDiContainer, FxmlLoaders and TableColumns.
-	// it used to arrive transitively through tornadofx.
 	implementation(kotlin("reflect"))
 	implementation("io.github.oshai:kotlin-logging-jvm:7.0.3")
 
